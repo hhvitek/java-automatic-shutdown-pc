@@ -1,8 +1,8 @@
 package model;
 
-import java.io.Serializable;
+import bindings.DataObjectBase;
 
-public class ModelBean implements Serializable {
+public class ModelBean extends DataObjectBase {
 
     private String spinnerValue = "00:30";
 
@@ -14,6 +14,8 @@ public class ModelBean implements Serializable {
     }
 
     public void setSpinnerValue(String spinnerValue) {
+        String oldValue = spinnerValue;
         this.spinnerValue = spinnerValue;
+        onPropertyChanged(this, "spinner", oldValue, spinnerValue);
     }
 }

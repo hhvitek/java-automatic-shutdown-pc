@@ -10,7 +10,6 @@ public class StateModelImpl implements StateModel {
 
     private static final Logger logger = LoggerFactory.getLogger(StateModelImpl.class);
 
-
     private String defaultDurationDelta;
     private String defaultSelectedTaskName;
 
