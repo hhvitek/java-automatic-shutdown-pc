@@ -1,6 +1,7 @@
 package model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface StateModel {
 
@@ -8,20 +9,20 @@ public interface StateModel {
     @NotNull String getSelectedTaskName();
 
     /**
-     * Initialize datetime when should expire.
-     * now() + durationDelay
-     *
-     * @param name
+     * @param name the name of a task to schedule
+     * @param parameter the parameter for a task to schedule, may be null as no parameter
      * @param durationDelay If null the default value is chosen.
      */
-    void setScheduledTask(@NotNull String name, @NotNull String durationDelay);
+    void setScheduledTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay);
     @NotNull String getScheduledTaskName();
 
     void cancelScheduledTask();
-    void restoreInitialState();
 
     @NotNull TimeManager getTimeManager();
     boolean hasElapsed();
     boolean isScheduled();
+
+    void setTimingDurationDelay(@NotNull String durationDelay);
+    String getTimingDurationDelay();
 
 }

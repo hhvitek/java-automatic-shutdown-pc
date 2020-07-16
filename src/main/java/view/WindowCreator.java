@@ -1,5 +1,6 @@
 package view;
 
+import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
 import tasks.Task;
 
@@ -30,7 +31,7 @@ public class WindowCreator {
     private JFrame guiFrame;
     ChooseTaskUI uiChooseTask = new ChooseTaskUI();;
 
-    WindowCreator(@NotNull List<Task> tasks) {
+    WindowCreator(@NotNull List<TaskTemplate> tasks) {
         guiFrame = new JFrame("Vypnutí PC");
         guiFrame.setContentPane(panelGui);
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

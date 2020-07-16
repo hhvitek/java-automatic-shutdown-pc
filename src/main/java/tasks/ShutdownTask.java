@@ -6,7 +6,7 @@ public class ShutdownTask extends Task {
     private static final String DESCRIPTION = "This task will turn the computer off.";
 
     public ShutdownTask() {
-        super(NAME, DESCRIPTION, false);
+        super(NAME, DESCRIPTION, false, false, ShutdownTask.class);
     }
 
     @Override

@@ -2,9 +2,9 @@ package view;
 
 import controller.ControllerImpl;
 import model.TaskModel;
+import model.TaskTemplate;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
-import tasks.Task;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -22,12 +22,12 @@ public class WindowManager {
         this.taskModel = taskModel;
         this.controller = controller;
 
-        List<Task> tasks = taskModel.getTasks();
+        List<TaskTemplate> tasks = taskModel.getTaskTemplates();
         windowCreator = createWindow(tasks);
         createAllListeners(windowCreator);
     }
 
-    private WindowCreator createWindow(@NotNull List<Task> tasks) {
+    private WindowCreator createWindow(@NotNull List<TaskTemplate> tasks) {
         return new WindowCreator(tasks);
     }
 
@@ -75,7 +75,7 @@ public class WindowManager {
     }
 
     void refreshTimingCountdowns(@NotNull TimeManager durationDelay) {
-        windowCreator.labelDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS());
+        windowCreator.labelDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
         windowCreator.labelWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
     }
 

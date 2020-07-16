@@ -31,6 +31,10 @@ public class TimeManager {
         whenElapsedPointInTime = addDurationDelayToNow(durationDelay);
     }
 
+    public TimeManager(@NotNull TimeManager other) {
+        whenElapsedPointInTime = Instant.from(other.whenElapsedPointInTime);
+    }
+
     public void setWhenElapsedUsingDurationDelay(@NotNull String durationDelay) {
         try {
             Duration duration = convertStringDurationDelayIntoDuration(durationDelay);
@@ -110,9 +114,14 @@ public class TimeManager {
                 '}';
     }
 
-    public String getRemainingDurationInHHMMSS() {
-        Duration delay = getRemainingDuration();
-        return convertDurationToHHMMSSString(delay);
+    public String getRemainingDurationInHHMMSS_ifElapsedZeros() {
+        if (hasElapsed()) {
+            return "00:00:00";
+        } else {
+            Duration delay = getRemainingDuration();
+            return convertDurationToHHMMSSString(delay);
+        }
+
     }
 
     /**
@@ -132,4 +141,12 @@ public class TimeManager {
         LocalDateTime dateTime = LocalDateTime.now().plus(getRemainingDuration());
         return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
+
+    @Override
+    public TimeManager clone() {
+        TimeManager clone = new TimeManager(this);
+        return clone;
+    }
+
+
 }

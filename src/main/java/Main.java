@@ -1,6 +1,6 @@
 import controller.ControllerImpl;
 import model.StateModelImpl;
-import model.TaskModel;
+import model.TaskModelImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.ViewImpl;
@@ -13,7 +13,7 @@ public class Main {
 
     public static final List<String>  ACTIVE_TASKS = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
     public static final String DEFAULT_TASK = "Shutdown";
-    public static final String DEFAULT_AFTERDELTA = "00:30";
+    public static final String DEFAULT_AFTERDELTA = "01:00";
     public static final String LOG_FILENAME = "shutdown.log";
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -24,7 +24,7 @@ public class Main {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        TaskModel taskModel = new TaskModel(ACTIVE_TASKS);
+        TaskModelImpl taskModel = new TaskModelImpl(ACTIVE_TASKS);
         StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
 
         ControllerImpl controller = new ControllerImpl(stateModel);

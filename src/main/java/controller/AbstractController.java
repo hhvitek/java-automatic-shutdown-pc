@@ -68,7 +68,6 @@ public abstract class AbstractController implements PropertyChangeListener {
      *                     of the property.
      */
     protected void setModelProperty(@NotNull String propertyName, @Nullable Object newValue) {
-
         for (AbstractModel model : registeredModels) {
             try {
                 Method method = model.getClass().
@@ -81,6 +80,49 @@ public abstract class AbstractController implements PropertyChangeListener {
             } catch (Exception ex) {
                 //  Handle exception.
                 logger.error("Failed to invoke model's method <{}> using reflection API. Method not found.", propertyName, ex);
+            }
+        }
+    }
+
+    /**
+     * This is a convenience method that subclasses can call to invoke model's method by it's string representation.
+     * This method uses reflection to inspect each of the model classes to determine whether it is the owner of
+     * the method in question. If it isn't, a NoSuchMethodException is thrown, which the method ignores.
+     *
+     * @param methodName      = The name of the method.
+     * @param methodParameter = An object that represents is passed as a method parameter
+     */
+    protected void invokeModelMethodWithOneParameter(@NotNull String methodName, @Nullable Object methodParameter) {
+        for (AbstractModel model : registeredModels) {
+            try {
+                Method method = model.getClass().
+                        getMethod(
+                                methodName,
+                                new Class[]{methodParameter.getClass()}
+                        );
+                method.invoke(model, methodParameter);
+            } catch (Exception ex) {
+                //  Handle exception.
+                logger.error("Failed to invoke model's method <{}> using reflection API. Method not found.", methodName, ex);
+            }
+        }
+    }
+
+    /**
+     * This is a convenience method that subclasses can call to invoke model's method by it's string representation.
+     * This method uses reflection to inspect each of the model classes to determine whether it is the owner of
+     * the method in question. If it isn't, a NoSuchMethodException is thrown, which the method ignores.
+     *
+     * @param methodName      = The name of the method.
+     */
+    protected void invokeModelMethodWithoutParameters(@NotNull String methodName) {
+        for (AbstractModel model : registeredModels) {
+            try {
+                Method method = model.getClass().getMethod(methodName);
+                method.invoke(model);
+            } catch (Exception ex) {
+                //  Handle exception.
+                logger.error("Failed to invoke model's method <{}> using reflection API. Method not found.", methodName, ex);
             }
         }
     }

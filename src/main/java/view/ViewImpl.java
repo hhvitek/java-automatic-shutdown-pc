@@ -31,17 +31,28 @@ public class ViewImpl extends AbstractView {
 
         //TODO exception illegal argument
         switch (ModelPropertiesEnum.valueOf(propertyName)) {
-            case SCHEDULED_TASK: {
-
+            case SCHEDULED_TASKNAME_CHANGED: {
+                logger.debug("Model's property {} changed.", propertyName);
                 break;
             }
-            case SELECTED_TASK: {
-
+            case SCHEDULED_TASKPARAMETER_CHANGED: {
+                logger.debug("Model's property {} changed.", propertyName);
                 break;
             }
-            case TIME_DURATION_DELAY: {
-                TimeManager newDurationDelay = (TimeManager) evt.getNewValue();
-                windowManager.refreshTimingCountdowns(newDurationDelay);
+            case SELECTED_TASK_CHANGED: {
+                logger.debug("Model's property {} changed.", propertyName);
+                break;
+            }
+            case CHOSEN_TIMING_DURATION_DELAY_CHANGED: {
+                String newTimingDurationDelay = evt.getNewValue().toString();
+                TimeManager timeManager = new TimeManager(newTimingDurationDelay);
+                refreshTimingCountdowns(timeManager);
+                break;
+            }
+            case TIMER_TICK: {
+                logger.debug("Model's property {} changed.", propertyName);
+                TimeManager timeManager = (TimeManager) evt.getNewValue();
+                refreshTimingCountdowns(timeManager);
                 break;
             }
             default: {

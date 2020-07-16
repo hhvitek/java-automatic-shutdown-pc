@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TimeManagerTest {
 
     @Test
@@ -54,6 +52,67 @@ class TimeManagerTest {
 
         Duration duration = time.getRemainingDuration();
         Assertions.assertTrue(duration.isNegative());
+    }
+
+    @Test
+    void copyConstructorTest() {
+
+        String duratioDelay = "02:30";
+        TimeManager time1 = new TimeManager(duratioDelay);
+        TimeManager time2 = new TimeManager(time1);
+
+        Assertions.assertEquals(time2, time1);
+
+        String durationDelayOther = "14:29";
+        time1.setWhenElapsedUsingDurationDelay(durationDelayOther);
+
+        Assertions.assertNotEquals(time2, time1);
+    }
+
+    @Test
+    void copyConstructor2ndTest() {
+
+        String duratioDelay = "02:30";
+        TimeManager time1 = new TimeManager(duratioDelay);
+        TimeManager time2 = new TimeManager(time1);
+
+        Assertions.assertEquals(time2, time1);
+
+        Instant instant = time1.getWhenElapsedPointInTime();
+        instant.plus(Duration.ofMinutes(90));
+
+        Assertions.assertEquals(time2, time1);
+    }
+
+    @Test
+    void copyShallowTest() {
+
+        String duratioDelay = "02:30";
+        TimeManager time1 = new TimeManager(duratioDelay);
+        TimeManager time2 = time1;
+
+        Assertions.assertEquals(time2, time1);
+
+        // changes both variables - both points to the same object
+        time1.setWhenElapsedUsingDurationDelay("14:30");
+
+        Assertions.assertEquals(time2, time1);
+
+
+    }
+
+    @Test
+    void copyDeepTest() {
+        String duratioDelay = "02:30";
+        TimeManager time1 = new TimeManager(duratioDelay);
+        TimeManager time2 = time1.clone();
+
+        Assertions.assertEquals(time2, time1);
+
+        // changes only one variable, two objects exist
+        time1.setWhenElapsedUsingDurationDelay("22:30");
+
+        Assertions.assertNotEquals(time2, time1);
     }
 
 }

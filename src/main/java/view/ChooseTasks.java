@@ -1,7 +1,7 @@
 package view;
 
+import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
-import tasks.Task;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -15,35 +15,35 @@ public class ChooseTasks {
 
     private Map<String, ChooseTaskElement> taskMap = new HashMap<>();
 
-    public JPanel createUIForOneTask(@NotNull Task task) {
+    public JPanel createUIForOneTask(@NotNull TaskTemplate taskTemplate) {
         JPanel taskPanel = new JPanel();
         taskPanel.setLayout(
                 new BoxLayout(taskPanel, BoxLayout.LINE_AXIS)
         );
 
-        JRadioButton radioButton = createTaskRadioButton(taskPanel, task);
-        JTextField textField = createTaskParameterFieldIfTaskAcceptsParameter(taskPanel, task);
+        JRadioButton radioButton = createTaskRadioButton(taskPanel, taskTemplate);
+        JTextField textField = createTaskParameterFieldIfTaskAcceptsParameter(taskPanel, taskTemplate);
 
-        ChooseTaskElement element = new ChooseTaskElement(task.getName(), radioButton, textField);
-        taskMap.put(task.getName(), element);
+        ChooseTaskElement element = new ChooseTaskElement(taskTemplate.getName(), radioButton, textField);
+        taskMap.put(taskTemplate.getName(), element);
 
         return taskPanel;
     }
 
-    private JRadioButton createTaskRadioButton(@NotNull JPanel taskPanel, @NotNull Task task) {
-        String taskName = task.getName();
+    private JRadioButton createTaskRadioButton(@NotNull JPanel taskPanel, @NotNull TaskTemplate taskTemplate) {
+        String taskName = taskTemplate.getName();
 
         JRadioButton radioButtonTask = new JRadioButton(taskName);
         radioButtonTask.setActionCommand(taskName);
-        radioButtonTask.setToolTipText(task.getDescription());
+        radioButtonTask.setToolTipText(taskTemplate.getDescription());
 
         taskPanel.add(radioButtonTask);
         buttonGroupChooseTask.add(radioButtonTask);
         return radioButtonTask;
     }
 
-    private JTextField createTaskParameterFieldIfTaskAcceptsParameter(@NotNull JPanel taskPanel, @NotNull Task task) {
-        if (task.acceptParameter()) {
+    private JTextField createTaskParameterFieldIfTaskAcceptsParameter(@NotNull JPanel taskPanel, @NotNull TaskTemplate taskTemplate) {
+        if (taskTemplate.acceptParameter()) {
             JTextField textFieldParameter = new JTextField();
             taskPanel.add(textFieldParameter);
             return textFieldParameter;

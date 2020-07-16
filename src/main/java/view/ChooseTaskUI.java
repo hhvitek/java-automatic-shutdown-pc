@@ -1,7 +1,7 @@
 package view;
 
+import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
-import tasks.Task;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +21,9 @@ public class ChooseTaskUI {
         );
     }
 
-    public JPanel createUIChooseTask(@NotNull List<Task> tasks) {
-        for (Task task: tasks) {
-            JPanel taskPanel = chooseTasks.createUIForOneTask(task);
+    public JPanel createUIChooseTask(@NotNull List<TaskTemplate> tasks) {
+        for (TaskTemplate taskTemplate: tasks) {
+            JPanel taskPanel = chooseTasks.createUIForOneTask(taskTemplate);
             uiContainerPanel.add(taskPanel);
         }
 
