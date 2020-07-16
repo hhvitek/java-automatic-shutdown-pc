@@ -18,6 +18,7 @@ public interface StateModel {
     @NotNull String getScheduledTaskName();
 
     void cancelScheduledTask();
+    void restoreInitialState();
 
     @NotNull TimeManager getTimeManager();
     boolean hasElapsed();

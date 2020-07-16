@@ -3,8 +3,9 @@ package model;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static model.ModelPropertiesEnum.*;
 
-public class StateModelImpl implements StateModel {
+public class StateModelImpl extends AbstractModel implements StateModel  {
 
     public static String DEFAULT_DURATION_DELTA = "00:30";
 
@@ -28,6 +29,7 @@ public class StateModelImpl implements StateModel {
         restoreInitialState();
     }
 
+    @Override
     public void restoreInitialState() {
         logger.debug("Restoring initial StateModel state.");
         setScheduledTaskToDefault();
@@ -44,8 +46,11 @@ public class StateModelImpl implements StateModel {
 
     @Override
     public void setSelectedTaskName(@NotNull String name) {
-        logger.debug("The new scheduled task: <{}>", name);
-        this.selectedTaskName = name;
+        String oldSelectedTaskName = selectedTaskName;
+        selectedTaskName = name;
+
+        logger.debug("The new selected task: <{}> -> <{}>", oldSelectedTaskName, selectedTaskName);
+        firePropertyChange(SELECTED_TASK, oldSelectedTaskName, selectedTaskName);
     }
 
     @Override
@@ -55,11 +60,23 @@ public class StateModelImpl implements StateModel {
 
     @Override
     public void setScheduledTask(@NotNull String name, @NotNull String durationDelay) {
-        logger.debug("The new scheduled task: <{}>:<{}>", name, durationDelay);
+        String oldScheduledTaskName = scheduledTaskName;
         scheduledTaskName = name;
-        timeManager = new TimeManager(durationDelay);
+
+        logger.debug("The new scheduled task: <{}> -> <{}>:<{}>", oldScheduledTaskName, scheduledTaskName, durationDelay);
+        firePropertyChange(SCHEDULED_TASK, oldScheduledTaskName, scheduledTaskName);
+
+        setTimeManager(durationDelay);
     }
 
+    //TODO this is public method?
+    public void setTimeManager(@NotNull String durationDelay) {
+        logger.debug("The new durationDelay init: <{}>", durationDelay);
+        TimeManager oldTimeManager = timeManager;
+        timeManager = new TimeManager(durationDelay);
+
+        firePropertyChange(TIME_DURATION_DELAY, oldTimeManager, timeManager);
+    }
 
     @Override
     public @NotNull String getScheduledTaskName() {

@@ -36,6 +36,10 @@ public class TaskModel {
         }
     }
 
+    public List<Task> getTasks() {
+        return taskMap.values().stream().collect(Collectors.toList());
+    }
+
     public List<String> getTaskNames() {
         return taskMap.keySet().stream().collect(Collectors.toList());
     }

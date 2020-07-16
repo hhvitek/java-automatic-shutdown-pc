@@ -1,10 +1,9 @@
-import model.StateModel;
+import controller.ControllerImpl;
 import model.StateModelImpl;
 import model.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import view.Gui;
-import view.WindowManager;
+import view.ViewImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class Main {
 
-    public static final List<String>  ACTIVE_TASKS = List.of("tasks.RestartTask", "tasks.ShutdownTask");
+    public static final List<String>  ACTIVE_TASKS = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
     public static final String DEFAULT_TASK = "Shutdown";
     public static final String DEFAULT_AFTERDELTA = "00:30";
     public static final String LOG_FILENAME = "shutdown.log";
@@ -22,14 +21,17 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         logger.info("STARTING");
 
-        TaskModel taskModel = new TaskModel(ACTIVE_TASKS);
-        StateModel stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
-
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        Gui gui = new Gui(taskModel, stateModel);
-        gui.run();
+        TaskModel taskModel = new TaskModel(ACTIVE_TASKS);
+        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+
+        ControllerImpl controller = new ControllerImpl(stateModel);
+        controller.addModel(stateModel);
+
+        ViewImpl view = new ViewImpl(controller, taskModel);
+        view.run();
 
         logger.info("FINISHED");
     }

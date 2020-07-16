@@ -6,7 +6,7 @@ public class RestartTask extends Task {
     private static final String DESCRIPTION = "This task will restart the computer.";
 
     public RestartTask() {
-        super(NAME, DESCRIPTION);
+        super(NAME, DESCRIPTION, false);
     }
 
     @Override

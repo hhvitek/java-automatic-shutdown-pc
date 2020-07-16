@@ -12,10 +12,12 @@ public abstract class Task {
 
     protected final String name;
     protected final String description;
+    protected final boolean acceptParameter;
 
-    protected Task(@NotNull String name, @NotNull String description) {
+    protected Task(@NotNull String name, @NotNull String description, boolean acceptParameter) {
         this.name = name;
         this.description = description;
+        this.acceptParameter = acceptParameter;
     }
 
     public String getName() {
@@ -24,6 +26,10 @@ public abstract class Task {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean acceptParameter() {
+        return acceptParameter;
     }
 
     public abstract String execute() throws TaskException;
