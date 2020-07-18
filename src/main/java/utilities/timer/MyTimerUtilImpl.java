@@ -1,4 +1,4 @@
-package timer;
+package utilities.timer;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -6,15 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MyTimerUtil implements MyTimer {
+public class MyTimerUtilImpl implements MyTimer {
 
     private Timer timer;
 
-    public MyTimerUtil() {
-    }
-
     @Override
-    public void scheduleAtFixedRate(@NotNull Runnable task, long rate) {
+    public void scheduleAtFixedRate(@NotNull Runnable task, int rate) {
         TimerTask timerTask = wrapRunnableInTimerTask(task);
 
         timer = new Timer();

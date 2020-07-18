@@ -1,5 +1,7 @@
 package tasks;
 
+import org.jetbrains.annotations.Nullable;
+
 public class RestartTask extends Task {
 
     private static final String NAME = "Restart";
@@ -10,7 +12,7 @@ public class RestartTask extends Task {
     }
 
     @Override
-    public String execute() throws TaskException {
+    public @Nullable String execute() throws TaskException {
         logger.info("Executing {}", name);
         throw new TaskException("Test error exception");
     }

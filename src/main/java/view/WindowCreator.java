@@ -2,7 +2,6 @@ package view;
 
 import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
-import tasks.Task;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,16 +19,20 @@ public class WindowCreator {
     JLabel labelStatusbar;
     JButton buttonSubmit;
     JButton buttonExit;
-    JButton buttonCancel;
+    JButton buttonShowScheduledTasks;
     JSpinner spinnerChooseTiming;
+    JLabel labelLastWhenElapsed;
+    JLabel labelLastDurationDelay;
+    JButton buttonCancel;
     JLabel labelWhenElapsed;
     JLabel labelDurationDelay;
+    JLabel labelLastId;
 
-    public static int TIMING_STEP_IN_MINUTES = 15;
-    public static String TIMING_DEFAULT_VALUE = "01:00";
+    final static int TIMING_STEP_IN_MINUTES = 15;
+    final static String TIMING_DEFAULT_VALUE = "01:00";
 
-    private JFrame guiFrame;
-    ChooseTaskUI uiChooseTask = new ChooseTaskUI();;
+    private final JFrame guiFrame;
+    final ChooseTaskUI uiChooseTask = new ChooseTaskUI();;
 
     WindowCreator(@NotNull List<TaskTemplate> tasks) {
         guiFrame = new JFrame("Vypnutí PC");

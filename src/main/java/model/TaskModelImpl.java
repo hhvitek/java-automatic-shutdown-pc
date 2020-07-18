@@ -4,11 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.Task;
+import utilities.reflection.ClassLoadingException;
+import utilities.reflection.ReflectionApi;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class TaskModelImpl implements TaskModel {
     private static final Logger logger = LoggerFactory.getLogger(TaskModelImpl.class);
@@ -27,7 +26,7 @@ public class TaskModelImpl implements TaskModel {
     }
 
     private Task getTaskFromPackageAndClassName(@NotNull String packageAndClassName) throws ClassLoadingException {
-        Object instance = ClassLoader.fromPackageNameClassName(packageAndClassName);
+        Object instance = ReflectionApi.instantiateFromStringPackageNameClassName(packageAndClassName);
         if(instance instanceof Task) {
             return (Task) instance;
         } else {
@@ -35,7 +34,23 @@ public class TaskModelImpl implements TaskModel {
         }
     }
 
-    public List<TaskTemplate> getTaskTemplates() {
-        return taskMap.values().stream().collect(Collectors.toList());
+    public boolean contains(@NotNull String name) {
+        return taskMap.containsKey(name);
+    }
+
+    /**
+     * Return null if no task exists.
+     */
+    public @NotNull Task getTaskByName(@NotNull String name) throws TaskNotFoundException{
+        Task task = taskMap.get(name);
+        if (task != null) {
+            return task;
+        } else {
+            throw new TaskNotFoundException(name);
+        }
+    }
+
+    public @NotNull List<TaskTemplate> getTaskTemplates() {
+        return new ArrayList<>(taskMap.values());
     }
 }

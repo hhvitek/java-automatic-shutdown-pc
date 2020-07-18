@@ -1,6 +1,7 @@
 package tasks;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ParametrizedTask extends Task {
 
@@ -9,10 +10,10 @@ public abstract class ParametrizedTask extends Task {
     }
 
     @Override
-    public String execute() {
+    public @Nullable String execute() {
         throw new UnsupportedOperationException("No parameterized execution not supported.");
     }
 
     @Override
-    public abstract String execute(@NotNull String parameter);
+    public abstract @Nullable String execute(@NotNull String parameter);
 }

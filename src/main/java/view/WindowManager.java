@@ -48,10 +48,10 @@ public class WindowManager {
                 controller.actionNewTaskScheduledByUser(selectedTaskName, timing, selectedTaskParameter);
             }
         });
-        windowCreator.buttonCancel.addActionListener(new ActionListener() {
+        windowCreator.buttonShowScheduledTasks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.actionCancelScheduledTaskByUser();
+                controller.actionShowScheduledTasks();
             }
         });
         windowCreator.buttonExit.addActionListener(new ActionListener() {
@@ -67,6 +67,12 @@ public class WindowManager {
                 controller.actionNewTaskSelectedByUser(selectedTaskName);
             }
         });
+        windowCreator.buttonCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.actionCancelScheduledTaskByUser();
+            }
+        });
     }
 
     void run() {
@@ -74,9 +80,22 @@ public class WindowManager {
         windowCreator.run();
     }
 
+    void timerTick() {
+        controller.eventTimerTickReceived();
+    }
+
     void refreshTimingCountdowns(@NotNull TimeManager durationDelay) {
         windowCreator.labelDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
         windowCreator.labelWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
+    }
+
+    void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
+        windowCreator.labelLastDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
+        windowCreator.labelLastWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
+    }
+
+    void updateLastScheduledTask(int id) {
+        windowCreator.labelLastId.setText(String.valueOf(id));
     }
 
     void showInfoMessageToUser(@NotNull String message) {

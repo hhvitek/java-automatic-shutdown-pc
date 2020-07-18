@@ -11,7 +11,8 @@ public abstract class AbstractView {
 
     protected AbstractView(@NotNull AbstractController controller) {
         this.controller = controller;
-        controller.addView(this);
+        //controller.addView(this); DO THIS MANUALLY AT THE END OF YOUR CONSTRUCTOR
+        // starts immediately receiving events even though the view is not fully instantiated by constructor.
     }
 
     public abstract void modelPropertyChange(final PropertyChangeEvent evt);

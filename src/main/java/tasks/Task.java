@@ -2,6 +2,7 @@ package tasks;
 
 import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ public abstract class Task implements TaskTemplate {
     protected final boolean produceResult;
     protected final Class<?> clazz;
 
-    public Task(@NotNull String name, @NotNull String description, boolean acceptParameter, boolean produceResult, @NotNull Class<?> clazz) {
+    protected Task(@NotNull String name, @NotNull String description, boolean acceptParameter, boolean produceResult, @NotNull Class<?> clazz) {
         this.name = name;
         this.description = description;
         this.acceptParameter = acceptParameter;
@@ -26,12 +27,12 @@ public abstract class Task implements TaskTemplate {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return description;
     }
 
@@ -46,21 +47,21 @@ public abstract class Task implements TaskTemplate {
     }
 
     @Override
-    public Class<?> getClazz() {
+    public @NotNull Class<?> getClazz() {
         return clazz;
     }
 
-    public abstract String execute() throws TaskException;
+    public abstract @Nullable String execute() throws TaskException;
 
-    public String execute(@NotNull String parameter) throws TaskException {
+    public @Nullable String execute(@NotNull String parameter) throws TaskException {
         throw new UnsupportedOperationException("Parametrized execution not supported.");
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Task)) return false;
-        Task task = (Task) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Task)) return false;
+        Task task = (Task) obj;
         return name.equals(task.name);
     }
 

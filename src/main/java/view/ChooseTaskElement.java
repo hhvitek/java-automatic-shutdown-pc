@@ -8,24 +8,14 @@ import java.awt.event.ActionListener;
 
 public class ChooseTaskElement {
 
-    private String taskName;
-    private JRadioButton radioButtonTaskName;
-    private JTextField textFieldTaskParameter;
+    private final JRadioButton radioButtonTaskName;
+    private final JTextField textFieldTaskParameter;
 
-    public ChooseTaskElement(@NotNull String taskName, @NotNull JRadioButton radioButtonTaskName) {
-        this.taskName = taskName;
-        this.radioButtonTaskName = radioButtonTaskName;
-    }
-
-    public ChooseTaskElement(@NotNull String taskName, @NotNull JRadioButton radioButtonTaskName, @Nullable JTextField textFieldTaskParameter) {
-        this.taskName = taskName;
+    public ChooseTaskElement(@NotNull JRadioButton radioButtonTaskName, @Nullable JTextField textFieldTaskParameter) {
         this.radioButtonTaskName = radioButtonTaskName;
         this.textFieldTaskParameter = textFieldTaskParameter;
     }
 
-    public void setTextFieldTaskParameter(@NotNull JTextField textFieldTaskParameter) {
-        this.textFieldTaskParameter = textFieldTaskParameter;
-    }
 
     public String getTaskParameter() {
         if (textFieldTaskParameter != null) {

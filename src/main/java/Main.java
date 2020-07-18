@@ -1,8 +1,11 @@
 import controller.ControllerImpl;
+import model.ScheduledTaskModelImpl;
 import model.StateModelImpl;
+import model.TaskModel;
 import model.TaskModelImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utilities.reflection.ReflectionApi;
 import view.ViewImpl;
 
 import javax.swing.*;
@@ -24,13 +27,18 @@ public class Main {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        TaskModelImpl taskModel = new TaskModelImpl(ACTIVE_TASKS);
-        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        ReflectionApi.shouldLog(false);
 
-        ControllerImpl controller = new ControllerImpl(stateModel);
+        TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
+        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(taskModel);
+
+        ControllerImpl controller = new ControllerImpl(stateModel, scheduledTaskModel);
         controller.addModel(stateModel);
+        controller.addModel(scheduledTaskModel);
 
         ViewImpl view = new ViewImpl(controller, taskModel);
+
         view.run();
 
         logger.info("FINISHED");

@@ -1,13 +1,15 @@
 package model;
 
-public interface TaskTemplate {
-    String getName();
+import org.jetbrains.annotations.NotNull;
 
-    String getDescription();
+public interface TaskTemplate {
+    @NotNull String getName();
+
+    @NotNull String getDescription();
 
     boolean acceptParameter();
 
     boolean doProduceResult();
 
-    Class<?> getClazz();
+    @NotNull Class<?> getClazz();
 }

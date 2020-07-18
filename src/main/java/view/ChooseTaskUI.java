@@ -11,9 +11,9 @@ import java.util.List;
 
 public class ChooseTaskUI {
 
-    private JPanel uiContainerPanel = new JPanel();
+    private final JPanel uiContainerPanel = new JPanel();
 
-    private ChooseTasks chooseTasks = new ChooseTasks();
+    private final ChooseTasks chooseTasks = new ChooseTasks();
 
     public ChooseTaskUI() {
         uiContainerPanel.setLayout(

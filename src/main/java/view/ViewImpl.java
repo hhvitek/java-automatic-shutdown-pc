@@ -1,7 +1,7 @@
 package view;
 
 import controller.ControllerImpl;
-import model.ModelPropertiesEnum;
+import model.ModelObservableEvents;
 import model.TaskModel;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
@@ -13,12 +13,13 @@ import java.beans.PropertyChangeEvent;
 public class ViewImpl extends AbstractView {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewImpl.class);
-    private WindowManager windowManager;
+    private final WindowManager windowManager;
 
     public ViewImpl(@NotNull ControllerImpl controller, @NotNull TaskModel taskModel) {
         super(controller);
         windowManager = new WindowManager(taskModel, controller);
         controller.setView(this);
+        controller.addView(this);
     }
 
     public void run() {
@@ -30,38 +31,40 @@ public class ViewImpl extends AbstractView {
         String propertyName = evt.getPropertyName();
 
         //TODO exception illegal argument
-        switch (ModelPropertiesEnum.valueOf(propertyName)) {
-            case SCHEDULED_TASKNAME_CHANGED: {
-                logger.debug("Model's property {} changed.", propertyName);
-                break;
-            }
-            case SCHEDULED_TASKPARAMETER_CHANGED: {
-                logger.debug("Model's property {} changed.", propertyName);
-                break;
-            }
-            case SELECTED_TASK_CHANGED: {
-                logger.debug("Model's property {} changed.", propertyName);
-                break;
-            }
+        switch (ModelObservableEvents.valueOf(propertyName)) {
             case CHOSEN_TIMING_DURATION_DELAY_CHANGED: {
+                logger.debug("Chose timing has changed. {} -> {}", evt.getOldValue(), evt.getNewValue());
                 String newTimingDurationDelay = evt.getNewValue().toString();
                 TimeManager timeManager = new TimeManager(newTimingDurationDelay);
-                refreshTimingCountdowns(timeManager);
+                refreshTimingDurationDelay(timeManager);
                 break;
             }
             case TIMER_TICK: {
-                logger.debug("Model's property {} changed.", propertyName);
-                TimeManager timeManager = (TimeManager) evt.getNewValue();
-                refreshTimingCountdowns(timeManager);
+                windowManager.timerTick();
                 break;
             }
-            default: {
-                logger.error("Property change event not recognized. <{}>", propertyName);
+            case LAST_SCHEDULED_TASK_CHANGED: {
+                int id = (int) evt.getNewValue();
+                windowManager.updateLastScheduledTask(id);
             }
         }
     }
 
-    public void refreshTimingCountdowns(@NotNull TimeManager timeManager) {
+    public void showUserError(@NotNull String errorMessage) {
+        windowManager.showErrorMessageToUser(errorMessage);
+    }
+
+    public void showUserInfo(@NotNull String infoMessage) {
+        windowManager.showInfoMessageToUser(infoMessage);
+    }
+
+    public void refreshTimingDurationDelay(@NotNull TimeManager timeManager) {
         windowManager.refreshTimingCountdowns(timeManager);
     }
+
+    public void refreshLastScheduledTaskTimingDurationDelay(@NotNull TimeManager timeManager) {
+        windowManager.refreshLastScheduledTaskTimingCountdowns(timeManager);
+    }
+
+
 }

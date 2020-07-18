@@ -1,5 +1,7 @@
 package tasks;
 
+import org.jetbrains.annotations.Nullable;
+
 public class ShutdownTask extends Task {
 
     private static final String NAME = "Shutdown";
@@ -10,7 +12,7 @@ public class ShutdownTask extends Task {
     }
 
     @Override
-    public String execute() throws TaskException {
+    public @Nullable String execute() throws TaskException {
         logger.info("Executing {}", name);
         return "OK.";
     }

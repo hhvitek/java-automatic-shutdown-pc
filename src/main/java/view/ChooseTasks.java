@@ -11,9 +11,9 @@ import java.util.Map;
 
 public class ChooseTasks {
 
-    private ButtonGroup buttonGroupChooseTask = new ButtonGroup();
+    private final ButtonGroup buttonGroupChooseTask = new ButtonGroup();
 
-    private Map<String, ChooseTaskElement> taskMap = new HashMap<>();
+    private final Map<String, ChooseTaskElement> taskMap = new HashMap<>();
 
     public JPanel createUIForOneTask(@NotNull TaskTemplate taskTemplate) {
         JPanel taskPanel = new JPanel();
@@ -24,7 +24,7 @@ public class ChooseTasks {
         JRadioButton radioButton = createTaskRadioButton(taskPanel, taskTemplate);
         JTextField textField = createTaskParameterFieldIfTaskAcceptsParameter(taskPanel, taskTemplate);
 
-        ChooseTaskElement element = new ChooseTaskElement(taskTemplate.getName(), radioButton, textField);
+        ChooseTaskElement element = new ChooseTaskElement(radioButton, textField);
         taskMap.put(taskTemplate.getName(), element);
 
         return taskPanel;

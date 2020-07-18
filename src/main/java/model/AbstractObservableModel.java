@@ -6,10 +6,13 @@ import org.jetbrains.annotations.Nullable;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public abstract class AbstractModel {
+/**
+ * Observer pattern
+ */
+public abstract class AbstractObservableModel {
     protected final PropertyChangeSupport propertyChangeSupport;
 
-    protected AbstractModel() {
+    protected AbstractObservableModel() {
         propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
@@ -21,7 +24,7 @@ public abstract class AbstractModel {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    protected void firePropertyChange(@NotNull ModelPropertiesEnum propertyName, @Nullable Object oldValue, @Nullable Object newValue) {
+    protected void firePropertyChange(@NotNull ModelObservableEvents propertyName, @Nullable Object oldValue, @Nullable Object newValue) {
         propertyChangeSupport.firePropertyChange(propertyName.toString(), oldValue, newValue);
     }
 

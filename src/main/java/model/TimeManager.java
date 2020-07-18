@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * durationDelay is defined as String in the format %H:%M 13:56
  */
-public class TimeManager {
+public final class TimeManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeManager.class);
 
@@ -35,7 +35,7 @@ public class TimeManager {
         whenElapsedPointInTime = Instant.from(other.whenElapsedPointInTime);
     }
 
-    public void setWhenElapsedUsingDurationDelay(@NotNull String durationDelay) {
+    void setWhenElapsedUsingDurationDelay(@NotNull String durationDelay) {
         try {
             Duration duration = convertStringDurationDelayIntoDuration(durationDelay);
             whenElapsedPointInTime = addDurationDelayToNow(duration);
@@ -45,18 +45,18 @@ public class TimeManager {
         }
     }
 
-    public static TimeManager fromNow() {
+    public static @NotNull TimeManager fromNow() {
         return new TimeManager("00:00");
     }
 
-    public static Duration convertStringDurationDelayIntoDuration(@NotNull String durationDelay) throws DateTimeException {
+    public static @NotNull Duration convertStringDurationDelayIntoDuration(@NotNull String durationDelay) throws DateTimeException {
         return Duration.between(
                 LocalTime.MIN, // 00:00:00
                 LocalTime.parse(durationDelay) // 02:00 or 00:02:00
         );
     }
 
-    public static Instant addDurationDelayToNow(@NotNull Duration durationDelay) {
+    public static @NotNull Instant addDurationDelayToNow(@NotNull Duration durationDelay) {
         return Instant.now().plus(durationDelay);
     }
 
@@ -73,17 +73,17 @@ public class TimeManager {
         }
     }
 
-    public Instant getWhenElapsedPointInTime() {
+    public @NotNull Instant getWhenElapsedPointInTime() {
         return whenElapsedPointInTime;
     }
 
-    public Duration getRemainingDuration() {
+    public @NotNull Duration getRemainingDuration() {
         return howLongBeforeItElapses(whenElapsedPointInTime);
     }
 
 
 
-    public static Duration howLongBeforeItElapses(@NotNull Instant pointInTime) {
+    public static @NotNull Duration howLongBeforeItElapses(@NotNull Instant pointInTime) {
         return Duration.between(
                 Instant.now(),
                 pointInTime
@@ -95,10 +95,10 @@ public class TimeManager {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final TimeManager that = (TimeManager) o;
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        final TimeManager that = (TimeManager) obj;
         return Objects.equals(whenElapsedPointInTime, that.whenElapsedPointInTime);
     }
 
@@ -109,12 +109,10 @@ public class TimeManager {
 
     @Override
     public String toString() {
-        return "TimeManager{" +
-                "whenElapsedPointInTime=" + whenElapsedPointInTime +
-                '}';
+        return getRemainingDurationInHHMMSS_ifElapsedZeros();
     }
 
-    public String getRemainingDurationInHHMMSS_ifElapsedZeros() {
+    public @NotNull String getRemainingDurationInHHMMSS_ifElapsedZeros() {
         if (hasElapsed()) {
             return "00:00:00";
         } else {
@@ -126,10 +124,8 @@ public class TimeManager {
 
     /**
      * Converts Javas Duration parameter into Javas String in the format HH:mm:SS (16:30:30)
-     * @param duration
-     * @return
      */
-    private String convertDurationToHHMMSSString(@NotNull Duration duration) {
+    private @NotNull String convertDurationToHHMMSSString(@NotNull Duration duration) {
         return String.format("%02d:%02d:%02d",
                 duration.toHoursPart(),
                 duration.toMinutesPart(),
@@ -137,15 +133,14 @@ public class TimeManager {
         );
     }
 
-    public String getWhenElapsedInHHMM() {
+    public @NotNull String getWhenElapsedInHHMM() {
         LocalDateTime dateTime = LocalDateTime.now().plus(getRemainingDuration());
         return dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     @Override
     public TimeManager clone() {
-        TimeManager clone = new TimeManager(this);
-        return clone;
+        return new TimeManager(this);
     }
 
 

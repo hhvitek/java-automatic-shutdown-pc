@@ -1,14 +1,23 @@
 package model;
 
 import org.jetbrains.annotations.NotNull;
+import tasks.TaskException;
+
+import java.util.Optional;
 
 public interface ScheduledTask {
 
-    TaskTemplate getTaskTemplate();
-    String getTaskParameter();
-    TimeManager getWhenElapsed();
-    String execute();
+    @NotNull Integer getId();
+    @NotNull TaskTemplate getTaskTemplate();
+    @NotNull Optional<String> getTaskParameter();
+    @NotNull TimeManager getWhenElapsed();
+    void execute() throws TaskException;
 
-    void setStatus(@NotNull ScheduledTaskStatus newStatus);
-    ScheduledTaskStatus getStatus();
+    @NotNull String getErrorMessage();
+    @NotNull String getOutput();
+
+    void setStatusIfPossible(@NotNull ScheduledTaskStatus newStatus);
+    @NotNull ScheduledTaskStatus getStatus();
+    boolean isScheduled();
+    void recomputeStatusIfTaskHasElapsedChangeIntoElapsedStatus();
 }

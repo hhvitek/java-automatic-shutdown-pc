@@ -1,4 +1,4 @@
-package timer;
+package utilities.timer;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,18 +6,15 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MyTimerSwing implements MyTimer {
+public class MyTimerSwingImpl implements MyTimer {
 
     private Timer timer;
 
-    public MyTimerSwing() {
-    }
-
     @Override
-    public void scheduleAtFixedRate(@NotNull Runnable task, long rate) {
+    public void scheduleAtFixedRate(@NotNull Runnable task, int rate) {
         ActionListener listener = wrapRunnableInActionListener(task);
 
-        timer = new Timer((int)rate, listener);
+        timer = new Timer(rate, listener);
         timer.start();
     }
 
