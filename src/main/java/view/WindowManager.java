@@ -1,6 +1,7 @@
 package view;
 
 import controller.ControllerImpl;
+import model.StateModel;
 import model.TaskModel;
 import model.TaskTemplate;
 import model.TimeManager;
@@ -76,7 +77,8 @@ public class WindowManager {
     }
 
     void run() {
-        refreshTimingCountdowns(new TimeManager(WindowCreator.TIMING_DEFAULT_VALUE));
+        controller.refreshViewFromStateModel();
+        //refreshTimingCountdowns(new TimeManager(WindowCreator.TIMING_DEFAULT_VALUE));
         windowCreator.run();
     }
 
@@ -92,6 +94,13 @@ public class WindowManager {
     void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
         windowCreator.labelLastDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
         windowCreator.labelLastWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
+    }
+
+    public void refreshViewFromModel(@NotNull StateModel stateModel) {
+        windowCreator.setSelectedTaskName(stateModel.getSelectedTaskName());
+        windowCreator.spinnerChooseTiming.getModel().setValue(stateModel.getTimingDurationDelay());
+        refreshTimingCountdowns(new TimeManager(stateModel.getTimingDurationDelay()));
+        updateLastScheduledTask(stateModel.getLastScheduledTaskId());
     }
 
     void updateLastScheduledTask(int id) {

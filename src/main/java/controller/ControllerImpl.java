@@ -103,4 +103,10 @@ public class ControllerImpl extends AbstractController {
                 scheduledTaskModel::cancelScheduledTask
         );
     }
+
+    //##################################################################################################################
+
+    public void refreshViewFromStateModel() {
+        view.refreshViewFromModel(stateModel);
+    }
 }

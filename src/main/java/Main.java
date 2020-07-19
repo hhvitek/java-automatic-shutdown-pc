@@ -1,13 +1,16 @@
 import controller.ControllerImpl;
 import model.ScheduledTaskModelImpl;
-import model.StateModelImpl;
 import model.TaskModel;
 import model.TaskModelImpl;
+import model.db.operations.StateModelJpaImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utilities.reflection.ReflectionApi;
 import view.ViewImpl;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -21,6 +24,10 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
+    private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
+            Persistence.createEntityManagerFactory("my-sqlite");
+
+
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         logger.info("STARTING");
 
@@ -29,8 +36,12 @@ public class Main {
 
         ReflectionApi.shouldLog(false);
 
+        EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager(); // Retrieve an application managed entity manager
+
+
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
-        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        //StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
         ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(taskModel);
 
         ControllerImpl controller = new ControllerImpl(stateModel, scheduledTaskModel);

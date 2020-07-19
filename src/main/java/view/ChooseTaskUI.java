@@ -42,4 +42,8 @@ public class ChooseTaskUI {
     public String getSelectedTaskParameter() {
         return chooseTasks.getSelectedTaskParameter();
     }
+
+    public void setSelectedTaskName(@NotNull String taskName) {
+        chooseTasks.selectTaskName(taskName);
+    }
 }

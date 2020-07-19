@@ -28,4 +28,8 @@ public class ChooseTaskElement {
     public void addActionListener(@NotNull ActionListener listener) {
         radioButtonTaskName.addActionListener(listener);
     }
+
+    public void setSelected() {
+        radioButtonTaskName.setSelected(true);
+    }
 }

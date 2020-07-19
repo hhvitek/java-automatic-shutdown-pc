@@ -2,6 +2,7 @@ package view;
 
 import controller.ControllerImpl;
 import model.ModelObservableEvents;
+import model.StateModel;
 import model.TaskModel;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
@@ -66,5 +67,7 @@ public class ViewImpl extends AbstractView {
         windowManager.refreshLastScheduledTaskTimingCountdowns(timeManager);
     }
 
-
+    public void refreshViewFromModel(@NotNull StateModel stateModel) {
+        windowManager.refreshViewFromModel(stateModel);
+    }
 }

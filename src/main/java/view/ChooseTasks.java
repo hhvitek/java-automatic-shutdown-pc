@@ -59,6 +59,13 @@ public class ChooseTasks {
         }
     }
 
+    public void selectTaskName(@NotNull String taskName) {
+        if (taskMap.containsKey(taskName)) {
+            ChooseTaskElement element = taskMap.get(taskName);
+            element.setSelected();
+        }
+    }
+
     public String getSelectedTaskName() {
         return buttonGroupChooseTask.getSelection().getActionCommand();
     }

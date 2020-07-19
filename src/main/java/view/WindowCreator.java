@@ -63,6 +63,10 @@ public class WindowCreator {
         return spinnerChooseTiming.getValue().toString();
     }
 
+    void setSelectedTaskName(@NotNull String taskName) {
+        uiChooseTask.setSelectedTaskName(taskName);
+    }
+
     String getSelectedTaskName() {
         return uiChooseTask.getSelectedTaskName();
     }
