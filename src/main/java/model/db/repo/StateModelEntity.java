@@ -22,6 +22,9 @@ public class StateModelEntity {
     @Column(name = "selected_task_name")
     private String selectedTaskName = "";
 
+    @Column(name = "selected_task_parameter")
+    private String selectedTaskParameter = "";
+
     @Column(name = "timing_duration_delay")
     private String timingDurationDelay;
 
@@ -67,6 +70,14 @@ public class StateModelEntity {
 
     public void setSelectedTaskName(String selectedTaskName) {
         this.selectedTaskName = selectedTaskName;
+    }
+
+    public String getSelectedTaskParameter() {
+        return selectedTaskName;
+    }
+
+    public void setSelectedTaskParameter(String selectedTaskParameter) {
+        this.selectedTaskParameter = selectedTaskParameter;
     }
 
     public String getTimingDurationDelay() {

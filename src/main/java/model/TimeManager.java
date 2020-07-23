@@ -10,6 +10,11 @@ import java.util.Objects;
 
 /**
  * durationDelay is defined as String in the format %H:%M 13:56
+ *
+ * Represents time remaining to the point in time. Specifically used to store Java's Instant time in future.
+ * This point in time in future is determined by duration from now() to this point in time.
+ *
+ * Minimum string value is 00:00
  */
 public final class TimeManager {
 
@@ -29,6 +34,10 @@ public final class TimeManager {
 
     public TimeManager(@NotNull Duration durationDelay) {
         whenElapsedPointInTime = addDurationDelayToNow(durationDelay);
+    }
+
+    public TimeManager(@NotNull Instant pointInTime) {
+        whenElapsedPointInTime = pointInTime;
     }
 
     public TimeManager(@NotNull TimeManager other) {

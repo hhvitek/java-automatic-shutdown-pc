@@ -1,24 +1,22 @@
 package tasks;
 
-import model.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Objects;
 
-public abstract class Task implements TaskTemplate {
+/**
+ * This class represents all STATIC data about any Task.
+ * Every task is described/defined by those STATIC data.
+ */
+public final class Task implements TaskTemplate {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Task.class);
+    private final String name;
+    private final String description;
+    private final boolean acceptParameter;
+    private final boolean produceResult;
+    private final Class<?> clazz;
 
-    protected final String name;
-    protected final String description;
-    protected final boolean acceptParameter;
-    protected final boolean produceResult;
-    protected final Class<?> clazz;
-
-    protected Task(@NotNull String name, @NotNull String description, boolean acceptParameter, boolean produceResult, @NotNull Class<?> clazz) {
+    public Task(@NotNull String name, @NotNull String description, boolean acceptParameter, boolean produceResult, @NotNull Class<?> clazz) {
         this.name = name;
         this.description = description;
         this.acceptParameter = acceptParameter;
@@ -49,12 +47,6 @@ public abstract class Task implements TaskTemplate {
     @Override
     public @NotNull Class<?> getClazz() {
         return clazz;
-    }
-
-    public abstract @Nullable String execute() throws TaskException;
-
-    public @Nullable String execute(@NotNull String parameter) throws TaskException {
-        throw new UnsupportedOperationException("Parametrized execution not supported.");
     }
 
     @Override

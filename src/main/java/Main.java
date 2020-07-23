@@ -1,16 +1,14 @@
-import controller.ControllerImpl;
+import controller.ControllerMainImpl;
+import controller.ControllerScheduledTasksImpl;
 import model.ScheduledTaskModelImpl;
+import model.StateModelImpl;
 import model.TaskModel;
 import model.TaskModelImpl;
-import model.db.operations.StateModelJpaImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utilities.reflection.ReflectionApi;
-import view.ViewImpl;
+import view.ViewMainImpl;
+import view.scheduledtasks.ViewScheduledTasksImpl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -24,8 +22,8 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
-            Persistence.createEntityManagerFactory("my-sqlite");
+    //private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
+    //        Persistence.createEntityManagerFactory("my-sqlite");
 
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -34,23 +32,27 @@ public class Main {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        ReflectionApi.shouldLog(false);
-
-        EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager(); // Retrieve an application managed entity manager
-
+        //EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager(); // Retrieve an application managed entity manager
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
-        //StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
-        StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        //StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
         ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(taskModel);
 
-        ControllerImpl controller = new ControllerImpl(stateModel, scheduledTaskModel);
+        ControllerMainImpl controller = new ControllerMainImpl(stateModel, scheduledTaskModel);
         controller.addModel(stateModel);
         controller.addModel(scheduledTaskModel);
 
-        ViewImpl view = new ViewImpl(controller, taskModel);
+        ViewMainImpl view = new ViewMainImpl(controller, taskModel);
 
-        view.run();
+        ControllerScheduledTasksImpl controllerScheduledTasks = new ControllerScheduledTasksImpl(scheduledTaskModel);
+        controllerScheduledTasks.addModel(scheduledTaskModel);
+
+        ViewScheduledTasksImpl viewScheduledTasks = new ViewScheduledTasksImpl(controllerScheduledTasks);
+        //TODO isssue when this view is bind to main controller instead of his own controller
+        controller.addView(viewScheduledTasks);
+
+        controller.run();
 
         logger.info("FINISHED");
     }

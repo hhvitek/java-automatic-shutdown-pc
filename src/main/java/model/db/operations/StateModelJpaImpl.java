@@ -53,12 +53,29 @@ public class StateModelJpaImpl extends AbstractObservableModel implements StateM
 
         logger.debug("The new selected task: <{}> -> <{}>", oldSelectedTaskName, name);
 
-        firePropertyChange(SELECTED_TASK_CHANGED, oldSelectedTaskName, name);
+        firePropertyChange(SELECTED_TASKNAME_CHANGED, oldSelectedTaskName, name);
     }
 
     @Override
     public @NotNull String getSelectedTaskName() {
         return stateModelEntity.getSelectedTaskName();
+    }
+
+    @Override
+    public void setSelectedTaskParameter(@NotNull String parameter) {
+        String oldSelectedTaskParameter = stateModelEntity.getSelectedTaskParameter();
+        stateModelEntity.setSelectedTaskParameter(parameter);
+
+        stateModelRepository.update(stateModelEntity);
+
+        logger.debug("The new selected task parameter: <{}> -> <{}>", oldSelectedTaskParameter, parameter);
+
+        firePropertyChange(SELECTED_TASKPARAMETER_CHANGED, oldSelectedTaskParameter, parameter);
+    }
+
+    @Override
+    public @NotNull String getSelectedTaskParameter() {
+        return null;
     }
 
     @Override
@@ -70,7 +87,7 @@ public class StateModelJpaImpl extends AbstractObservableModel implements StateM
 
         logger.debug("The new timingDurationDelay: <{}> -> <{}>", oldTimingDurationDelay, durationDelay);
 
-        firePropertyChange(CHOSEN_TIMING_DURATION_DELAY_CHANGED, oldTimingDurationDelay, durationDelay);
+        firePropertyChange(SELECTED_TIMING_DURATION_DELAY_CHANGED, oldTimingDurationDelay, durationDelay);
     }
 
     @Override

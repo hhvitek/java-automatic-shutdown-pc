@@ -1,4 +1,4 @@
-package view;
+package view.choosetasks;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -6,12 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-public class ChooseTaskElement {
+/**
+ * Represents UI's Radio elements to choose task
+ */
+public class TaskElement {
 
     private final JRadioButton radioButtonTaskName;
     private final JTextField textFieldTaskParameter;
 
-    public ChooseTaskElement(@NotNull JRadioButton radioButtonTaskName, @Nullable JTextField textFieldTaskParameter) {
+    public TaskElement(@NotNull JRadioButton radioButtonTaskName, @Nullable JTextField textFieldTaskParameter) {
         this.radioButtonTaskName = radioButtonTaskName;
         this.textFieldTaskParameter = textFieldTaskParameter;
     }

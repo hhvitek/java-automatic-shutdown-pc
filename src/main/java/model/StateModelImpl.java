@@ -17,8 +17,8 @@ public class StateModelImpl extends AbstractObservableModel implements StateMode
 
     // data in ui
     private String selectedTaskName = "";
-    private String timingDurationDelay;
-
+    private String selectedTaskParameter = "";
+    private String timingDurationDelay = "01:00";
     private int lastScheduledTaskId;
 
 
@@ -37,10 +37,15 @@ public class StateModelImpl extends AbstractObservableModel implements StateMode
     private void restoreInitialState() {
         logger.debug("Restoring initial StateModel state.");
         setSelectedTaskNameToDefault();
+        setSelectedTaskParameterToDefault();
     }
 
     private void setSelectedTaskNameToDefault() {
         setSelectedTaskName(defaultSelectedTaskName);
+    }
+
+    private void setSelectedTaskParameterToDefault() {
+        setSelectedTaskParameter("");
     }
 
     @Override
@@ -49,7 +54,7 @@ public class StateModelImpl extends AbstractObservableModel implements StateMode
         selectedTaskName = name;
 
         logger.debug("The new selected task: <{}> -> <{}>", oldSelectedTaskName, selectedTaskName);
-        firePropertyChange(SELECTED_TASK_CHANGED, oldSelectedTaskName, selectedTaskName);
+        firePropertyChange(SELECTED_TASKNAME_CHANGED, oldSelectedTaskName, selectedTaskName);
     }
 
     @Override
@@ -58,12 +63,26 @@ public class StateModelImpl extends AbstractObservableModel implements StateMode
     }
 
     @Override
+    public void setSelectedTaskParameter(@NotNull String parameter) {
+        String oldSelectedTaskParameter = selectedTaskParameter;
+        selectedTaskParameter = parameter;
+
+        logger.debug("The new selected task parameter: <{}> -> <{}>", oldSelectedTaskParameter, selectedTaskParameter);
+        firePropertyChange(SELECTED_TASKPARAMETER_CHANGED, oldSelectedTaskParameter, selectedTaskParameter);
+    }
+
+    @Override
+    public @NotNull String getSelectedTaskParameter() {
+        return selectedTaskParameter;
+    }
+
+    @Override
     public void setTimingDurationDelay(@NotNull String durationDelay) {
         String oldTimingDurationDelay = timingDurationDelay;
         timingDurationDelay = durationDelay;
 
         logger.debug("The new timingDurationDelay: <{}> -> <{}>", oldTimingDurationDelay, durationDelay);
-        firePropertyChange(CHOSEN_TIMING_DURATION_DELAY_CHANGED, oldTimingDurationDelay, durationDelay);
+        firePropertyChange(SELECTED_TIMING_DURATION_DELAY_CHANGED, oldTimingDurationDelay, durationDelay);
     }
 
     @Override

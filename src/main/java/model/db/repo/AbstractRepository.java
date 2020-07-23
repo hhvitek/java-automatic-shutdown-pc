@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class AbstractRepository<T> {
 
@@ -33,13 +34,19 @@ public abstract class AbstractRepository<T> {
         return entityManager.createQuery(query).getResultList();
     }
 
+    public Stream<T> findAllAsStream() {
+        String query = String.format("SELECT a FROM %s a", getEntityClazz().getName());
+        return entityManager.createQuery(query).getResultStream();
+    }
+
     public void delete(@NotNull T entity) {
         try {
             entityManager.getTransaction().begin();
             entityManager.remove(entity);
-            entityManager.getTransaction().commit();
         } catch (Exception ex) {
-            logger.error("Failed to remove {} from DB. {}.", getEntityClazz(), entity);
+            logger.error("Failed to remove {} from DB. {}.", getEntityClazz(), entity, ex);
+        } finally {
+            entityManager.getTransaction().commit();
         }
     }
 
@@ -53,23 +60,47 @@ public abstract class AbstractRepository<T> {
 
     }
 
-    public void create(@NotNull T entity) {
+    public void deleteAll() {
+        String query = String.format("DELETE FROM %s", getEntityClazz().getName());
+
         try {
             entityManager.getTransaction().begin();
-            entityManager.persist(entity);
+            entityManager.createQuery(query).executeUpdate();
+        } catch(Exception ex) {
+            logger.error("Failed to remove from DB <{}>.", getEntityClazz(), ex);
+        } finally {
             entityManager.getTransaction().commit();
-        } catch (Exception ex) {
-            logger.error("Failed to persist/create {} into DB. {}.", getEntityClazz(), entity);
         }
+    }
+
+    public boolean containsById(@NotNull Object id) {
+        try {
+            T entity = findOneById(id);
+            return true;
+        } catch (ElemNotFoundException e) {
+            return false;
+        }
+    }
+
+    public void create(@NotNull T entity) {
+            try {
+                entityManager.getTransaction().begin();
+                entityManager.persist(entity);
+            } catch (Exception ex) {
+                logger.error("Failed to persist/create {} into DB. {}.", getEntityClazz(), entity, ex);
+            } finally {
+                entityManager.getTransaction().commit();
+            }
     }
 
     public void update(@NotNull T entity) {
         try {
             entityManager.getTransaction().begin();
             entityManager.merge(entity);
-            entityManager.getTransaction().commit();
         } catch (Exception ex) {
-            logger.error("Failed to merge/update {} into DB. {}.", getEntityClazz(), entity);
+            logger.error("Failed to merge/update {} into DB. {}.", getEntityClazz(), entity, ex);
+        } finally {
+            entityManager.getTransaction().commit();
         }
     }
 }

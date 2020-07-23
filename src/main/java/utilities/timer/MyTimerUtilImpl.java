@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * MyTimer's implementation using Java utils own Timer class.
+ */
 public class MyTimerUtilImpl implements MyTimer {
 
     private Timer timer;
@@ -18,7 +21,7 @@ public class MyTimerUtilImpl implements MyTimer {
         timer.scheduleAtFixedRate(timerTask, 0L, rate);
     }
 
-    private TimerTask wrapRunnableInTimerTask(@NotNull Runnable runnable) {
+    private @NotNull TimerTask wrapRunnableInTimerTask(@NotNull Runnable runnable) {
         return new TimerTask() {
             @Override
             public void run() {

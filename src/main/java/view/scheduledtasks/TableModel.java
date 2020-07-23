@@ -1,4 +1,4 @@
-package view;
+package view.scheduledtasks;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import javax.swing.table.AbstractTableModel;
 import java.util.*;
 
-public class ScheduledTasksTableModel extends AbstractTableModel {
+/**
+ * Custom JTable Model
+ */
+public class TableModel extends AbstractTableModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasksTableModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(TableModel.class);
 
     private static final int ID_COLUMN_INDEX = 0;
     private static final int WHEN_ELAPSED_COLUMN_INDEX = 3;
@@ -19,22 +22,31 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
     };
     private final List<Object[]> data;
 
-    public ScheduledTasksTableModel() {
+    public TableModel() {
         data = Collections.synchronizedList(new ArrayList<>());
     }
 
     public void addScheduledTaskRow(@NotNull Object[] rowValues) {
         if (rowValues.length != getColumnCount()) {
             logger.error("Expected column count: <{}>. Actual: <{}>. Ignoring", rowValues.length, getColumnCount());
-        } else {
-            data.add(rowValues);
-            int dataSize = getRowCount() - 1;
-            fireTableRowsInserted(dataSize, dataSize);
+        } else  {
+            int id = (int) rowValues[ID_COLUMN_INDEX];
+            if (isIdAlreadyInTable(id)) {
+                logger.error("Trying to insert a new row for already existing scheduled task id: <{}>! Ignoring.", id);
+            } else {
+                data.add(rowValues);
+                int dataSize = getRowCount() - 1;
+                fireTableRowsInserted(dataSize, dataSize);
+            }
         }
     }
 
     public int getScheduledTaskIdByRow(int rowIndex) {
         return (int) getValueAt(rowIndex, ID_COLUMN_INDEX);
+    }
+
+    private boolean isIdAlreadyInTable(int id) {
+        return getRowById(id) >= 0;
     }
 
     private int getRowById(int id) {
@@ -48,9 +60,11 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
 
     public void updateScheduledTaskRow(@NotNull Object[] newValues) {
         int id = (int) newValues[ID_COLUMN_INDEX];
-        int rowIndex = getRowById(id);
-        if (rowIndex >= 0) {
+        if (isIdAlreadyInTable(id)) {
+            int rowIndex = getRowById(id);
             updateValuesIfDifferent(rowIndex, newValues);
+        } else {
+            logger.error("Trying to update task id: <{}> that is not in table yet. Ignoring", id);
         }
     }
 
@@ -65,9 +79,11 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
     }
 
     public void updateWhenElapsedForTask(int id, @NotNull String newWhenElapsed) {
-        int rowIndex = getRowById(id);
-        if(rowIndex >=0) {
+        if (isIdAlreadyInTable(id)) {
+            int rowIndex = getRowById(id);
             setValueAt(newWhenElapsed, rowIndex, WHEN_ELAPSED_COLUMN_INDEX);
+        } else {
+            logger.error("Trying to update task id: <{}> that is not in table yet. Ignoring", id);
         }
     }
 

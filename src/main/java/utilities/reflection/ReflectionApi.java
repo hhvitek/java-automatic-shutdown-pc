@@ -1,6 +1,7 @@
 package utilities.reflection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,63 +12,122 @@ import java.util.Arrays;
 
 /**
  * Using Java Reflection API.
- * Utility class, only static methods.
+ * Helper class...
+ *  * To instantiate object based on class.getName() "package.className" string representation.
+ *  * To search and invoke instance's method based on method's string name.
+ *
+ *  Could be configured to throw ReflectionApiException on Error or/and to log errors
  */
 public final class ReflectionApi {
 
-    private static Logger logger = LoggerFactory.getLogger(ReflectionApi.class);
-
-    private static boolean shouldLog = true;
-
-    private ReflectionApi() {
+    public static enum LEVEL {
+        TRACE, DEBUG, INFO, WARN, ERROR
     }
 
-    public static void shouldLog(boolean shouldLog) {
-        ReflectionApi.shouldLog = shouldLog;
-        if (shouldLog) {
-            logger = LoggerFactory.getLogger(ReflectionApi.class);
-        } else {
-            logger = LoggerFactory.getLogger("NoLogger");
-        }
+    private static final Logger logger = LoggerFactory.getLogger(ReflectionApi.class);
 
+    private boolean shouldLog;
+    //logging facility such as DEBUG, INFO, WARN, ...
+    private LEVEL logLevel;
+
+    private boolean shouldThrowException;
+
+    private ReflectionApi() {
+        this(true, true, LEVEL.DEBUG);
+    }
+
+    public ReflectionApi(boolean shouldThrow, boolean shouldLog) {
+        shouldLog(shouldLog);
+        shouldThrowExceptionOnError(shouldThrow);
+        logLevel(LEVEL.DEBUG);
+    }
+
+    public ReflectionApi(boolean shouldThrow, boolean shouldLog, @NotNull LEVEL logLevel) {
+        shouldLog(shouldLog);
+        shouldThrowExceptionOnError(shouldThrow);
+        logLevel(logLevel);
+    }
+
+    public void shouldLog(boolean shouldLog) {
+        this.shouldLog = shouldLog;
+    }
+
+    public void logLevel(@NotNull LEVEL logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public void shouldThrowExceptionOnError(boolean shouldThrow) {
+        this.shouldThrowException = shouldThrow;
+    }
+
+    private void logIfShould(@NotNull String logMessage, Object... objects) {
+        if (shouldLog) {
+            switch (logLevel) {
+                case TRACE:
+                    logger.trace(logMessage, objects);
+                    break;
+                case DEBUG:
+                    logger.debug(logMessage, objects);
+                    break;
+                case INFO:
+                    logger.info(logMessage, objects);
+                    break;
+                case WARN:
+                    logger.warn(logMessage, objects);
+                    break;
+                case ERROR:
+                    logger.error(logMessage, objects);
+                    break;
+            }
+        }
+    }
+
+    private void throwIfShould(@Nullable String message, @Nullable Throwable throwable) throws ReflectionApiException {
+        if (shouldThrowException) {
+            throw new ReflectionApiException(message, throwable);
+        }
+    }
+
+    private void throwIfShould(@NotNull String message) throws ReflectionApiException {
+        throwIfShould(message, null);
+    }
+
+    private void throwIfShould(@NotNull Throwable throwable) throws ReflectionApiException {
+        throwIfShould(null, throwable);
     }
 
     //METHOD INVOKE#####################################################################################################
 
-    public static void invokeModelMethodWithOneParameter(@NotNull Object instance, @NotNull String methodName, @NotNull Object methodParameter) {
-        Class<?> clazz = instance.getClass();
-        try {
-            Method method = clazz.getMethod(methodName, methodParameter.getClass());
-            method.invoke(instance, methodParameter);
-        } catch (Exception ex) {
-            //  Handle exception.
-            logger.warn("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameter, ex);
-        }
+    public void invokeMethodWithoutParameters(@NotNull Object instance, @NotNull String methodName) throws ReflectionApiException {
+        invokeMethodWithParameters(instance, methodName);
     }
 
-    public static void invokeModelMethodWithoutParameters(@NotNull Object instance, @NotNull String methodName) {
-        Class<?> clazz = instance.getClass();
-        try {
-            Method method = clazz.getMethod(methodName);
-            method.invoke(instance);
-        } catch (Exception ex) {
-            //  Handle exception.
-            logger.warn("Failed to invoke model's method <{}>.<{}> using utilities.reflection API. Method not found.", clazz, methodName, ex);
-        }
-    }
-
-    public static void invokeModelMethodWitMultipleParameters(@NotNull Object instance, @NotNull String methodName, @NotNull Object[] methodParameters) {
+    public void invokeMethodWithParameters(@NotNull Object instance, @NotNull String methodName, @Nullable Object... methodParameters) throws ReflectionApiException {
         Class<?> clazz = instance.getClass();
         try {
             Method method = clazz.getMethod(methodName, convertObjectArrayIntoClassArray(methodParameters));
             method.invoke(instance, methodParameters);
         } catch (Exception ex) {
             //  Handle exception.
-            logger.warn("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameters, ex);
+            logIfShould("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameters, ex);
+            throwIfShould(ex);
         }
     }
 
-    private static Class<?>[] convertObjectArrayIntoClassArray(@NotNull Object[] objects) {
+    public @Nullable Object invokeMethodWithParametersReturnValue(@NotNull Object instance, @NotNull String methodName, @Nullable Object... methodParameters) throws ReflectionApiException {
+        Class<?> clazz = instance.getClass();
+        try {
+            Method method = clazz.getMethod(methodName, convertObjectArrayIntoClassArray(methodParameters));
+            return method.invoke(instance, methodParameters);
+        } catch (Exception ex) {
+            //  Handle exception.
+            logIfShould("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameters, ex);
+            throwIfShould(ex);
+            return null;
+        }
+    }
+
+    private static Class<?>[] convertObjectArrayIntoClassArray(@Nullable Object... objects) {
         return Arrays.stream(objects)
                 .map(Object::getClass)
                 .toArray(Class<?>[]::new);
@@ -78,93 +138,40 @@ public final class ReflectionApi {
     /**
      * Parameter must be in the format package.className convention
      *
-     * @throws ClassLoadingException
+     * @throws ReflectionApiException
      */
-    public static Object instantiateFromStringPackageNameClassName(@NotNull String packageNameClassName) throws ClassLoadingException {
+    public @Nullable Object instantiateFromStringPackageNameClassName(@NotNull String packageNameClassName) throws ReflectionApiException {
+        return instantiateWithParametersFromStringPackageNameClassName(packageNameClassName);
+    }
+
+    /**
+     * Parameter must be in the format package.className convention
+     *
+     * @throws ReflectionApiException
+     */
+    public @Nullable Object instantiateWithParametersFromStringPackageNameClassName(@NotNull String packageNameClassName, @Nullable Object... objects) throws ReflectionApiException {
         try {
             Class<?> clazz = Class.forName(packageNameClassName);
-            Constructor<?> constructor = clazz.getConstructor();
-            return constructor.newInstance();
+            Constructor<?> constructor = clazz.getConstructor(convertObjectArrayIntoClassArray(objects));
+            return constructor.newInstance(objects);
         } catch (IllegalAccessException |
                 InvocationTargetException |
                 NoSuchMethodException |
                 ClassNotFoundException |
                 InstantiationException e) {
             String errorMessage = "Class <" + packageNameClassName + "> not found. Forgot package name \"package.className\"?";
-            logger.warn(errorMessage);
-            throw new ClassLoadingException(errorMessage, e);
+            logIfShould(errorMessage);
+            throwIfShould(errorMessage, e);
+            return null;
         }
     }
 
-    /**
-     * Parameter must be in the format package.className convention
-     *
-     * @throws ClassLoadingException
-     */
-    public static Object instantiateFromStringPackageNameClassName(@NotNull Class<?> clazzToReturn, @NotNull String packageNameClassName) throws ClassLoadingException {
-        Object instance = instantiateFromStringPackageNameClassName(packageNameClassName);
-        if (clazzToReturn.isInstance(instance)) {
-            return instance;
-        } else {
-            String errorMessage = String.format(
-                    "String packageNameClassName: <%s> is not class: <%s>.",
-                    packageNameClassName,
-                    clazzToReturn
-            );
-            logger.warn(errorMessage);
-            throw new ClassLoadingException(errorMessage);
-        }
+    public @Nullable Object instantiateByClazz(@NotNull Class<?> clazz) throws ReflectionApiException {
+        return instantiateFromStringPackageNameClassName(clazz.getName());
     }
 
-    public static Object instantiateByClazz(@NotNull Class<?> clazz) throws ClassLoadingException {
-        try {
-            Constructor<?> constructor = clazz.getConstructor();
-            return constructor.newInstance();
-        } catch (IllegalAccessException |
-                InvocationTargetException |
-                NoSuchMethodException |
-                InstantiationException e) {
-            String errorMessage = "Requested class <" + clazz + "> does not have relevant accessible no param constructor.";
-            logger.warn(errorMessage);
-            throw new ClassLoadingException(errorMessage, e);
-        }
-    }
-
-    public static Object instantiateByClazzWithOneParameter(@NotNull Class<?> clazz, @NotNull Object parameter) throws ClassLoadingException {
-        try {
-            Constructor<?> constructor = clazz.getConstructor(parameter.getClass());
-            return constructor.newInstance(parameter);
-        } catch (IllegalAccessException |
-                InvocationTargetException |
-                NoSuchMethodException |
-                InstantiationException e) {
-            String errorMessage = String.format(
-                    "Requested class <%s> does not have relevant accessible single parameter <%s> constructor.",
-                    clazz,
-                    parameter.getClass()
-            );
-            logger.warn(errorMessage);
-            throw new ClassLoadingException(errorMessage, e);
-        }
-    }
-
-    public static Object instantiateByClazzWithMultipleParameters(@NotNull Class<?> clazz, @NotNull Object[] parameters) throws ClassLoadingException {
-        Class<?>[] parametersClazzes = convertObjectArrayIntoClassArray(parameters);
-        try {
-            Constructor<?> constructor = clazz.getConstructor(parametersClazzes);
-            return constructor.newInstance(parameters);
-        } catch (IllegalAccessException |
-                InvocationTargetException |
-                NoSuchMethodException |
-                InstantiationException e) {
-            String errorMessage = String.format(
-                    "Requested class <%s> does not have relevant accessible multiple parameter <%s> constructor.",
-                    clazz,
-                    parametersClazzes
-            );
-            logger.warn(errorMessage);
-            throw new ClassLoadingException(errorMessage, e);
-        }
+    public @Nullable Object instantiateByClazzWithMultipleParameters(@NotNull Class<?> clazz, @NotNull Object... parameters) throws ReflectionApiException {
+        return instantiateWithParametersFromStringPackageNameClassName(clazz.getName(), parameters);
     }
 
 }

@@ -2,7 +2,7 @@ package tasks;
 
 import org.jetbrains.annotations.Nullable;
 
-public class RestartTask extends Task {
+public class RestartTask extends ExecutableTask {
 
     private static final String NAME = "Restart";
     private static final String DESCRIPTION = "This task will restart the computer.";
@@ -12,8 +12,8 @@ public class RestartTask extends Task {
     }
 
     @Override
-    public @Nullable String execute() throws TaskException {
-        logger.info("Executing {}", name);
+    public @Nullable String execute(Object... objects) throws TaskException {
+        logger.info("Executing {}", getName());
         throw new TaskException("Test error exception");
     }
 }

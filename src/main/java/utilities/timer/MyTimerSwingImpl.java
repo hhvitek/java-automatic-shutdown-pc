@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * MyTimer's implementation using Swing's own Timer class.
+ */
 public class MyTimerSwingImpl implements MyTimer {
 
     private Timer timer;
@@ -18,7 +21,7 @@ public class MyTimerSwingImpl implements MyTimer {
         timer.start();
     }
 
-    private ActionListener wrapRunnableInActionListener(@NotNull Runnable runnable) {
+    private @NotNull ActionListener wrapRunnableInActionListener(@NotNull Runnable runnable) {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

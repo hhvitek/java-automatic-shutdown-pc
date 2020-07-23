@@ -16,11 +16,9 @@
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.connection.user" value=""/>
             <property name="hibernate.connection.autocommit" value="true"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.flushMode" value="ALWAYS"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.connection.url"
-                      value="jdbc:sqlite:C:\Libraries\GIT\java-automatic-shutdown-pc\src\main\resources\db\db.sqlite3"/>
+                      value="jdbc:sqlite:./src/main/resources/db/db.sqlite3"/>
             <property name="hibernate.connection.driver_class" value="org.sqlite.JDBC"/>
         </properties>
     </persistence-unit>

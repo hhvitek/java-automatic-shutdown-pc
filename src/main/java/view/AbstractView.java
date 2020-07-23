@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 
+/**
+ * View implements Observer pattern modelPropertyChange
+ */
 public abstract class AbstractView {
 
     protected AbstractController controller;
@@ -12,7 +15,7 @@ public abstract class AbstractView {
     protected AbstractView(@NotNull AbstractController controller) {
         this.controller = controller;
         //controller.addView(this); DO THIS MANUALLY AT THE END OF YOUR CONSTRUCTOR
-        // starts immediately receiving events even though the view is not fully instantiated by constructor.
+        //if done here it starts immediately receiving events even though the view is not fully instantiated by constructor.
     }
 
     public abstract void modelPropertyChange(final PropertyChangeEvent evt);

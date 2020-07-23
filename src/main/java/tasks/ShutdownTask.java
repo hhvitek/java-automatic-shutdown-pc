@@ -2,7 +2,7 @@ package tasks;
 
 import org.jetbrains.annotations.Nullable;
 
-public class ShutdownTask extends Task {
+public class ShutdownTask extends ExecutableTask {
 
     private static final String NAME = "Shutdown";
     private static final String DESCRIPTION = "This task will turn the computer off.";
@@ -12,8 +12,8 @@ public class ShutdownTask extends Task {
     }
 
     @Override
-    public @Nullable String execute() throws TaskException {
-        logger.info("Executing {}", name);
+    public @Nullable String execute(Object... parameters) throws TaskException {
+        logger.info("Executing {}", getName());
         return "OK.";
     }
 }

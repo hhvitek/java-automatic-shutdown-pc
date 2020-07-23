@@ -1,6 +1,6 @@
-package view;
+package view.choosetasks;
 
-import model.TaskTemplate;
+import tasks.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -9,13 +9,13 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 
-public class ChooseTaskUI {
+public class TaskUI {
 
     private final JPanel uiContainerPanel = new JPanel();
 
-    private final ChooseTasks chooseTasks = new ChooseTasks();
+    private final TaskGroup taskGroup = new TaskGroup();
 
-    public ChooseTaskUI() {
+    public TaskUI() {
         uiContainerPanel.setLayout(
                 new GridLayout(0, 1)
         );
@@ -23,27 +23,27 @@ public class ChooseTaskUI {
 
     public JPanel createUIChooseTask(@NotNull List<TaskTemplate> tasks) {
         for (TaskTemplate taskTemplate: tasks) {
-            JPanel taskPanel = chooseTasks.createUIForOneTask(taskTemplate);
+            JPanel taskPanel = taskGroup.createUIForOneTask(taskTemplate);
             uiContainerPanel.add(taskPanel);
         }
 
-        chooseTasks.selectFirstRadioTask();
+        taskGroup.selectFirstRadioTask();
         return uiContainerPanel;
     }
 
     public void addActionListener(@NotNull ActionListener listener) {
-        chooseTasks.addActionListener(listener);
+        taskGroup.addActionListener(listener);
     }
 
     public String getSelectedTaskName() {
-        return chooseTasks.getSelectedTaskName();
+        return taskGroup.getSelectedTaskName();
     }
 
     public String getSelectedTaskParameter() {
-        return chooseTasks.getSelectedTaskParameter();
+        return taskGroup.getSelectedTaskParameter();
     }
 
     public void setSelectedTaskName(@NotNull String taskName) {
-        chooseTasks.selectTaskName(taskName);
+        taskGroup.selectTaskName(taskName);
     }
 }

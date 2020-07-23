@@ -1,7 +1,8 @@
 package view;
 
-import model.TaskTemplate;
+import tasks.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
+import view.choosetasks.TaskUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class WindowCreator {
+public class MainWindowCreator {
     private JPanel panelGui;
     private JPanel panelChooseTasks;
     private JPanel panelChooseTiming;
@@ -32,9 +33,9 @@ public class WindowCreator {
     final static String TIMING_DEFAULT_VALUE = "01:00";
 
     private final JFrame guiFrame;
-    final ChooseTaskUI uiChooseTask = new ChooseTaskUI();;
+    final TaskUI uiChooseTask = new TaskUI();;
 
-    WindowCreator(@NotNull List<TaskTemplate> tasks) {
+    MainWindowCreator(@NotNull List<TaskTemplate> tasks) {
         guiFrame = new JFrame("Vypnutí PC");
         guiFrame.setContentPane(panelGui);
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

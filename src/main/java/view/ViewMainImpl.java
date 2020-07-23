@@ -1,38 +1,45 @@
 package view;
 
-import controller.ControllerImpl;
+import controller.ControllerMainImpl;
+import model.ModelObservableEvents;
 import model.StateModel;
 import model.TaskModel;
-import model.TaskTemplate;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tasks.TaskTemplate;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-public class WindowManager {
+public class ViewMainImpl extends AbstractView {
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewMainImpl.class);
 
     private final TaskModel taskModel;
-    private final ControllerImpl controller;
-    private final WindowCreator windowCreator;
+    private final ControllerMainImpl controller;
+    private final MainWindowCreator windowCreator;
 
-    public WindowManager(@NotNull TaskModel taskModel, @NotNull ControllerImpl controller) {
-        this.taskModel = taskModel;
+
+    public ViewMainImpl(@NotNull ControllerMainImpl controller, @NotNull TaskModel taskModel) {
+        super(controller);
+        controller.setView(this);
+        controller.addView(this);
+
         this.controller = controller;
+        this.taskModel = taskModel;
 
         List<TaskTemplate> tasks = taskModel.getTaskTemplates();
-        windowCreator = createWindow(tasks);
+        windowCreator = new MainWindowCreator(tasks);
         createAllListeners(windowCreator);
     }
 
-    private WindowCreator createWindow(@NotNull List<TaskTemplate> tasks) {
-        return new WindowCreator(tasks);
-    }
-
-    private void createAllListeners(@NotNull WindowCreator windowCreator) {
+    private void createAllListeners(@NotNull MainWindowCreator windowCreator) {
         windowCreator.spinnerChooseTiming.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -71,27 +78,47 @@ public class WindowManager {
         windowCreator.buttonCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.actionCancelScheduledTaskByUser();
+                controller.actionCancelLastScheduledTask();
             }
         });
     }
 
-    void run() {
-        controller.refreshViewFromStateModel();
+    public void run() {
         //refreshTimingCountdowns(new TimeManager(WindowCreator.TIMING_DEFAULT_VALUE));
         windowCreator.run();
     }
 
-    void timerTick() {
-        controller.eventTimerTickReceived();
+    @Override
+    public void modelPropertyChange(PropertyChangeEvent evt) {
+        String propertyName = evt.getPropertyName();
+
+        //TODO exception illegal argument
+        switch (ModelObservableEvents.valueOf(propertyName)) {
+            case SELECTED_TIMING_DURATION_DELAY_CHANGED: {
+                logger.debug("Chose timing has changed. {} -> {}", evt.getOldValue(), evt.getNewValue());
+                String newTimingDurationDelay = evt.getNewValue().toString();
+                TimeManager timeManager = new TimeManager(newTimingDurationDelay);
+                refreshTimingCountdowns(timeManager);
+                break;
+            }
+            case TIMER_TICK: {
+                controller.eventTimerTickReceived();
+                break;
+            }
+            case LAST_SCHEDULED_TASK_CHANGED: {
+                int id = (int) evt.getNewValue();
+                updateLastScheduledTask(id);
+                break;
+            }
+        }
     }
 
-    void refreshTimingCountdowns(@NotNull TimeManager durationDelay) {
+    private void refreshTimingCountdowns(@NotNull TimeManager durationDelay) {
         windowCreator.labelDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
         windowCreator.labelWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
     }
 
-    void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
+    public void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
         windowCreator.labelLastDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
         windowCreator.labelLastWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
     }
@@ -103,15 +130,15 @@ public class WindowManager {
         updateLastScheduledTask(stateModel.getLastScheduledTaskId());
     }
 
-    void updateLastScheduledTask(int id) {
+    private void updateLastScheduledTask(int id) {
         windowCreator.labelLastId.setText(String.valueOf(id));
     }
 
-    void showInfoMessageToUser(@NotNull String message) {
+    public void showInfoMessageToUser(@NotNull String message) {
         windowCreator.labelStatusbar.setText(message);
     }
 
-    void showErrorMessageToUser(@NotNull String errorMessage) {
+    public void showErrorMessageToUser(@NotNull String errorMessage) {
         showInfoMessageToUser(errorMessage);
         windowCreator.showErrorPopup(errorMessage);
     }

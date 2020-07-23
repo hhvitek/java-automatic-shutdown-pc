@@ -1,11 +1,12 @@
-package view;
+package view.scheduledtasks;
 
-import controller.ControllerImpl;
+import controller.ControllerScheduledTasksImpl;
 import model.ModelObservableEvents;
-import model.ScheduledTask;
+import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.AbstractView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,12 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-public class ScheduledTasksWindow extends AbstractView {
+/**
+ * Scheduled action Window
+ * both View and Controller for this frame
+ * Uses JTable
+ */
+public class ViewScheduledTasksImpl extends AbstractView {
     private JPanel panelGui;
     private JPanel panelControls;
     private JTable tableScheduledTasks;
@@ -23,26 +29,25 @@ public class ScheduledTasksWindow extends AbstractView {
     private JButton buttonCancelSelected;
     private JScrollPane panelScrollTable;
 
-    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasksWindow.class);
+    private static final Logger logger = LoggerFactory.getLogger(ViewScheduledTasksImpl.class);
 
     private final JFrame guiFrame;
 
-    private final WindowScheduledActions scheduledActions;
+    private final TableViewController scheduledActions;
 
-    public ScheduledTasksWindow(@NotNull ControllerImpl controller, @NotNull List<ScheduledTask> initialScheduledTasks) {
+    public ViewScheduledTasksImpl(@NotNull ControllerScheduledTasksImpl controller) {
         super(controller);
 
         guiFrame = new JFrame("Načasované akce");
         guiFrame.setContentPane(panelGui);
-        guiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        guiFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        scheduledActions = new WindowScheduledActions(tableScheduledTasks);
+        scheduledActions = new TableViewController(tableScheduledTasks);
 
-        initializeWindowWithData(initialScheduledTasks);
         buttonRemoveFinished.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.actionRemoveFinishedTasks();
+                controller.actionRemoveAllFinishedTasks();
             }
         });
         buttonRemoveAll.addActionListener(new ActionListener() {
@@ -59,16 +64,11 @@ public class ScheduledTasksWindow extends AbstractView {
             }
         });
 
-        controller.addView(this);
+        //TODO will receive events from the main controller
+        //controller.addView(this);
     }
 
-    public void initializeWindowWithData(@NotNull List<ScheduledTask> initialScheduledTask) {
-        initialScheduledTask.forEach(
-                scheduledTask -> scheduledActions.createUIForOneScheduledTask(scheduledTask)
-        );
-    }
-
-    public void run() {
+    public void runAndShowScheduledTasksOverviewWindow() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

@@ -15,11 +15,14 @@ import java.util.List;
 public abstract class AbstractController implements PropertyChangeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractController.class);
+    private final ReflectionApi reflectionApi;
 
     protected final List<AbstractView> registeredViews;
     protected final List<AbstractObservableModel> registeredModels;
 
     protected AbstractController() {
+        reflectionApi = new ReflectionApi(false, false);
+
         registeredViews = new ArrayList<>();
         registeredModels = new ArrayList<>();
     }
@@ -51,44 +54,22 @@ public abstract class AbstractController implements PropertyChangeListener {
         }
     }
 
-    /**
-     * This is a convenience method that subclasses can call to invoke model's method by it's string representation.
-     * This method uses utilities.reflection to inspect each of the model classes to determine whether it is the owner of
-     * the method in question. If it isn't, a NoSuchMethodException is thrown, which the method ignores.
-     *
-     * @param methodName      = The name of the method.
-     * @param methodParameter = An object that represents is passed as a method parameter
-     */
-    protected void invokeModelMethodWithOneParameter(@NotNull String methodName, @NotNull Object methodParameter) {
+
+    protected void modelInvokeMethodWithoutParameters(@NotNull String methodName) {
         for (AbstractObservableModel model : registeredModels) {
-            ReflectionApi.invokeModelMethodWithOneParameter(model, methodName, methodParameter);
+            reflectionApi.invokeMethodWithoutParameters(model, methodName);
         }
     }
 
-    /**
-     * This is a convenience method that subclasses can call to invoke model's method by it's string representation.
-     * This method uses utilities.reflection to inspect each of the model classes to determine whether it is the owner of
-     * the method in question. If it isn't, a NoSuchMethodException is thrown, which the method ignores.
-     *
-     * @param methodName      = The name of the method.
-     */
-    protected void invokeModelMethodWithoutParameters(@NotNull String methodName) {
+    protected void modelInvokeMethodWithParameters(@NotNull String methodName, Object... methodParameters) {
         for (AbstractObservableModel model : registeredModels) {
-            ReflectionApi.invokeModelMethodWithoutParameters(model, methodName);
+            reflectionApi.invokeMethodWithParameters(model, methodName, methodParameters);
         }
     }
 
-    /**
-     * This is a convenience method that subclasses can call to invoke model's method by it's string representation.
-     * This method uses utilities.reflection to inspect each of the model classes to determine whether it is the owner of
-     * the method in question. If it isn't, a NoSuchMethodException is thrown, which the method ignores.
-     *
-     * @param methodName      = The name of the method.
-     * @param methodParameters = An object that represents is passed as a method parameter
-     */
-    protected void invokeModelMethodWitMultipleParameters(@NotNull String methodName, @NotNull Object[] methodParameters) {
-        for (AbstractObservableModel model : registeredModels) {
-            ReflectionApi.invokeModelMethodWitMultipleParameters(model, methodName, methodParameters);
+    protected void viewInvokeMethod(@NotNull String methodName, Object... optionalMethodParameters) {
+        for (AbstractView view: registeredViews) {
+            reflectionApi.invokeMethodWithParameters(view, methodName, optionalMethodParameters);
         }
     }
 

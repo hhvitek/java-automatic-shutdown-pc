@@ -1,5 +1,9 @@
-package model;
+package model.scheduledtasks;
 
+/**
+ * State of a ScheduledTask
+ * ScheduledTask can change state only to the "bigger" one: CREATED < SCHEDULED < ELAPSED <...
+ */
 public enum ScheduledTaskStatus {
 
     CREATED, // just been created

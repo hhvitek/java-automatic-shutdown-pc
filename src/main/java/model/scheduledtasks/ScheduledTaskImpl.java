@@ -1,25 +1,27 @@
-package model;
+package model.scheduledtasks;
 
+import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tasks.Task;
+import tasks.ExecutableTask;
 import tasks.TaskException;
+import tasks.TaskTemplate;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import static model.ModelObservableEvents.*;
-import static model.ScheduledTaskStatus.*;
+import static model.scheduledtasks.ScheduledTaskStatus.*;
 
-public class ScheduledTaskImpl extends AbstractObservableModel implements ScheduledTask {
+public class ScheduledTaskImpl extends ScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTaskImpl.class);
     private static int sequenceId = 1000;
 
     private final int id;
-    private final Task task;
+    private final ExecutableTask task;
     private final TimeManager whenElapsed;
 
     private String parameter = "";
@@ -29,16 +31,16 @@ public class ScheduledTaskImpl extends AbstractObservableModel implements Schedu
 
     private ScheduledTaskStatus status;
 
-    public ScheduledTaskImpl(@NotNull Task task, @NotNull TimeManager whenElapsed) {
+    public ScheduledTaskImpl(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed) {
         id = getNextSequenceId();
         this.task = task;
         this.whenElapsed = whenElapsed;
         status = CREATED;
 
-        logger.info("The new task has been scheduled: <{}>.", this);
+        logger.info("The new task has been created: <{}>.", this);
     }
 
-    public ScheduledTaskImpl(@NotNull Task task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
+    public ScheduledTaskImpl(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
         this(task, whenElapsed);
         this.parameter = parameter;
     }

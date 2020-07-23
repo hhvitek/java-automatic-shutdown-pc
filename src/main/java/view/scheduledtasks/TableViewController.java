@@ -1,7 +1,9 @@
-package view;
+package view.scheduledtasks;
 
-import model.ScheduledTask;
+import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -10,15 +12,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WindowScheduledActions {
+/**
+ * Custom JTable
+ */
+public class TableViewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TableViewController.class);
 
     private final JTable table;
-    private final ScheduledTasksTableModel tableModel;
+    private final TableModel tableModel;
 
-    public WindowScheduledActions(@NotNull JTable table) {
+    public TableViewController(@NotNull JTable table) {
         this.table = table;
 
-        tableModel = new ScheduledTasksTableModel();
+        tableModel = new TableModel();
         table.setModel(tableModel);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -30,7 +37,7 @@ public class WindowScheduledActions {
 
         setColumnPreferredWidth("Id", 50);
         setColumnPreferredWidth("Name", 100);
-        setColumnPreferredWidth("Status", 100);
+        setColumnPreferredWidth("Status", 125);
         setColumnPreferredWidth("WhenElapse", 100);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     }
