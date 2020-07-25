@@ -4,6 +4,8 @@ import model.ScheduledTaskModelImpl;
 import model.StateModelImpl;
 import model.TaskModel;
 import model.TaskModelImpl;
+import model.scheduledtasks.Manager;
+import model.scheduledtasks.ManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.ViewMainImpl;
@@ -37,7 +39,9 @@ public class Main {
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
         StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
         //StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
-        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(taskModel);
+
+        Manager manager = new ManagerImpl(taskModel);
+        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(manager);
 
         ControllerMainImpl controller = new ControllerMainImpl(stateModel, scheduledTaskModel);
         controller.addModel(stateModel);

@@ -1,16 +1,20 @@
 package model.scheduledtasks;
 
+import model.TaskModel;
+import model.TaskModelImpl;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tasks.ExecutableTask;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 class ManagerImplTest extends ManagerTest{
 
     public ManagerImplTest() {
-        super(new ManagerImpl());
+        List<String> tasksPackageAndClassName = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
+        TaskModel taskModel = new TaskModelImpl(tasksPackageAndClassName);
+        manager = new ManagerImpl(taskModel);
     }
 
     @Override

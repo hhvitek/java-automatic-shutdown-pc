@@ -1,14 +1,16 @@
 package model.scheduledtasks;
 
+import model.TaskModel;
+import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import tasks.ExecutableTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static model.scheduledtasks.ScheduledTaskStatus.*;
 
 /**
  * Manages creation, cancellation, execution of scheduled tasks.
@@ -22,14 +24,19 @@ public class ManagerImpl extends Manager {
 
     private final List<ScheduledTask> scheduledTasks;
 
-    public ManagerImpl() {
+    public ManagerImpl(@NotNull TaskModel taskModel) {
+        super(taskModel);
         scheduledTasks = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
-    public void addScheduledTask(@NotNull ScheduledTask newScheduledTask) {
+    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
+        return new ScheduledTaskImpl(executableTask, durationDelay, parameter);
+    }
+
+    @Override
+    protected void addNewScheduledTask(@NotNull ScheduledTask newScheduledTask) {
         scheduledTasks.add(newScheduledTask);
-        newScheduledTask.setStatusIfPossible(SCHEDULED);
     }
 
     @Override

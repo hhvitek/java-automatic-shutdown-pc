@@ -1,6 +1,6 @@
 package controller;
 
-import model.ScheduledTaskModel;
+import model.ScheduledTaskModelImpl;
 import model.ScheduledTaskNotFoundException;
 import model.StateModel;
 import model.TaskNotFoundException;
@@ -17,12 +17,12 @@ public class ControllerMainImpl extends AbstractController {
     private static final Logger logger = LoggerFactory.getLogger(ControllerMainImpl.class);
 
     private final StateModel stateModel;
-    private final ScheduledTaskModel scheduledTaskModel;
+    private final ScheduledTaskModelImpl scheduledTaskModel;
 
     private ViewMainImpl view;
     private ControllerScheduledTasksImpl controllerScheduledTasks;
 
-    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModel scheduledTaskModel) {
+    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModelImpl scheduledTaskModel) {
         this.stateModel = stateModel;
         this.scheduledTaskModel = scheduledTaskModel;
 

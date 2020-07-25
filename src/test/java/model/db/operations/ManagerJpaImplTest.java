@@ -1,5 +1,7 @@
 package model.db.operations;
 
+import model.TaskModel;
+import model.TaskModelImpl;
 import model.TimeManager;
 import model.db.repo.ScheduledTaskRepository;
 import model.db.repo.SynchronizedScheduledTaskRepository;
@@ -13,6 +15,7 @@ import tasks.ExecutableTask;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class ManagerJpaImplTest extends ManagerTest {
 
@@ -22,8 +25,10 @@ public class ManagerJpaImplTest extends ManagerTest {
     private static EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();;
     private static ScheduledTaskRepository repository = new SynchronizedScheduledTaskRepository(entityManager);;
 
-    protected ManagerJpaImplTest() {
-        super(new ManagerJpaImpl(entityManager));
+    public ManagerJpaImplTest() {
+        List<String> tasksPackageAndClassName = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
+        TaskModel taskModel = new TaskModelImpl(tasksPackageAndClassName);
+        manager = new ManagerJpaImpl(entityManager, taskModel);
     }
 
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import tasks.ExecutableTask;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -22,17 +23,11 @@ public class ScheduledTaskEntity {
     @GeneratedValue
     private Integer id;
 
-    @Transient
-    private ExecutableTask task;
-
     @Column(name = "task_name")
     private String taskName;
 
-    @Transient
-    private TimeManager whenElapsed;
-
     @Column(name = "when_elapsed")
-    private Long instant;
+    private Instant instant;
 
     @Column(name = "parameter")
     private String parameter;
@@ -51,8 +46,8 @@ public class ScheduledTaskEntity {
     }
 
     public ScheduledTaskEntity(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed) {
-        this.task = task;
-        this.whenElapsed = whenElapsed;
+        taskName = task.getName();
+        instant = whenElapsed.getWhenElapsedPointInTime();
         status = ScheduledTaskStatus.CREATED;
 
         logger.info("The new task has been created: <{}>.", this);
@@ -75,11 +70,11 @@ public class ScheduledTaskEntity {
         this.taskName = taskName;
     }
 
-    public Long getInstant() {
+    public Instant getInstant() {
         return instant;
     }
 
-    public void setInstant(Long instant) {
+    public void setInstant(Instant instant) {
         this.instant = instant;
     }
 
@@ -115,23 +110,13 @@ public class ScheduledTaskEntity {
         this.status = status;
     }
 
-    public TimeManager getWhenElapsed() {
-        return whenElapsed;
-    }
-
-    public ExecutableTask getExecutableTask() {
-        return task;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScheduledTaskEntity that = (ScheduledTaskEntity) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(task, that.task) &&
                 Objects.equals(taskName, that.taskName) &&
-                Objects.equals(whenElapsed, that.whenElapsed) &&
                 Objects.equals(instant, that.instant) &&
                 Objects.equals(parameter, that.parameter) &&
                 Objects.equals(output, that.output) &&
@@ -141,19 +126,19 @@ public class ScheduledTaskEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, task, taskName, whenElapsed, instant, parameter, output, errorMessage, status);
+        return Objects.hash(id, taskName, instant, parameter, output, errorMessage, status);
     }
 
-    public static ScheduledTaskEntity createFromScheduledTask(@NotNull ScheduledTask task) {
+    public static @NotNull ScheduledTaskEntity createFromScheduledTask(@NotNull ScheduledTask task) {
         ScheduledTaskEntity entity = new ScheduledTaskEntity();
         entity.id = task.getId();
-        entity.parameter = task.getTaskParameter().get();
+        entity.parameter = task.getTaskParameter().orElse("");
         entity.status = task.getStatus();
-        entity.whenElapsed = task.getWhenElapsed();
         entity.taskName = task.getTaskTemplate().getName();
         entity.errorMessage = task.getErrorMessage();
         entity.output = task.getOutput();
-        return null;
+        entity.instant = task.getWhenElapsed().getWhenElapsedPointInTime();
+        return entity;
     }
 
 }

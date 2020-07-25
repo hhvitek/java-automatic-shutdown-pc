@@ -1,32 +1,74 @@
 package model.scheduledtasks;
 
-import model.AbstractObservableModel;
-import model.ScheduledTaskNotFoundException;
+import model.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tasks.ExecutableTask;
 import tasks.TaskException;
 import utilities.timer.MyTimer;
 import utilities.timer.MyTimerUtilImpl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Optional;
 
+import static model.ModelObservableEvents.SCHEDULED_TASK_CREATED;
 import static model.scheduledtasks.ScheduledTaskStatus.*;
 
-abstract public class Manager extends AbstractObservableModel {
+abstract public class Manager extends AbstractObservableModel implements PropertyChangeListener {
 
     protected static final Logger logger = LoggerFactory.getLogger(Manager.class);
     private static final int DEFAULT_TIMER_TICK_RATE_1s = 1000;
 
     private final MyTimer timer;
+    private final TaskModel taskModel;
 
-    protected Manager() {
+    protected Manager(@NotNull TaskModel taskModel) {
+        this.taskModel = taskModel;
         timer = new MyTimerUtilImpl();
         startTimer();
     }
 
-    public abstract void addScheduledTask(@NotNull ScheduledTask newScheduledTask);
+    /**
+     * @param name the name of a task to schedule. If task not exist throws exception.
+     * @param parameter the parameter for a task to schedule, may be null as no parameter
+     * @param durationDelay when to schedule task from now() in the format %H:%M 01:00
+     * @return scheduled task unique identification
+     * @throws TaskNotFoundException if no task is found.
+     */
+    public int scheduleTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay)
+            throws TaskNotFoundException {
+        ScheduledTask scheduledTask = createScheduleTask(name, parameter, durationDelay);
+        return scheduledTask.getId();
+    }
+
+    protected @NotNull ScheduledTask createScheduleTask(
+            @NotNull String name,
+            @Nullable String parameter,
+            @NotNull String durationDelay) throws TaskNotFoundException {
+        ExecutableTask task = taskModel.getTaskByName(name);
+        TimeManager timeManager = new TimeManager(durationDelay);
+
+        ScheduledTask scheduledTask = instantiateNewScheduleTask(task, timeManager, parameter);
+        scheduledTask.setStatusIfPossible(SCHEDULED);
+        scheduledTask.addPropertyChangeListener(this);
+        addNewScheduledTask(scheduledTask);
+
+        firePropertyChange(SCHEDULED_TASK_CREATED, scheduledTask.getId(), scheduledTask);
+
+        return scheduledTask;
+    }
+
+    protected abstract ScheduledTask instantiateNewScheduleTask(
+            @NotNull ExecutableTask executableTask,
+            @NotNull TimeManager durationDelay,
+            @Nullable String parameter
+    );
+
+    protected abstract void addNewScheduledTask(@NotNull ScheduledTask newScheduledTask);
 
     public void cancelScheduledTask(int id) {
         setScheduledTaskStatus(id, CANCELLED);
@@ -99,5 +141,17 @@ abstract public class Manager extends AbstractObservableModel {
 
     private List<ScheduledTask> getAllScheduledTasksInScheduledStatus() {
         return getAllScheduledTasksByStatus(SCHEDULED);
+    }
+
+    /**
+     * Propagate events from scheduled tasks
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(
+                ModelObservableEvents.valueOf(evt.getPropertyName()),
+                evt.getOldValue(),
+                evt.getNewValue()
+        );
     }
 }

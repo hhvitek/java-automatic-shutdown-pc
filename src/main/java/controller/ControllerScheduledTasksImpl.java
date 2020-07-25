@@ -1,6 +1,6 @@
 package controller;
 
-import model.ScheduledTaskModel;
+import model.ScheduledTaskModelImpl;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +11,9 @@ public class ControllerScheduledTasksImpl extends AbstractController{
 
     private static final Logger logger = LoggerFactory.getLogger(ControllerScheduledTasksImpl.class);
 
-    private final ScheduledTaskModel scheduledTaskModel;
+    private final ScheduledTaskModelImpl scheduledTaskModel;
 
-    public ControllerScheduledTasksImpl(@NotNull ScheduledTaskModel scheduledTaskModel) {
+    public ControllerScheduledTasksImpl(@NotNull ScheduledTaskModelImpl scheduledTaskModel) {
         this.scheduledTaskModel = scheduledTaskModel;
     }
 

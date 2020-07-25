@@ -1,27 +1,66 @@
 package model;
 
-import model.scheduledtasks.ManagerImpl;
+import model.scheduledtasks.Manager;
 import model.scheduledtasks.ScheduledTask;
-import model.scheduledtasks.ScheduledTaskImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tasks.ExecutableTask;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
- * Uses Java's java.beans.PropertyChangeListener, java.beans.PropertyChangeSupport to implements observer pattern
- *
- * Creates scheduled tasks, uses ScheduledTaskManager to manage created scheduled tasks
- *
- * Observes scheduled tasks events.
+ * Implementation of a scheduled task logic
+ *     * Manages scheduled tasks - scheduling, executing, cancelling etc.
+ *     * Any change to scheduled tasks should be propagated using observer pattern - {@see ModelObservableEvents}
+ *       (such as: java.beans.PropertyChangeListener, java.beans.PropertyChangeSupport)
  */
-public class ScheduledTaskModelImpl extends ScheduledTaskModel {
+public class ScheduledTaskModelImpl extends AbstractObservableModel implements PropertyChangeListener {
 
-    public ScheduledTaskModelImpl(@NotNull TaskModel taskModel) {
-        super(new ManagerImpl(), taskModel);
+    protected final Manager scheduledTaskManager;
+
+    public ScheduledTaskModelImpl(@NotNull Manager manager) {
+        this.scheduledTaskManager = manager;
+        manager.addPropertyChangeListener(this);
     }
 
+    public int scheduleTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay)
+            throws TaskNotFoundException {
+        return scheduledTaskManager.scheduleTask(name, parameter, durationDelay);
+    }
+
+    public void cancelScheduledTask(int id) {
+        scheduledTaskManager.cancelScheduledTask(id);
+    }
+
+
+    public void deleteScheduledTask(int id) {
+        scheduledTaskManager.deleteScheduledTask(id);
+    }
+
+
+    public @NotNull ScheduledTask getScheduledTask(int id) throws ScheduledTaskNotFoundException {
+        return scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
+    }
+
+
+    public void removeAllTasks() {
+        scheduledTaskManager.removeAllTasks();
+    }
+
+
+    public void removeAllFinishedTasks() {
+        scheduledTaskManager.removeAllFinishedTasks();
+    }
+
+    /**
+     * Propagate events from scheduled tasks and manager
+     */
     @Override
-    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask task, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        return new ScheduledTaskImpl(task, durationDelay, parameter);
+    public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(
+                ModelObservableEvents.valueOf(evt.getPropertyName()),
+                evt.getOldValue(),
+                evt.getNewValue()
+        );
     }
 }

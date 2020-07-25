@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.ExecutableTask;
-import tasks.RemainderTask;
-import tasks.RestartTask;
-import tasks.ShutdownTask;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,32 +16,18 @@ import static model.scheduledtasks.ScheduledTaskStatus.DELETED;
 
 public abstract class ManagerTest {
 
-    protected final Manager manager;
-    protected ScheduledTask shutdownScheduledTask;
-    protected ScheduledTask restartScheduledTask;
-    protected ScheduledTask remainderScheduledTask;
+    protected Manager manager;
+    protected int shutdownId;
+    protected int restartId;
+    protected int remainderId;
 
     protected abstract ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask task, @NotNull TimeManager durationDelay, @Nullable String parameter);
 
-    protected ManagerTest(@NotNull Manager manager) {
-        this.manager = manager;
-    }
-
     @BeforeEach
     public void init() {
-        ShutdownTask shutdownTask = new ShutdownTask();
-        RestartTask restartTask = new RestartTask();
-        RemainderTask remainderTask = new RemainderTask();
-
-        TimeManager durationDelay = new TimeManager("01:30");
-
-        shutdownScheduledTask = instantiateNewScheduleTask(shutdownTask, durationDelay, null);
-        restartScheduledTask = instantiateNewScheduleTask(restartTask, durationDelay, null);
-        remainderScheduledTask = instantiateNewScheduleTask(remainderTask, durationDelay, "parameter value");
-
-        manager.addScheduledTask(shutdownScheduledTask);
-        manager.addScheduledTask(restartScheduledTask);
-        manager.addScheduledTask(remainderScheduledTask);
+        shutdownId = manager.scheduleTask("Shutdown", null, "01:30");
+        restartId = manager.scheduleTask("Restart", null, "02:30");
+        remainderId = manager.scheduleTask("Remainder", "this is a parameter", "03:30");
     }
 
     @Test
@@ -55,27 +38,27 @@ public abstract class ManagerTest {
 
     @Test
     public void removeTaskTest() {
-        int id = shutdownScheduledTask.getId();
-        manager.deleteScheduledTask(id);
+        manager.deleteScheduledTask(shutdownId);
+        Optional<ScheduledTask> task = manager.getScheduledTaskById(shutdownId);
 
-        Assertions.assertEquals(DELETED, shutdownScheduledTask.getStatus());
+        Assertions.assertTrue(task.isPresent());
+        Assertions.assertEquals(DELETED, task.get().getStatus());
     }
 
     @Test
     public void cancelTaskTest() {
-        int id = shutdownScheduledTask.getId();
-        manager.cancelScheduledTask(id);
+        manager.cancelScheduledTask(shutdownId);
+        Optional<ScheduledTask> task = manager.getScheduledTaskById(shutdownId);
 
-        Assertions.assertEquals(CANCELLED, shutdownScheduledTask.getStatus());
+        Assertions.assertTrue(task.isPresent());
+        Assertions.assertEquals(CANCELLED, task.get().getStatus());
     }
 
     @Test
     public void getTaskByIdTest() {
-        int id = shutdownScheduledTask.getId();
-
-        Optional<ScheduledTask> taskOpt = manager.getScheduledTaskById(id);
+        Optional<ScheduledTask> taskOpt = manager.getScheduledTaskById(shutdownId);
         Assertions.assertTrue(taskOpt.isPresent());
-        Assertions.assertEquals(id, taskOpt.get().getId());
+        Assertions.assertEquals(shutdownId, taskOpt.get().getId());
     }
 
 }

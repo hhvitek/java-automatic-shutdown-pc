@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 /**
  * Decorator over ScheduledTaskRepository.
  * No simultaneous access to DB.
+ *  * SqLite3 is locking whole database during write operations (filesystem lock)
+ *    Therefore during write operation every other operation (even read) shall fail!
+ *    This class-lock ensures serialized access with automatic wait until previous operation finishes.
  */
 public class SynchronizedScheduledTaskRepository extends ScheduledTaskRepository {
 

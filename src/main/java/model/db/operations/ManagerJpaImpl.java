@@ -1,5 +1,7 @@
 package model.db.operations;
 
+import model.TaskModel;
+import model.TimeManager;
 import model.db.repo.ElemNotFoundException;
 import model.db.repo.ScheduledTaskEntity;
 import model.db.repo.ScheduledTaskRepository;
@@ -8,6 +10,8 @@ import model.scheduledtasks.Manager;
 import model.scheduledtasks.ScheduledTask;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import tasks.ExecutableTask;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -22,16 +26,21 @@ public class ManagerJpaImpl extends Manager {
     private final ScheduledTaskRepository scheduledTaskRepository;
     private final EntityManager entityManager;
 
-    public ManagerJpaImpl(@NotNull EntityManager entityManager) {
-        super();
+    public ManagerJpaImpl(@NotNull EntityManager entityManager, @NotNull TaskModel taskModel) {
+        super(taskModel);
         this.entityManager = entityManager;
         scheduledTaskRepository = new SynchronizedScheduledTaskRepository(entityManager);
     }
 
+    @Override
+    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
+        return new ScheduledTaskJpaImpl(entityManager, executableTask, durationDelay, parameter);
+    }
 
     @Override
-    public void addScheduledTask(@NotNull ScheduledTask newScheduledTask) {
-        newScheduledTask.setStatusIfPossible(SCHEDULED);
+    protected void addNewScheduledTask(@NotNull ScheduledTask newScheduledTask) {
+        ScheduledTaskEntity entity = ScheduledTaskEntity.createFromScheduledTask(newScheduledTask);
+        scheduledTaskRepository.update(entity);
     }
 
     @Override
