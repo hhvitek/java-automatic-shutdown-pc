@@ -1,9 +1,7 @@
 package model.db.operations;
 
 import model.TimeManager;
-import model.db.repo.ScheduledTaskEntity;
-import model.db.repo.ScheduledTaskRepository;
-import model.db.repo.SynchronizedScheduledTaskRepository;
+import model.db.repo.*;
 import model.scheduledtasks.ScheduledTask;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
@@ -21,32 +19,44 @@ import java.util.Optional;
 import static model.ModelObservableEvents.*;
 import static model.scheduledtasks.ScheduledTaskStatus.*;
 
-public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChangeListener {
+public class ScheduledTaskJpaImpl extends ScheduledTask {
 
     private ScheduledTaskEntity entity;
-    private final ScheduledTaskRepository repository;
+    private ScheduledTaskRepository scheduledTaskRepository;
+    private TaskTemplateRepository taskTemplateRepository;
+    private ExecutableTask executableTask;
 
-    public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull TimeManager whenElapsed) {
-        entity = new ScheduledTaskEntity(task, whenElapsed);
-        repository = new SynchronizedScheduledTaskRepository(entityManager);
-        repository.create(entity);
+    ScheduledTaskJpaImpl() {
+
     }
 
+    private ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task) {
+        executableTask = task;
+
+        scheduledTaskRepository = new SynchronizedScheduledTaskRepository(entityManager);
+        taskTemplateRepository = new TaskTemplateRepository(entityManager);
+    }
 
     public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
-        entity = new ScheduledTaskEntity(task, whenElapsed, parameter);
-        repository = new SynchronizedScheduledTaskRepository(entityManager);
-        repository.create(entity);
+        this(entityManager, task);
+
+        TaskTemplateEntity taskTemplateEntity = findOrCreateTaskTemplate(task);
+        entity = new ScheduledTaskEntity(taskTemplateEntity, whenElapsed, parameter);
+        scheduledTaskRepository.create(entity);
     }
 
+    public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull ScheduledTaskEntity entity) {
+        this(entityManager, task);
 
-    private ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ScheduledTaskEntity existingEntity) {
-        this.entity = existingEntity;
-        repository = new SynchronizedScheduledTaskRepository(entityManager);
+        this.entity = entity;
     }
 
-    public static ScheduledTaskJpaImpl fromAlreadyExistingEntity(@NotNull EntityManager entityManager, @NotNull ScheduledTaskEntity existingEntity) {
-        return new ScheduledTaskJpaImpl(entityManager, existingEntity);
+    private TaskTemplateEntity findOrCreateTaskTemplate(@NotNull ExecutableTask task) {
+        try {
+            return taskTemplateRepository.findOneById(task.getName());
+        } catch (ElemNotFoundException e) {
+            return TaskTemplateEntity.fromTaskTemplate(task);
+        }
     }
 
 
@@ -57,7 +67,7 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
 
     @Override
     public @NotNull TaskTemplate getTaskTemplate() {
-        return entity.getExecutableTask();
+        return entity.getTaskTemplate();
     }
 
     @Override
@@ -77,7 +87,7 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
 
     @Override
     public void execute() throws TaskException {
-        ExecutableTask task = entity.getExecutableTask();
+        ExecutableTask task = executableTask;
 
         try {
             if (task.acceptParameter()) {
@@ -97,7 +107,7 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
             firePropertyChange(SCHEDULED_TASK_FINISHED_WITH_ERRORS, getId(), this);
             throw ex;
         } finally {
-            repository.update(entity);
+            scheduledTaskRepository.update(entity);
         }
     }
 
@@ -115,6 +125,7 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
     public void setStatusIfPossible(@NotNull ScheduledTaskStatus newStatus) {
         if (entity.getStatus().isLessThan(newStatus)) {
             entity.setStatus(newStatus);
+            scheduledTaskRepository.update(entity);
             firePropertyChange(SCHEDULED_TASK_STATUS_CHANGED, getId(), this);
         }
     }
@@ -124,8 +135,7 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
         return entity.getStatus();
     }
 
-    @Override
-    public boolean isScheduled() {
+    private boolean isScheduled() {
         return getStatus() == SCHEDULED;
     }
 
@@ -147,10 +157,5 @@ public class ScheduledTaskJpaImpl extends ScheduledTask implements PropertyChang
     @Override
     public int hashCode() {
         return Objects.hash(entity);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
     }
 }

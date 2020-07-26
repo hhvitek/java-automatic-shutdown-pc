@@ -22,7 +22,8 @@ public class ManagerJpaImplTest extends ManagerTest {
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("my-sqlite");
 
-    private static EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();;
+    private static EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
+
     private static ScheduledTaskRepository repository = new SynchronizedScheduledTaskRepository(entityManager);;
 
     public ManagerJpaImplTest() {
@@ -37,10 +38,5 @@ public class ManagerJpaImplTest extends ManagerTest {
     public void init() {
         repository.deleteAll();
         super.init();
-    }
-
-    @Override
-    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask task, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        return new ScheduledTaskJpaImpl(entityManager, task, durationDelay, parameter);
     }
 }

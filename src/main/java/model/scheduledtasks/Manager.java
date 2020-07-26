@@ -24,12 +24,12 @@ abstract public class Manager extends AbstractObservableModel implements Propert
     private static final int DEFAULT_TIMER_TICK_RATE_1s = 1000;
 
     private final MyTimer timer;
-    private final TaskModel taskModel;
+    protected final TaskModel taskModel;
 
     protected Manager(@NotNull TaskModel taskModel) {
         this.taskModel = taskModel;
         timer = new MyTimerUtilImpl();
-        startTimer();
+        //startTimer();
     }
 
     /**

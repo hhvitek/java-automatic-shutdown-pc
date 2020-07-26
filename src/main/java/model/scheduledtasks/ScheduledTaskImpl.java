@@ -110,8 +110,7 @@ public class ScheduledTaskImpl extends ScheduledTask {
         return status;
     }
 
-    @Override
-    public boolean isScheduled() {
+    private boolean isScheduled() {
         return status == SCHEDULED;
     }
 

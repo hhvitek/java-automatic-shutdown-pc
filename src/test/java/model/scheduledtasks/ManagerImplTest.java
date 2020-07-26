@@ -16,9 +16,4 @@ class ManagerImplTest extends ManagerTest{
         TaskModel taskModel = new TaskModelImpl(tasksPackageAndClassName);
         manager = new ManagerImpl(taskModel);
     }
-
-    @Override
-    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask task, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        return new ScheduledTaskImpl(task, durationDelay, parameter);
-    }
 }

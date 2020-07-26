@@ -42,13 +42,6 @@ public class SynchronizedScheduledTaskRepository extends ScheduledTaskRepository
     }
 
     @Override
-    public Stream<ScheduledTaskEntity> findAllAsStream() {
-        synchronized (SynchronizedScheduledTaskRepository.class) {
-            return super.findAllAsStream();
-        }
-    }
-
-    @Override
     public void delete(@NotNull ScheduledTaskEntity entity) {
         synchronized (SynchronizedScheduledTaskRepository.class) {
             super.delete(entity);

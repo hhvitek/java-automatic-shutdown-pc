@@ -21,6 +21,5 @@ public abstract class ScheduledTask extends AbstractObservableModel {
 
     public abstract void setStatusIfPossible(@NotNull ScheduledTaskStatus newStatus);
     public abstract @NotNull ScheduledTaskStatus getStatus();
-    public abstract boolean isScheduled();
     public abstract void recomputeStatusIfTaskHasElapsedChangeIntoElapsedStatus();
 }

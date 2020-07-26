@@ -38,8 +38,9 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
     }
 
 
-    public @NotNull ScheduledTask getScheduledTask(int id) throws ScheduledTaskNotFoundException {
-        return scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
+    public @NotNull ScheduledTaskMessenger getScheduledTask(int id) throws ScheduledTaskNotFoundException {
+        ScheduledTask scheduledTask = scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
+        return ScheduledTaskMessenger.createFromScheduledTask(scheduledTask);
     }
 
 

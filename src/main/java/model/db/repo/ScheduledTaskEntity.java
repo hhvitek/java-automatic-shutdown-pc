@@ -8,9 +8,11 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.ExecutableTask;
+import tasks.TaskTemplate;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @Entity
@@ -23,8 +25,9 @@ public class ScheduledTaskEntity {
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "task_name")
-    private String taskName;
+    @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinColumn(name = "fk_task_template", nullable = false)
+    private TaskTemplateEntity taskTemplate;
 
     @Column(name = "when_elapsed")
     private Instant instant;
@@ -45,38 +48,31 @@ public class ScheduledTaskEntity {
     ScheduledTaskEntity() {
     }
 
-    public ScheduledTaskEntity(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed) {
-        taskName = task.getName();
+    public ScheduledTaskEntity(@NotNull TaskTemplateEntity entity, @NotNull TimeManager whenElapsed) {
+        this.taskTemplate = entity;
         instant = whenElapsed.getWhenElapsedPointInTime();
         status = ScheduledTaskStatus.CREATED;
 
         logger.info("The new task has been created: <{}>.", this);
     }
 
-    public ScheduledTaskEntity(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
+    public ScheduledTaskEntity(@NotNull TaskTemplateEntity task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
         this(task, whenElapsed);
         this.parameter = parameter;
+    }
+
+    public TaskTemplate getTaskTemplate() {
+        return taskTemplate;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getTaskName() {
-        return taskName;
+    public TimeManager getWhenElapsed() {
+        return new TimeManager(instant);
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public Instant getInstant() {
-        return instant;
-    }
-
-    public void setInstant(Instant instant) {
-        this.instant = instant;
-    }
 
     public String getParameter() {
         return parameter;
@@ -108,37 +104,6 @@ public class ScheduledTaskEntity {
 
     public void setStatus(ScheduledTaskStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ScheduledTaskEntity that = (ScheduledTaskEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(taskName, that.taskName) &&
-                Objects.equals(instant, that.instant) &&
-                Objects.equals(parameter, that.parameter) &&
-                Objects.equals(output, that.output) &&
-                Objects.equals(errorMessage, that.errorMessage) &&
-                status == that.status;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, taskName, instant, parameter, output, errorMessage, status);
-    }
-
-    public static @NotNull ScheduledTaskEntity createFromScheduledTask(@NotNull ScheduledTask task) {
-        ScheduledTaskEntity entity = new ScheduledTaskEntity();
-        entity.id = task.getId();
-        entity.parameter = task.getTaskParameter().orElse("");
-        entity.status = task.getStatus();
-        entity.taskName = task.getTaskTemplate().getName();
-        entity.errorMessage = task.getErrorMessage();
-        entity.output = task.getOutput();
-        entity.instant = task.getWhenElapsed().getWhenElapsedPointInTime();
-        return entity;
     }
 
 }

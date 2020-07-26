@@ -1,9 +1,6 @@
 package controller;
 
-import model.ScheduledTaskModelImpl;
-import model.ScheduledTaskNotFoundException;
-import model.StateModel;
-import model.TaskNotFoundException;
+import model.*;
 import model.scheduledtasks.ScheduledTask;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +52,7 @@ public class ControllerMainImpl extends AbstractController {
     public void eventTimerTickReceived() {
         int lastScheduledTaskId = stateModel.getLastScheduledTaskId();
         try {
-            ScheduledTask lastScheduledTask = scheduledTaskModel.getScheduledTask(lastScheduledTaskId);
+            ScheduledTaskMessenger lastScheduledTask = scheduledTaskModel.getScheduledTask(lastScheduledTaskId);
             refreshViewIfTaskIsInScheduledStatus(lastScheduledTask);
         } catch (ScheduledTaskNotFoundException ex) {
             // task has simply been deleted and user hasn't created a new one.
@@ -67,7 +64,7 @@ public class ControllerMainImpl extends AbstractController {
         viewInvokeMethod("runAndShowScheduledTasksOverviewWindow");
     }
 
-    private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTask lastScheduledTask) {
+    private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {
         if (lastScheduledTask.getStatus() == ScheduledTaskStatus.SCHEDULED) {
             view.refreshLastScheduledTaskTimingCountdowns(lastScheduledTask.getWhenElapsed());
         }

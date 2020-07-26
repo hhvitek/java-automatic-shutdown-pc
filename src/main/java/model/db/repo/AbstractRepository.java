@@ -34,11 +34,6 @@ public abstract class AbstractRepository<T> {
         return entityManager.createQuery(query).getResultList();
     }
 
-    public Stream<T> findAllAsStream() {
-        String query = String.format("SELECT a FROM %s a", getEntityClazz().getName());
-        return entityManager.createQuery(query).getResultStream();
-    }
-
     public void delete(@NotNull T entity) {
         try {
             entityManager.getTransaction().begin();

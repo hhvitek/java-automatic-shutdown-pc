@@ -21,8 +21,6 @@ public abstract class ManagerTest {
     protected int restartId;
     protected int remainderId;
 
-    protected abstract ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask task, @NotNull TimeManager durationDelay, @Nullable String parameter);
-
     @BeforeEach
     public void init() {
         shutdownId = manager.scheduleTask("Shutdown", null, "01:30");
