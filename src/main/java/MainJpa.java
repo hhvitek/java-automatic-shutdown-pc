@@ -28,7 +28,8 @@ public class MainJpa {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-
+    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
+            Persistence.createEntityManagerFactory("my-sqlite");
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         logger.info("STARTING JPA");
@@ -38,10 +39,12 @@ public class MainJpa {
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
 
-        EntityManager stateModelEntityManager = SqliteEntityManagerFactory.createEntityManager();
+        model.db.operations.EntityManagerFactory entityManagerFactory = new SqliteEntityManagerFactory(ENTITY_MANAGER_FACTORY);
+        EntityManager stateModelEntityManager = entityManagerFactory.createEntityManager();
+
         StateModelJpaImpl stateModel = new StateModelJpaImpl(stateModelEntityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
 
-        Manager manager = new ManagerJpaImpl(taskModel);
+        Manager manager = new ManagerJpaImpl(taskModel, entityManagerFactory);
 
         ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(manager);
 

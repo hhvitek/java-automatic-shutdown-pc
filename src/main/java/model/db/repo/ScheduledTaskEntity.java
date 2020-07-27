@@ -20,6 +20,7 @@ public class ScheduledTaskEntity {
 
     @Id
     @GeneratedValue
+    @SequenceGenerator(name = "sequence_generator", allocationSize = 1)
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
@@ -119,5 +120,14 @@ public class ScheduledTaskEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, taskTemplate, instant, parameter, output, errorMessage, status);
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduledTaskEntity{" +
+                "id=" + id +
+                ", taskTemplate=" + taskTemplate +
+                ", status=" + status +
+                '}';
     }
 }

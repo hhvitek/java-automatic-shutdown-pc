@@ -21,9 +21,6 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    //private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
-    //        Persistence.createEntityManagerFactory("my-sqlite");
-
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         logger.info("STARTING");
@@ -31,11 +28,9 @@ public class Main {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        //EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager(); // Retrieve an application managed entity manager
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
         StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
-        //StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
 
         Manager manager = new ManagerImpl(taskModel);
         ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(manager);

@@ -10,6 +10,7 @@ public class StateModelEntity {
 
     @Id
     @GeneratedValue
+    @SequenceGenerator(name = "sequence_generator", allocationSize = 1)
     private Integer id;
 
     @Column(name = "default_timing_duration_delay", nullable = false)

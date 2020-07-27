@@ -3,25 +3,32 @@ package model.db.operations;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
-public class SqliteEntityManagerFactory {
+/**
+ * The following was determined to be necessary for multiple threaded writers in Sqlite db:
+ *  * PRAGMA journal_mode=WAL - allows for writers and readers to coexist
+ *  * PRAGMA busy_timeout=millis - any writer will lock database on file system level. Even for readers. This should
+ *                                wait additional request/threads for millis before throwing error-exception
+ *  * Also there is jpa-level query.timeout that should be configured appropriately
+ *  * Also it is required to use separate EntityManagers for every thread
+ */
+public class SqliteEntityManagerFactory implements EntityManagerFactory {
 
-    private static final javax.persistence.EntityManagerFactory ENTITY_MANAGER_FACTORY =
-            Persistence.createEntityManagerFactory("my-sqlite");
+    private final javax.persistence.EntityManagerFactory entityManagerFactory;
 
-    private SqliteEntityManagerFactory() {
-
+    public SqliteEntityManagerFactory(@NotNull javax.persistence.EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
-    public static EntityManager createEntityManager() {
-        EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
+    @Override
+    public @NotNull EntityManager createEntityManager() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         makeSqliteDbWriteAheadLogging(entityManager);
         makeSqliteBusyTimeout(entityManager);
         return entityManager;
     }
 
-    public static void makeSqliteBusyTimeout(@NotNull EntityManager entityManager) {
+    public void makeSqliteBusyTimeout(@NotNull EntityManager entityManager) {
         String query = "PRAGMA busy_timeout=1111;";
 
         entityManager.getTransaction().begin();
@@ -29,7 +36,7 @@ public class SqliteEntityManagerFactory {
         entityManager.getTransaction().commit();
     }
 
-    public static void makeSqliteDbWriteAheadLogging(@NotNull EntityManager entityManager) {
+    public void makeSqliteDbWriteAheadLogging(@NotNull EntityManager entityManager) {
         String query = "PRAGMA journal_mode=WAL;";
 
         entityManager.getTransaction().begin();

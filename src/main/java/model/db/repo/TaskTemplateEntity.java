@@ -6,6 +6,7 @@ import tasks.TaskTemplate;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "task_template")
@@ -69,5 +70,29 @@ public class TaskTemplateEntity implements TaskTemplate {
     @Override
     public @NotNull Class<?> getClazz() {
         return clazz;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskTemplateEntity entity = (TaskTemplateEntity) o;
+        return name.equals(entity.name) &&
+                description.equals(entity.description) &&
+                acceptParameter.equals(entity.acceptParameter) &&
+                produceResult.equals(entity.produceResult) &&
+                clazz.equals(entity.clazz);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, acceptParameter, produceResult, clazz);
+    }
+
+    @Override
+    public String toString() {
+        return "TaskTemplateEntity{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }
