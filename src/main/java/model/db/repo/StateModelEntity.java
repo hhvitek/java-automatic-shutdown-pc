@@ -12,26 +12,26 @@ public class StateModelEntity {
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "default_timing_duration_delay")
-    private String defaultTimingDurationDelay;
+    @Column(name = "default_timing_duration_delay", nullable = false)
+    private String defaultTimingDurationDelay = "01:00";
 
-    @Column(name = "default_selected_task_name")
-    private String defaultSelectedTaskName;
+    @Column(name = "default_selected_task_name", nullable = false)
+    private String defaultSelectedTaskName = "Shutdown";
 
     // data in ui
-    @Column(name = "selected_task_name")
+    @Column(name = "selected_task_name", nullable = false)
     private String selectedTaskName = "";
 
-    @Column(name = "selected_task_parameter")
+    @Column(name = "selected_task_parameter", nullable = false)
     private String selectedTaskParameter = "";
 
-    @Column(name = "timing_duration_delay")
-    private String timingDurationDelay;
+    @Column(name = "timing_duration_delay", nullable = false)
+    private String timingDurationDelay = "00:00";
 
-    @Column(name = "last_scheduled_task_id")
-    private Integer lastScheduledTaskId;
+    @Column(name = "last_scheduled_task_id", nullable = false)
+    private Integer lastScheduledTaskId = Integer.MIN_VALUE;
 
-    StateModelEntity() {
+    protected StateModelEntity() {
     }
 
     public StateModelEntity(@NotNull String defaultDurationDelay, @NotNull String defaultSelectedTaskName) {
@@ -48,11 +48,11 @@ public class StateModelEntity {
         return id;
     }
 
-    public String getDefaultTimingDurationDelay() {
+    public @NotNull String getDefaultTimingDurationDelay() {
         return defaultTimingDurationDelay;
     }
 
-    public void setDefaultTimingDurationDelay(String defaultTimingDurationDelay) {
+    public void setDefaultTimingDurationDelay(@NotNull String defaultTimingDurationDelay) {
         this.defaultTimingDurationDelay = defaultTimingDurationDelay;
     }
 
@@ -60,7 +60,7 @@ public class StateModelEntity {
         return defaultSelectedTaskName;
     }
 
-    public void setDefaultSelectedTaskName(String defaultSelectedTaskName) {
+    public void setDefaultSelectedTaskName(@NotNull String defaultSelectedTaskName) {
         this.defaultSelectedTaskName = defaultSelectedTaskName;
     }
 
@@ -68,7 +68,7 @@ public class StateModelEntity {
         return selectedTaskName;
     }
 
-    public void setSelectedTaskName(String selectedTaskName) {
+    public void setSelectedTaskName(@NotNull String selectedTaskName) {
         this.selectedTaskName = selectedTaskName;
     }
 
@@ -76,7 +76,7 @@ public class StateModelEntity {
         return selectedTaskName;
     }
 
-    public void setSelectedTaskParameter(String selectedTaskParameter) {
+    public void setSelectedTaskParameter(@NotNull String selectedTaskParameter) {
         this.selectedTaskParameter = selectedTaskParameter;
     }
 
@@ -84,7 +84,7 @@ public class StateModelEntity {
         return timingDurationDelay;
     }
 
-    public void setTimingDurationDelay(String timingDurationDelay) {
+    public void setTimingDurationDelay(@NotNull String timingDurationDelay) {
         this.timingDurationDelay = timingDurationDelay;
     }
 
@@ -92,7 +92,7 @@ public class StateModelEntity {
         return lastScheduledTaskId;
     }
 
-    public void setLastScheduledTaskId(Integer lastScheduledTaskId) {
+    public void setLastScheduledTaskId(@NotNull Integer lastScheduledTaskId) {
         this.lastScheduledTaskId = lastScheduledTaskId;
     }
 }

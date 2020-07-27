@@ -40,7 +40,7 @@ public class ScheduledTaskImpl extends ScheduledTask {
         logger.info("The new task has been created: <{}>.", this);
     }
 
-    public ScheduledTaskImpl(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
+    public ScheduledTaskImpl(@NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @NotNull String parameter) {
         this(task, whenElapsed);
         this.parameter = parameter;
     }
@@ -60,8 +60,8 @@ public class ScheduledTaskImpl extends ScheduledTask {
     }
 
     @Override
-    public @NotNull Optional<String> getTaskParameter() {
-        return Optional.ofNullable(parameter);
+    public @NotNull String getTaskParameter() {
+        return parameter;
     }
 
     @Override

@@ -10,9 +10,9 @@ import java.util.*;
 /**
  * Custom JTable Model
  */
-public class TableModel extends AbstractTableModel {
+public class ScheduledTasksTableModel extends AbstractTableModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(TableModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasksTableModel.class);
 
     private static final int ID_COLUMN_INDEX = 0;
     private static final int WHEN_ELAPSED_COLUMN_INDEX = 3;
@@ -22,7 +22,7 @@ public class TableModel extends AbstractTableModel {
     };
     private final List<Object[]> data;
 
-    public TableModel() {
+    public ScheduledTasksTableModel() {
         data = Collections.synchronizedList(new ArrayList<>());
     }
 

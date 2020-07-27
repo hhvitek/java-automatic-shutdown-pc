@@ -2,6 +2,7 @@ package view.scheduledtasks;
 
 import controller.ControllerScheduledTasksImpl;
 import model.ModelObservableEvents;
+import model.ScheduledTaskMessenger;
 import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -35,14 +36,15 @@ public class ViewScheduledTasksImpl extends AbstractView {
 
     private final TableViewController scheduledActions;
 
-    public ViewScheduledTasksImpl(@NotNull ControllerScheduledTasksImpl controller) {
+    public ViewScheduledTasksImpl(@NotNull ControllerScheduledTasksImpl controller,
+                                  @NotNull List<ScheduledTaskMessenger> initialAlreadyExistingTasks) {
         super(controller);
 
         guiFrame = new JFrame("Načasované akce");
         guiFrame.setContentPane(panelGui);
         guiFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        scheduledActions = new TableViewController(tableScheduledTasks);
+        scheduledActions = new TableViewController(tableScheduledTasks, initialAlreadyExistingTasks);
 
         buttonRemoveFinished.addActionListener(new ActionListener() {
             @Override
@@ -102,19 +104,19 @@ public class ViewScheduledTasksImpl extends AbstractView {
         //TODO exception illegal argument
         switch (ModelObservableEvents.valueOf(propertyName)) {
             case SCHEDULED_TASK_CREATED: {
-                ScheduledTask newTask = (ScheduledTask) evt.getNewValue();
+                ScheduledTaskMessenger newTask = (ScheduledTaskMessenger) evt.getNewValue();
                 scheduledActions.createUIForOneScheduledTask(newTask);
                 break;
             }
             case SCHEDULED_TASK_STATUS_CHANGED:
             case SCHEDULED_TASK_FINISHED:
             case SCHEDULED_TASK_FINISHED_WITH_ERRORS: {
-                ScheduledTask updatedTask = (ScheduledTask) evt.getNewValue();
+                ScheduledTaskMessenger updatedTask = (ScheduledTaskMessenger) evt.getNewValue();
                 scheduledActions.updateUIForOneScheduledTask(updatedTask);
                 break;
             }
             case TIMER_TICK: {
-                List<ScheduledTask> scheduledTasks = (List<ScheduledTask>) evt.getNewValue();
+                List<ScheduledTaskMessenger> scheduledTasks = (List<ScheduledTaskMessenger>) evt.getNewValue();
                 scheduledActions.updateUIWhenElapsedForTasks(scheduledTasks);
                 break;
             }

@@ -1,6 +1,9 @@
 import controller.ControllerMainImpl;
 import controller.ControllerScheduledTasksImpl;
 import model.*;
+import model.db.operations.ManagerJpaImpl;
+import model.db.operations.SqliteEntityManagerFactory;
+import model.db.operations.StateModelJpaImpl;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ManagerImpl;
 import org.slf4j.Logger;
@@ -8,11 +11,15 @@ import org.slf4j.LoggerFactory;
 import view.ViewMainImpl;
 import view.scheduledtasks.ViewScheduledTasksImpl;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class Main {
+public class MainJpa {
 
     public static final List<String>  ACTIVE_TASKS = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
     public static final String DEFAULT_TASK = "Shutdown";
@@ -21,23 +28,21 @@ public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    //private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
-    //        Persistence.createEntityManagerFactory("my-sqlite");
 
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        logger.info("STARTING");
+        logger.info("STARTING JPA");
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
-        //EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager(); // Retrieve an application managed entity manager
-
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
-        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
-        //StateModelJpaImpl stateModel = new StateModelJpaImpl(entityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
 
-        Manager manager = new ManagerImpl(taskModel);
+        EntityManager stateModelEntityManager = SqliteEntityManagerFactory.createEntityManager();
+        StateModelJpaImpl stateModel = new StateModelJpaImpl(stateModelEntityManager, DEFAULT_AFTERDELTA, DEFAULT_TASK);
+
+        Manager manager = new ManagerJpaImpl(taskModel);
+
         ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(manager);
 
         ControllerMainImpl controller = new ControllerMainImpl(stateModel, scheduledTaskModel);

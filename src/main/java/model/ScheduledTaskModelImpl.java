@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of a scheduled task logic
@@ -28,6 +30,11 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
         return scheduledTaskManager.scheduleTask(name, parameter, durationDelay);
     }
 
+    public @NotNull List<ScheduledTaskMessenger> getAllScheduledTasks() {
+        return scheduledTaskManager.getAllScheduledTasks().stream()
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     public void cancelScheduledTask(int id) {
         scheduledTaskManager.cancelScheduledTask(id);
     }
@@ -39,8 +46,7 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
 
 
     public @NotNull ScheduledTaskMessenger getScheduledTask(int id) throws ScheduledTaskNotFoundException {
-        ScheduledTask scheduledTask = scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
-        return ScheduledTaskMessenger.createFromScheduledTask(scheduledTask);
+        return scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
     }
 
 

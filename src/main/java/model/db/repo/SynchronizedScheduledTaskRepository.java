@@ -21,7 +21,7 @@ public class SynchronizedScheduledTaskRepository extends ScheduledTaskRepository
     }
 
     @Override
-    public Stream<ScheduledTaskEntity> findByStatus(@NotNull ScheduledTaskStatus status) {
+    public List<ScheduledTaskEntity> findByStatus(@NotNull ScheduledTaskStatus status) {
         synchronized (SynchronizedScheduledTaskRepository.class) {
             return super.findByStatus(status);
         }

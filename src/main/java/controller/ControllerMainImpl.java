@@ -57,6 +57,7 @@ public class ControllerMainImpl extends AbstractController {
         } catch (ScheduledTaskNotFoundException ex) {
             // task has simply been deleted and user hasn't created a new one.
             // or no task has ever been scheduled so far...
+            logger.debug("Last eventId in database is old and incorrect one.");
         }
     }
 

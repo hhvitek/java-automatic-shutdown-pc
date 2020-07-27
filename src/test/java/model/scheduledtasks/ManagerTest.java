@@ -1,5 +1,7 @@
 package model.scheduledtasks;
 
+import model.Observer;
+import model.ScheduledTaskMessenger;
 import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,12 +13,14 @@ import tasks.ExecutableTask;
 import java.util.List;
 import java.util.Optional;
 
+import static model.ModelObservableEvents.SCHEDULED_TASK_STATUS_CHANGED;
 import static model.scheduledtasks.ScheduledTaskStatus.CANCELLED;
 import static model.scheduledtasks.ScheduledTaskStatus.DELETED;
 
 public abstract class ManagerTest {
 
     protected Manager manager;
+    protected Observer observer;
     protected int shutdownId;
     protected int restartId;
     protected int remainderId;
@@ -26,6 +30,9 @@ public abstract class ManagerTest {
         shutdownId = manager.scheduleTask("Shutdown", null, "01:30");
         restartId = manager.scheduleTask("Restart", null, "02:30");
         remainderId = manager.scheduleTask("Remainder", "this is a parameter", "03:30");
+
+        observer = new Observer();
+        manager.addPropertyChangeListener(observer);
     }
 
     @Test
@@ -57,6 +64,17 @@ public abstract class ManagerTest {
         Optional<ScheduledTask> taskOpt = manager.getScheduledTaskById(shutdownId);
         Assertions.assertTrue(taskOpt.isPresent());
         Assertions.assertEquals(shutdownId, taskOpt.get().getId());
+    }
+
+    @Test
+    public void eventUponStatusChangeTest() {
+        manager.cancelScheduledTask(shutdownId);
+
+        Assertions.assertNotNull(observer.getLastEvent());
+        Assertions.assertEquals(SCHEDULED_TASK_STATUS_CHANGED.toString(), observer.getLastEvent().getPropertyName());
+
+        ScheduledTaskMessenger task = (ScheduledTaskMessenger) observer.getLastEvent().getNewValue();
+        Assertions.assertEquals(CANCELLED, task.getStatus());
     }
 
 }

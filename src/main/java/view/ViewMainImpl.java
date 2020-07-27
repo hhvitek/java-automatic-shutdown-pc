@@ -28,8 +28,6 @@ public class ViewMainImpl extends AbstractView {
 
     public ViewMainImpl(@NotNull ControllerMainImpl controller, @NotNull TaskModel taskModel) {
         super(controller);
-        controller.setView(this);
-        controller.addView(this);
 
         this.controller = controller;
         this.taskModel = taskModel;
@@ -37,6 +35,10 @@ public class ViewMainImpl extends AbstractView {
         List<TaskTemplate> tasks = taskModel.getTaskTemplates();
         windowCreator = new MainWindowCreator(tasks);
         createAllListeners(windowCreator);
+
+        // must be after windowCreator is created because model is already generating events..
+        controller.setView(this);
+        controller.addView(this);
     }
 
     private void createAllListeners(@NotNull MainWindowCreator windowCreator) {

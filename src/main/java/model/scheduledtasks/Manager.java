@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static model.ModelObservableEvents.SCHEDULED_TASK_CREATED;
+import static model.ModelObservableEvents.TIMER_TICK;
 import static model.scheduledtasks.ScheduledTaskStatus.*;
 
 abstract public class Manager extends AbstractObservableModel implements PropertyChangeListener {
@@ -29,7 +30,8 @@ abstract public class Manager extends AbstractObservableModel implements Propert
     protected Manager(@NotNull TaskModel taskModel) {
         this.taskModel = taskModel;
         timer = new MyTimerUtilImpl();
-        //startTimer();
+
+        //TODO startTimer must be called in children at the end of the constructors after every object was created
     }
 
     /**
@@ -103,7 +105,7 @@ abstract public class Manager extends AbstractObservableModel implements Propert
 
     //TIMER##############################################################################################################
 
-    private void startTimer() {
+    protected void startTimer() {
         logger.debug("Starting utilities timer...");
         Runnable runnable = this::timerTick;
         timer.scheduleAtFixedRate(runnable, DEFAULT_TIMER_TICK_RATE_1s);
@@ -118,8 +120,8 @@ abstract public class Manager extends AbstractObservableModel implements Propert
         recomputeStatusForTasksInScheduledStatus();
         executeElapsedScheduledTasks();
 
-        //List<ScheduledTask> tasks = getAllScheduledTasksInScheduledStatus();
-        //firePropertyChange(TIMER_TICK, tasks.size(), tasks);
+        List<ScheduledTask> tasks = getAllScheduledTasksInScheduledStatus();
+        firePropertyChange(TIMER_TICK, tasks.size(), tasks);
     }
 
     protected abstract void recomputeStatusForTasksInScheduledStatus();

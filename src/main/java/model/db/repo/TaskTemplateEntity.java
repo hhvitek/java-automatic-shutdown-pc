@@ -15,25 +15,24 @@ public class TaskTemplateEntity implements TaskTemplate {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "description", nullable = false)
+    private String description = "";
 
-    @Column(name = "accept_parameter")
-    private Boolean acceptParameter;
+    @Column(name = "accept_parameter", nullable = false)
+    private Boolean acceptParameter = false;
 
-    @Column(name = "produce_result")
-    private Boolean produceResult;
+    @Column(name = "produce_result", nullable = false)
+    private Boolean produceResult = false;
 
-    @Column(name = "clazz")
-    private Class<?> clazz;
+    @Column(name = "clazz", nullable = false)
+    private Class<?> clazz = TaskTemplateEntity.class;
 
     @OneToMany(
-            mappedBy = "taskTemplate",
-            orphanRemoval = true
+            mappedBy = "taskTemplate"
     )
     private List<ScheduledTaskEntity> scheduledTasks = new ArrayList<>();
 
-    TaskTemplateEntity() {
+    protected TaskTemplateEntity() {
 
     }
 

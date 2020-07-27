@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.stream.Stream;
 
 public abstract class AbstractRepository<T> {
 
@@ -16,6 +15,10 @@ public abstract class AbstractRepository<T> {
 
     protected AbstractRepository(@NotNull EntityManager entityManager) {
         this.entityManager = entityManager;
+    }
+
+    public @NotNull EntityManager getEntityManager() {
+        return entityManager;
     }
 
     public abstract Class<T> getEntityClazz();

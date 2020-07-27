@@ -11,14 +11,16 @@ import tasks.TaskException;
 import tasks.TaskTemplate;
 
 import javax.persistence.EntityManager;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Objects;
 import java.util.Optional;
 
 import static model.ModelObservableEvents.*;
 import static model.scheduledtasks.ScheduledTaskStatus.*;
 
+/**
+ * Be warned regarding listening to the events...
+ * Be warned shared entitymanagers
+ */
 public class ScheduledTaskJpaImpl extends ScheduledTask {
 
     private ScheduledTaskEntity entity;
@@ -33,11 +35,19 @@ public class ScheduledTaskJpaImpl extends ScheduledTask {
     private ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task) {
         executableTask = task;
 
-        scheduledTaskRepository = new SynchronizedScheduledTaskRepository(entityManager);
+        scheduledTaskRepository = new ScheduledTaskRepository(entityManager);
         taskTemplateRepository = new TaskTemplateRepository(entityManager);
     }
 
-    public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @Nullable String parameter) {
+    public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull TimeManager whenElapsed) {
+        this(entityManager, task);
+
+        TaskTemplateEntity taskTemplateEntity = findOrCreateTaskTemplate(task);
+        entity = new ScheduledTaskEntity(taskTemplateEntity, whenElapsed);
+        scheduledTaskRepository.create(entity);
+    }
+
+    public ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask task, @NotNull TimeManager whenElapsed, @NotNull String parameter) {
         this(entityManager, task);
 
         TaskTemplateEntity taskTemplateEntity = findOrCreateTaskTemplate(task);
@@ -71,13 +81,8 @@ public class ScheduledTaskJpaImpl extends ScheduledTask {
     }
 
     @Override
-    public @NotNull Optional<String> getTaskParameter() {
-        String parameter = entity.getParameter();
-        if (parameter == null || parameter.isBlank()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(parameter);
-        }
+    public @NotNull String getTaskParameter() {
+        return entity.getParameter();
     }
 
     @Override
@@ -87,23 +92,16 @@ public class ScheduledTaskJpaImpl extends ScheduledTask {
 
     @Override
     public void execute() throws TaskException {
-        ExecutableTask task = executableTask;
-
         try {
-            if (task.acceptParameter()) {
-                entity.setOutput(
-                        task.execute(entity.getParameter())
-                );
-            } else {
-                entity.setOutput(
-                        task.execute()
-                );
+            String output = executableTask.execute(entity.getParameter());
+            if (output != null) {
+                entity.setOutput(output);
             }
             setStatusIfPossible(EXECUTED_SUCCESS);
             firePropertyChange(SCHEDULED_TASK_FINISHED, getId(), this);
         } catch (TaskException ex) {
-            setStatusIfPossible(EXECUTED_ERROR);
             entity.setErrorMessage(ex.toString());
+            setStatusIfPossible(EXECUTED_ERROR);
             firePropertyChange(SCHEDULED_TASK_FINISHED_WITH_ERRORS, getId(), this);
             throw ex;
         } finally {

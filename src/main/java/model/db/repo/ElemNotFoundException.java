@@ -11,7 +11,7 @@ public class ElemNotFoundException extends Exception {
         super(errorMessage);
     }
 
-    public ElemNotFoundException(Class where, Object what) {
+    public ElemNotFoundException(@NotNull Class<?> where, @NotNull Object what) {
         this(where.toString(), what.toString());
     }
 

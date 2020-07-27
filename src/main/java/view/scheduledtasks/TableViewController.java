@@ -1,5 +1,6 @@
 package view.scheduledtasks;
 
+import model.ScheduledTaskMessenger;
 import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -20,12 +21,13 @@ public class TableViewController {
     private static final Logger logger = LoggerFactory.getLogger(TableViewController.class);
 
     private final JTable table;
-    private final TableModel tableModel;
+    private final ScheduledTasksTableModel tableModel;
 
-    public TableViewController(@NotNull JTable table) {
+    public TableViewController(@NotNull JTable table, @NotNull List<ScheduledTaskMessenger> alreadyExistingScheduledTasks) {
         this.table = table;
 
-        tableModel = new TableModel();
+        tableModel = new ScheduledTasksTableModel();
+        initializeWithInitialScheduledTasks(alreadyExistingScheduledTasks);
         table.setModel(tableModel);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -49,12 +51,18 @@ public class TableViewController {
         column.setMaxWidth(width + 10);
     }
 
-    public void createUIForOneScheduledTask(@NotNull ScheduledTask scheduledTask) {
+    private void initializeWithInitialScheduledTasks(@NotNull List<ScheduledTaskMessenger> alreadyExistingScheduledTasks) {
+        alreadyExistingScheduledTasks.forEach(
+                this::createUIForOneScheduledTask
+        );
+    }
+
+    public void createUIForOneScheduledTask(@NotNull ScheduledTaskMessenger scheduledTask) {
         Object[] cols = processScheduledTaskIntoUIObjects(scheduledTask);
         tableModel.addScheduledTaskRow(cols);
     }
 
-    private Object[] processScheduledTaskIntoUIObjects(@NotNull ScheduledTask scheduledTask) {
+    private Object[] processScheduledTaskIntoUIObjects(@NotNull ScheduledTaskMessenger scheduledTask) {
         String output = scheduledTask.getOutput();
         String errorMessage = scheduledTask.getErrorMessage();
         if (!errorMessage.isBlank()) {
@@ -71,12 +79,12 @@ public class TableViewController {
         return cols;
     }
 
-    public void updateUIForOneScheduledTask(@NotNull ScheduledTask scheduledTask) {
+    public void updateUIForOneScheduledTask(@NotNull ScheduledTaskMessenger scheduledTask) {
         Object[] cols = processScheduledTaskIntoUIObjects(scheduledTask);
         tableModel.updateScheduledTaskRow(cols);
     }
 
-    public void updateUIWhenElapsedForTasks(@NotNull List<ScheduledTask> scheduledTasks) {
+    public void updateUIWhenElapsedForTasks(@NotNull List<ScheduledTaskMessenger> scheduledTasks) {
         scheduledTasks.forEach(
                 scheduledTask -> tableModel.updateWhenElapsedForTask(
                         scheduledTask.getId(),

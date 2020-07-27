@@ -34,8 +34,4 @@ public class ControllerScheduledTasksImpl extends AbstractController{
     public void actionRemoveAllTasks() {
         scheduledTaskModel.removeAllTasks();
     }
-
-
-
-
 }

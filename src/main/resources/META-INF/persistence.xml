@@ -15,11 +15,13 @@
             <property name="hibernate.connection.username" value=""/>
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.connection.user" value=""/>
-            <property name="hibernate.connection.autocommit" value="true"/>
+            <property name="hibernate.connection.autocommit" value="false"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.connection.provider_disables_autocommit" value="true" />
             <property name="hibernate.connection.url"
                       value="jdbc:sqlite:./src/main/resources/db/db.sqlite3"/>
             <property name="hibernate.connection.driver_class" value="org.sqlite.JDBC"/>
+            <property name="javax.persistence.query.timeout" value="1111"/>
         </properties>
     </persistence-unit>
 </persistence>

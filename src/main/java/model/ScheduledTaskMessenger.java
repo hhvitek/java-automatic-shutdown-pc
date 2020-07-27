@@ -7,57 +7,19 @@ import tasks.TaskTemplate;
 
 import java.util.Optional;
 
-public class ScheduledTaskMessenger {
-    public Integer id;
-    public TaskTemplate taskTemplate;
-    public String taskParameter;
-    public TimeManager whenElapsed;
-    public String errorMessage;
-    public String output;
-    public ScheduledTaskStatus status;
+public interface ScheduledTaskMessenger {
 
-    private ScheduledTaskMessenger() {
-    }
+    Integer getId();
 
-    public static ScheduledTaskMessenger createFromScheduledTask(@NotNull ScheduledTask scheduledTask) {
-        ScheduledTaskMessenger messenger = new ScheduledTaskMessenger();
+    TaskTemplate getTaskTemplate();
 
-        messenger.id = scheduledTask.getId();
-        messenger.taskParameter = scheduledTask.getTaskParameter().orElse("");
-        messenger.taskTemplate = scheduledTask.getTaskTemplate();
-        messenger.whenElapsed = scheduledTask.getWhenElapsed();
-        messenger.errorMessage = scheduledTask.getErrorMessage();
-        messenger.output = scheduledTask.getOutput();
-        messenger.status = scheduledTask.getStatus();
+    String getTaskParameter();
 
-        return messenger;
-    }
+    TimeManager getWhenElapsed();
 
-    public Integer getId() {
-        return id;
-    }
+    String getErrorMessage();
 
-    public TaskTemplate getTaskTemplate() {
-        return taskTemplate;
-    }
+    String getOutput();
 
-    public String getTaskParameter() {
-        return taskParameter;
-    }
-
-    public TimeManager getWhenElapsed() {
-        return whenElapsed;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public String getOutput() {
-        return output;
-    }
-
-    public ScheduledTaskStatus getStatus() {
-        return status;
-    }
+    ScheduledTaskStatus getStatus();
 }

@@ -27,11 +27,16 @@ public class ManagerImpl extends Manager {
     public ManagerImpl(@NotNull TaskModel taskModel) {
         super(taskModel);
         scheduledTasks = Collections.synchronizedList(new ArrayList<>());
+        startTimer();
     }
 
     @Override
     protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        return new ScheduledTaskImpl(executableTask, durationDelay, parameter);
+        if (parameter == null) {
+            return new ScheduledTaskImpl(executableTask, durationDelay);
+        } else {
+            return new ScheduledTaskImpl(executableTask, durationDelay, parameter);
+        }
     }
 
     @Override

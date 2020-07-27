@@ -19,17 +19,15 @@ import java.util.List;
 
 public class ManagerJpaImplTest extends ManagerTest {
 
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
-            Persistence.createEntityManagerFactory("my-sqlite");
 
-    private static EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
+    private static EntityManager entityManager = SqliteEntityManagerFactory.createEntityManager();
 
     private static ScheduledTaskRepository repository = new SynchronizedScheduledTaskRepository(entityManager);;
 
     public ManagerJpaImplTest() {
         List<String> tasksPackageAndClassName = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
         TaskModel taskModel = new TaskModelImpl(tasksPackageAndClassName);
-        manager = new ManagerJpaImpl(entityManager, taskModel);
+        manager = new ManagerJpaImpl(taskModel);
     }
 
 

@@ -5,7 +5,6 @@ import model.TimeManager;
 import model.db.repo.ElemNotFoundException;
 import model.db.repo.ScheduledTaskEntity;
 import model.db.repo.ScheduledTaskRepository;
-import model.db.repo.SynchronizedScheduledTaskRepository;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ScheduledTask;
 import model.scheduledtasks.ScheduledTaskStatus;
@@ -14,28 +13,29 @@ import org.jetbrains.annotations.Nullable;
 import tasks.ExecutableTask;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static model.scheduledtasks.ScheduledTaskStatus.SCHEDULED;
 
 public class ManagerJpaImpl extends Manager {
 
-    private final ScheduledTaskRepository scheduledTaskRepository;
-    private final EntityManager entityManager;
-
-    public ManagerJpaImpl(@NotNull EntityManager entityManager, @NotNull TaskModel taskModel) {
+    public ManagerJpaImpl(@NotNull TaskModel taskModel) {
         super(taskModel);
-        this.entityManager = entityManager;
-        scheduledTaskRepository = new SynchronizedScheduledTaskRepository(entityManager);
+
+        startTimer();
     }
 
     @Override
     protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        return new ScheduledTaskJpaImpl(entityManager, executableTask, durationDelay, parameter);
+        if (parameter == null) {
+            return new ScheduledTaskJpaImpl(SqliteEntityManagerFactory.createEntityManager(), executableTask, durationDelay);
+        } else {
+            return new ScheduledTaskJpaImpl(SqliteEntityManagerFactory.createEntityManager(), executableTask, durationDelay, parameter);
+        }
     }
 
     @Override
@@ -44,16 +44,23 @@ public class ManagerJpaImpl extends Manager {
     }
 
     private @Nullable ScheduledTask createTaskFromAlreadyExistingEntity(@NotNull Integer id) {
+
+        EntityManager entityManager = SqliteEntityManagerFactory.createEntityManager();
+        ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
+
         try {
-            ScheduledTaskEntity entity = scheduledTaskRepository.findOneById(id);
+            ScheduledTaskEntity entity = repository.findOneById(id);
             ExecutableTask executableTask = taskModel.getTaskByName(entity.getTaskTemplate().getName());
-            return new ScheduledTaskJpaImpl(
+            ScheduledTask task = new ScheduledTaskJpaImpl(
                     entityManager,
                     executableTask,
                     entity
             );
+            task.addPropertyChangeListener(this);
+            return task;
         } catch (ElemNotFoundException e) {
             logger.error("RuntimeError trying to add convert non-existing entity into scheduled task. Every scheduled task should have been already created in db before adding to manager.", e);
+            entityManager.close();
             return null;
         }
     }
@@ -66,8 +73,15 @@ public class ManagerJpaImpl extends Manager {
 
     @Override
     protected @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(@NotNull ScheduledTaskStatus status) {
-        Stream<ScheduledTaskEntity> stream = scheduledTaskRepository.findByStatus(status);
-        return stream
+
+        EntityManager entityManager = SqliteEntityManagerFactory.createEntityManager();
+        ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
+
+        List<ScheduledTaskEntity> entities = repository.findByStatus(status);
+
+        entityManager.close();
+
+        return entities.stream()
                 .map(entity -> createTaskFromAlreadyExistingEntity(entity.getId()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
@@ -75,7 +89,13 @@ public class ManagerJpaImpl extends Manager {
 
     @Override
     public void removeAllTasks() {
-        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findAll();
+
+        EntityManager entityManager = SqliteEntityManagerFactory.createEntityManager();
+        ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
+
+        List<ScheduledTaskEntity> tasks = repository.findAll();
+        entityManager.close();
+
         tasks.forEach(
                 entity -> deleteScheduledTask(entity.getId())
         );
@@ -83,7 +103,14 @@ public class ManagerJpaImpl extends Manager {
 
     @Override
     public List<ScheduledTask> getAllScheduledTasks() {
-        return scheduledTaskRepository.findAll()
+
+        EntityManager entityManager = SqliteEntityManagerFactory.createEntityManager();
+        ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
+
+        List<ScheduledTaskEntity> scheduledTasks = repository.findAll();
+        entityManager.close();
+
+        return scheduledTasks
                 .stream()
                 .map(entity -> createTaskFromAlreadyExistingEntity(entity.getId()))
                 .filter(Objects::nonNull)
@@ -98,5 +125,4 @@ public class ManagerJpaImpl extends Manager {
                 ScheduledTask::recomputeStatusIfTaskHasElapsedChangeIntoElapsedStatus
         );
     }
-
 }
