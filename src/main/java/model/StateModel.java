@@ -8,18 +8,18 @@ import org.jetbrains.annotations.NotNull;
  *     * Represents current configuration of the application
  *     * If no attribute selected, methods should return relevant default values.
  */
-public interface StateModel {
+public abstract class StateModel extends AbstractObservableModel {
 
-    void setSelectedTaskName(@NotNull String name);
-    @NotNull String getSelectedTaskName();
+    public abstract void setSelectedTaskName(@NotNull String name);
+    public abstract @NotNull String getSelectedTaskName();
 
-    void setSelectedTaskParameter(@NotNull String parameter);
-    @NotNull String getSelectedTaskParameter();
+    public abstract void setSelectedTaskParameter(@NotNull String parameter);
+    public abstract @NotNull String getSelectedTaskParameter();
 
-    void setTimingDurationDelay(@NotNull String durationDelay);
-    @NotNull String getTimingDurationDelay();
+    public abstract void setTimingDurationDelay(@NotNull String durationDelay);
+    public abstract @NotNull String getTimingDurationDelay();
 
-    void setLastScheduledTaskId(int id);
-    int getLastScheduledTaskId();
+    public abstract void setLastScheduledTaskId(int id);
+    public abstract int getLastScheduledTaskId();
 
 }

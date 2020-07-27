@@ -46,14 +46,7 @@ public class MainWindowCreator {
     }
 
     void run() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                guiFrame.pack();
-                setCenteredToGoldenRatio(guiFrame);
-                guiFrame.setVisible(true);
-            }
-        });
+        SwingViewUtils.runAndShowWindow(guiFrame);
     }
 
     void showErrorPopup(@NotNull String errorMessage) {
@@ -97,21 +90,5 @@ public class MainWindowCreator {
             sequence.add(hourPart + ':' + minutePart);
         }
         return sequence;
-    }
-
-    /**
-     * Callable after swing frame.pack() function to center application window.
-     */
-    private static void setCenteredToGoldenRatio(JFrame frame) {
-        Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenHeight = (int) screenDimension.getHeight();
-        int screenWidth = (int) screenDimension.getWidth();
-
-        int frameHeight = frame.getHeight();
-        int frameWidth = frame.getWidth();
-
-        int goldenRatioHeight = (int) ((screenHeight - frameHeight) * 0.38);
-
-        frame.setLocation((screenWidth / 2) - (frameWidth / 2), goldenRatioHeight);
     }
 }

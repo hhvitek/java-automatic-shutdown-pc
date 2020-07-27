@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import static model.ModelObservableEvents.*;
 
-public class StateModelImpl extends AbstractObservableModel implements StateModel {
+public class StateModelImpl extends StateModel {
 
     private static final String DEFAULT_TIMING_DURATION_DELAY = "01:00";
 

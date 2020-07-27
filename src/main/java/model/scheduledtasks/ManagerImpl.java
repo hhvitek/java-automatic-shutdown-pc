@@ -13,12 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Manages creation, cancellation, execution of scheduled tasks.
- *
- * This class is itself observable and in turn observer to scheduled tasks it manages
- *
- * Scheduled tasks produce events in their lifetime. This manager listens to those events and propagate them to it's
- * observers.
+ * Implementation of Manager using just Java's synchronizedList
+ * No persistence implemented...
  */
 public class ManagerImpl extends Manager {
 
@@ -27,7 +23,6 @@ public class ManagerImpl extends Manager {
     public ManagerImpl(@NotNull TaskModel taskModel) {
         super(taskModel);
         scheduledTasks = Collections.synchronizedList(new ArrayList<>());
-        startTimer();
     }
 
     @Override
@@ -73,7 +68,7 @@ public class ManagerImpl extends Manager {
 
     //TIMER#####################
     @Override
-    protected void recomputeStatusForTasksInScheduledStatus() {
+    public void recomputeStatusForTasksInScheduledStatus() {
         scheduledTasks.forEach(
                 ScheduledTask::recomputeStatusIfTaskHasElapsedChangeIntoElapsedStatus
         );

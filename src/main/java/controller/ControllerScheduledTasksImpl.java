@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Controller for user actions in a window containing all scheduled tasks.
+ */
 public class ControllerScheduledTasksImpl extends AbstractController{
 
     private static final Logger logger = LoggerFactory.getLogger(ControllerScheduledTasksImpl.class);
@@ -15,6 +18,7 @@ public class ControllerScheduledTasksImpl extends AbstractController{
 
     public ControllerScheduledTasksImpl(@NotNull ScheduledTaskModelImpl scheduledTaskModel) {
         this.scheduledTaskModel = scheduledTaskModel;
+        addModel(scheduledTaskModel);
     }
 
     public void actionCancelScheduledTaskById(int id) {

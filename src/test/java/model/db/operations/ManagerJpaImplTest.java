@@ -32,7 +32,7 @@ public class ManagerJpaImplTest extends ManagerTest {
     public ManagerJpaImplTest() {
         List<String> tasksPackageAndClassName = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
         TaskModel taskModel = new TaskModelImpl(tasksPackageAndClassName);
-        manager = new ManagerJpaImpl(taskModel, entityManagerFactory);
+        manager = new ManagerJpaImpl(taskModel, entityManager);
     }
 
 

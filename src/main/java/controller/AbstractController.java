@@ -12,6 +12,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * It's listener for any events in Models. Propagate those events to Views.
+ */
 public abstract class AbstractController implements PropertyChangeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractController.class);
@@ -53,7 +56,6 @@ public abstract class AbstractController implements PropertyChangeListener {
             view.modelPropertyChange(evt);
         }
     }
-
 
     protected void modelInvokeMethodWithoutParameters(@NotNull String methodName) {
         for (AbstractObservableModel model : registeredModels) {

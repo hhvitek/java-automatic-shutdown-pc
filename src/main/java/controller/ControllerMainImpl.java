@@ -8,7 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.ViewMainImpl;
+import view.scheduledtasks.ViewScheduledTasksImpl;
 
+/**
+ * Controller for user actions in the Main app window. Specifically to schedule any new ScheduledTask.
+ *
+ * Upon user-request shows the a new window containing list of all ScheduledTasks.
+ */
 public class ControllerMainImpl extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(ControllerMainImpl.class);
@@ -17,17 +23,22 @@ public class ControllerMainImpl extends AbstractController {
     private final ScheduledTaskModelImpl scheduledTaskModel;
 
     private ViewMainImpl view;
+    private ViewScheduledTasksImpl taskView;
     private ControllerScheduledTasksImpl controllerScheduledTasks;
 
-    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModelImpl scheduledTaskModel) {
+    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModelImpl scheduledTaskModel, @NotNull ControllerScheduledTasksImpl controllerScheduledTasks) {
         this.stateModel = stateModel;
         this.scheduledTaskModel = scheduledTaskModel;
 
-        controllerScheduledTasks = new ControllerScheduledTasksImpl(scheduledTaskModel);
+        this.controllerScheduledTasks = controllerScheduledTasks;
+
+        addModel(stateModel);
+        addModel(scheduledTaskModel);
     }
 
-    public void setView(@NotNull ViewMainImpl view) {
-        this.view = view;
+    public void setViews(@NotNull ViewMainImpl mainView, @NotNull ViewScheduledTasksImpl taskView) {
+        this.view = mainView;
+        this.taskView = taskView;
     }
 
     public void actionExitByUser() {
@@ -57,6 +68,7 @@ public class ControllerMainImpl extends AbstractController {
         } catch (ScheduledTaskNotFoundException ex) {
             // task has simply been deleted and user hasn't created a new one.
             // or no task has ever been scheduled so far...
+            // or database has changed since last run (scheduled task deleted but lastScheduledTaskId stayed)...
             String errorMessage = "Last eventId <{" + lastScheduledTaskId + "}> in database is old and incorrect one.";
             logger.debug(errorMessage);
             view.showInfoMessageToUser(errorMessage);
@@ -64,7 +76,7 @@ public class ControllerMainImpl extends AbstractController {
     }
 
     public void actionShowScheduledTasks() {
-        viewInvokeMethod("runAndShowScheduledTasksOverviewWindow");
+        taskView.runAndShowScheduledTasksOverviewWindow();
     }
 
     private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {

@@ -1,13 +1,16 @@
 import controller.ControllerMainImpl;
 import controller.ControllerScheduledTasksImpl;
 import model.*;
+import model.db.operations.SqliteEntityManagerFactory;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.SwingViewUtils;
 import view.ViewMainImpl;
 import view.scheduledtasks.ViewScheduledTasksImpl;
 
+import javax.persistence.EntityManager;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -23,44 +26,37 @@ public class Main {
 
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        logger.info("STARTING");
+        logger.info("************STARTING configuration*************");
 
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
-
+        SwingViewUtils.setLookAndFeelToSystemDefault();
+        SwingViewUtils.setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
-        StateModelImpl stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
+        StateModel stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);
 
         Manager manager = new ManagerImpl(taskModel);
-        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(manager);
 
-        ControllerMainImpl controller = new ControllerMainImpl(stateModel, scheduledTaskModel);
-        controller.addModel(stateModel);
-        controller.addModel(scheduledTaskModel);
+        executeCommom(taskModel, stateModel, manager, manager);
 
-        ViewMainImpl view = new ViewMainImpl(controller, taskModel);
+        logger.info("************FINISHED configuration*************");
+    }
+
+    static void executeCommom(TaskModel taskModel, StateModel stateModel, Manager userManager, Manager periodicManager) {
+        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(userManager, periodicManager);
 
         ControllerScheduledTasksImpl controllerScheduledTasks = new ControllerScheduledTasksImpl(scheduledTaskModel);
-        controllerScheduledTasks.addModel(scheduledTaskModel);
+
+        ControllerMainImpl controller = new ControllerMainImpl(stateModel, scheduledTaskModel, controllerScheduledTasks);
+        ViewMainImpl mainView = new ViewMainImpl(controller, taskModel);
 
         List<ScheduledTaskMessenger> alreadyExistingTasks = scheduledTaskModel.getAllScheduledTasks();
-        ViewScheduledTasksImpl viewScheduledTasks = new ViewScheduledTasksImpl(controllerScheduledTasks, alreadyExistingTasks);
-        //TODO isssue when this view is bind to main controller instead of his own controller
-        controller.addView(viewScheduledTasks);
+        ViewScheduledTasksImpl taskView = new ViewScheduledTasksImpl(controllerScheduledTasks, alreadyExistingTasks);
 
+        controller.setViews(mainView, taskView);
         controller.run();
 
-        logger.info("FINISHED");
+        scheduledTaskModel.startTimer();
     }
 
-    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
-        java.util.Enumeration keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof javax.swing.plaf.FontUIResource)
-                UIManager.put(key, f);
-        }
-    }
+
 }

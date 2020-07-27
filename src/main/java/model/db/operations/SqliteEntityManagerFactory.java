@@ -6,11 +6,15 @@ import javax.persistence.EntityManager;
 
 /**
  * The following was determined to be necessary for multiple threaded writers in Sqlite db:
- *  * PRAGMA journal_mode=WAL - allows for writers and readers to coexist
- *  * PRAGMA busy_timeout=millis - any writer will lock database on file system level. Even for readers. This should
+ *  1] PRAGMA journal_mode=WAL - allows for writers and readers to coexist
+ *  2] PRAGMA busy_timeout=millis - any writer will lock database on file system level. Even for readers. This should
  *                                wait additional request/threads for millis before throwing error-exception
- *  * Also there is jpa-level query.timeout that should be configured appropriately
- *  * Also it is required to use separate EntityManagers for every thread
+ *  3] Also there is jpa-level query.timeout that should be configured appropriately
+ *  4] Also it is required to use separate EntityManagers for every thread
+ *
+ * This class ensures the 1] and 2]. The third one is placed into persistence.xml. The fourth one is ensured by creation
+ * of only two entityManagers for the whole application. One for app-user operation the other for scheduled periodic
+ * operation that is automatically executed every X seconds and may result into write-operations into DB.
  */
 public class SqliteEntityManagerFactory implements EntityManagerFactory {
 

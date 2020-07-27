@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.AbstractView;
+import view.SwingViewUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,36 +66,10 @@ public class ViewScheduledTasksImpl extends AbstractView {
                 controller.actionCancelSelectedTasks(selectedTasks);
             }
         });
-
-        //TODO will receive events from the main controller
-        //controller.addView(this);
     }
 
     public void runAndShowScheduledTasksOverviewWindow() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                guiFrame.pack();
-                setCenteredToGoldenRatio(guiFrame);
-                guiFrame.setVisible(true);
-            }
-        });
-    }
-
-    /**
-     * Callable after swing frame.pack() function to center application window.
-     */
-    private static void setCenteredToGoldenRatio(JFrame frame) {
-        Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenHeight = (int) screenDimension.getHeight();
-        int screenWidth = (int) screenDimension.getWidth();
-
-        int frameHeight = frame.getHeight();
-        int frameWidth = frame.getWidth();
-
-        int goldenRatioHeight = (int) ((screenHeight - frameHeight) * 0.38);
-
-        frame.setLocation((screenWidth / 2) - (frameWidth / 2), goldenRatioHeight);
+        SwingViewUtils.runAndShowWindow(guiFrame);
     }
 
     @Override

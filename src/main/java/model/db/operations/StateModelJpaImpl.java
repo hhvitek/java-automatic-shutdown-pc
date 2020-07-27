@@ -13,7 +13,7 @@ import java.util.List;
 
 import static model.ModelObservableEvents.*;
 
-public class StateModelJpaImpl extends AbstractObservableModel implements StateModel {
+public class StateModelJpaImpl extends StateModel {
 
     private static final String DEFAULT_TIMING_DURATION_DELAY = "01:00";
 

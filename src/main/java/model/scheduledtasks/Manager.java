@@ -1,14 +1,13 @@
 package model.scheduledtasks;
 
 import model.*;
+import org.dom4j.rule.Mode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.ExecutableTask;
 import tasks.TaskException;
-import utilities.timer.MyTimer;
-import utilities.timer.MyTimerUtilImpl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -16,20 +15,29 @@ import java.util.List;
 import java.util.Optional;
 
 import static model.ModelObservableEvents.SCHEDULED_TASK_CREATED;
-import static model.ModelObservableEvents.TIMER_TICK;
 import static model.scheduledtasks.ScheduledTaskStatus.*;
 
-abstract public class Manager extends AbstractObservableModel implements PropertyChangeListener {
+/**
+ * Manages creation, cancellation, and PARTLY execution of scheduled tasks.
+ * !!!
+ * !!! Provides interface to existing ScheduledTasks - ManagerTimerOperations,
+ * !!!  it's expected that SOMEONE other shall periodically use this interface
+ * !!!  to change ScheduledTasks state and executes them accordingly.
+ * !!!
+ *
+ * This class is itself observable and in turn observer to scheduled tasks it manages
+ *
+ * Scheduled tasks produce events in their lifetime. This manager listens to those events and propagate them to it's
+ * observers.
+ */
+abstract public class Manager extends AbstractObservableModel implements ManagerTimerOperations,PropertyChangeListener {
 
     protected static final Logger logger = LoggerFactory.getLogger(Manager.class);
-    private static final int DEFAULT_TIMER_TICK_RATE_1s = 1000;
 
-    private final MyTimer timer;
     protected final TaskModel taskModel;
 
     protected Manager(@NotNull TaskModel taskModel) {
         this.taskModel = taskModel;
-        timer = new MyTimerUtilImpl();
 
         //TODO startTimer must be called in children at the end of the constructors after every object was created
     }
@@ -102,32 +110,13 @@ abstract public class Manager extends AbstractObservableModel implements Propert
 
     public abstract List<ScheduledTask> getAllScheduledTasks();
 
+    @Override
+    public abstract void recomputeStatusForTasksInScheduledStatus();
 
-    //TIMER##############################################################################################################
-
-    protected void startTimer() {
-        logger.debug("Starting utilities timer...");
-        Runnable runnable = this::timerTick;
-        timer.scheduleAtFixedRate(runnable, DEFAULT_TIMER_TICK_RATE_1s);
-    }
-
-    private void stopTimer() {
-        logger.debug("Stopping utilities timer...");
-        timer.stop();
-    }
-
-    private void timerTick() {
-        recomputeStatusForTasksInScheduledStatus();
-        executeElapsedScheduledTasks();
-
-        List<ScheduledTask> tasks = getAllScheduledTasksInScheduledStatus();
-        firePropertyChange(TIMER_TICK, tasks.size(), tasks);
-    }
-
-    protected abstract void recomputeStatusForTasksInScheduledStatus();
     protected abstract List<ScheduledTask> getAllScheduledTasksByStatus(ScheduledTaskStatus elapsed);
 
-    private void executeElapsedScheduledTasks() {
+    @Override
+    public void executeElapsedScheduledTasks() {
         for(ScheduledTask task: getAllTasksInElapsedStatus()) {
             try {
                 task.execute();
@@ -141,7 +130,8 @@ abstract public class Manager extends AbstractObservableModel implements Propert
         return getAllScheduledTasksByStatus(ELAPSED);
     }
 
-    private List<ScheduledTask> getAllScheduledTasksInScheduledStatus() {
+    @Override
+    public @NotNull List<ScheduledTask> getAllScheduledTasksInScheduledStatus() {
         return getAllScheduledTasksByStatus(SCHEDULED);
     }
 
