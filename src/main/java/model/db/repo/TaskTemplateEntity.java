@@ -6,7 +6,6 @@ import tasks.TaskTemplate;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "task_template")
@@ -31,18 +30,17 @@ public class TaskTemplateEntity implements TaskTemplate {
     @OneToMany(
             mappedBy = "taskTemplate"
     )
-    private List<ScheduledTaskEntity> scheduledTasks = new ArrayList<>();
+    private final List<ScheduledTaskEntity> scheduledTasks = new ArrayList<>();
 
     protected TaskTemplateEntity() {
-
     }
 
     public static TaskTemplateEntity fromTaskTemplate(@NotNull TaskTemplate taskTemplate) {
         TaskTemplateEntity entity = new TaskTemplateEntity();
         entity.name = taskTemplate.getName();
         entity.description = taskTemplate.getDescription();
-        entity.produceResult = taskTemplate.doProduceResult();
-        entity.acceptParameter = taskTemplate.acceptParameter();
+        entity.produceResult = taskTemplate.canProduceResult();
+        entity.acceptParameter = taskTemplate.canAcceptParameter();
         entity.clazz = taskTemplate.getClazz();
         return entity;
     }
@@ -58,35 +56,18 @@ public class TaskTemplateEntity implements TaskTemplate {
     }
 
     @Override
-    public boolean acceptParameter() {
+    public boolean canAcceptParameter() {
         return acceptParameter;
     }
 
     @Override
-    public boolean doProduceResult() {
+    public boolean canProduceResult() {
         return produceResult;
     }
 
     @Override
     public @NotNull Class<?> getClazz() {
         return clazz;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TaskTemplateEntity entity = (TaskTemplateEntity) o;
-        return name.equals(entity.name) &&
-                description.equals(entity.description) &&
-                acceptParameter.equals(entity.acceptParameter) &&
-                produceResult.equals(entity.produceResult) &&
-                clazz.equals(entity.clazz);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, acceptParameter, produceResult, clazz);
     }
 
     @Override

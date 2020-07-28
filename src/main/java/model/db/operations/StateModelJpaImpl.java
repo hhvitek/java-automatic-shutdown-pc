@@ -1,6 +1,5 @@
 package model.db.operations;
 
-import model.AbstractObservableModel;
 import model.StateModel;
 import model.db.repo.StateModelEntity;
 import model.db.repo.StateModelRepository;
@@ -49,7 +48,7 @@ public class StateModelJpaImpl extends StateModel {
         String oldSelectedTaskName = stateModelEntity.getSelectedTaskName();
         stateModelEntity.setSelectedTaskName(name);
 
-        stateModelRepository.update(stateModelEntity);
+        stateModelRepository.update(stateModelEntity); // TODO
 
         logger.debug("The new selected task: <{}> -> <{}>", oldSelectedTaskName, name);
 
@@ -66,7 +65,7 @@ public class StateModelJpaImpl extends StateModel {
         String oldSelectedTaskParameter = stateModelEntity.getSelectedTaskParameter();
         stateModelEntity.setSelectedTaskParameter(parameter);
 
-        stateModelRepository.update(stateModelEntity);
+        stateModelRepository.update(stateModelEntity); // TODO
 
         logger.debug("The new selected task parameter: <{}> -> <{}>", oldSelectedTaskParameter, parameter);
 
@@ -75,7 +74,7 @@ public class StateModelJpaImpl extends StateModel {
 
     @Override
     public @NotNull String getSelectedTaskParameter() {
-        return null;
+        return stateModelEntity.getSelectedTaskParameter();
     }
 
     @Override
@@ -83,7 +82,7 @@ public class StateModelJpaImpl extends StateModel {
         String oldTimingDurationDelay = stateModelEntity.getTimingDurationDelay();
         stateModelEntity.setTimingDurationDelay(durationDelay);
 
-        stateModelRepository.update(stateModelEntity);
+        stateModelRepository.update(stateModelEntity); // TODO
 
         logger.debug("The new timingDurationDelay: <{}> -> <{}>", oldTimingDurationDelay, durationDelay);
 
@@ -100,7 +99,7 @@ public class StateModelJpaImpl extends StateModel {
         int oldValue = stateModelEntity.getLastScheduledTaskId();
         stateModelEntity.setLastScheduledTaskId(id);
 
-        stateModelRepository.update(stateModelEntity);
+        stateModelRepository.update(stateModelEntity); // TODO
 
         firePropertyChange(LAST_SCHEDULED_TASK_CHANGED, oldValue, id);
     }

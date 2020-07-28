@@ -6,17 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ScheduledTaskRepository extends AbstractRepository<ScheduledTaskEntity> {
 
     public ScheduledTaskRepository(@NotNull EntityManager entityManager) {
-        super(entityManager);
-    }
-
-    @Override
-    public Class<ScheduledTaskEntity> getEntityClazz() {
-        return ScheduledTaskEntity.class;
+        super(entityManager, ScheduledTaskEntity.class);
     }
 
     public List<ScheduledTaskEntity> findByStatus(@NotNull ScheduledTaskStatus status) {

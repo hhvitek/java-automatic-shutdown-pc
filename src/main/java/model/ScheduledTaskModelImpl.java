@@ -3,7 +3,6 @@ package model;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ManagerTimerOperations;
 import model.scheduledtasks.PeriodicTaskUpdater;
-import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,24 +12,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of a scheduled task logic
- *     * Manages scheduled tasks - scheduling, executing, cancelling etc.
- *     * Any change to scheduled tasks should be propagated using observer pattern - {@see ModelObservableEvents}
- *       (such as: java.beans.PropertyChangeListener, java.beans.PropertyChangeSupport)
- *
- *     * Divided into two parts: user-driven and autonomous-periodic-task
- *          * user-part manages user actions
- *          * autonomous represents "countdown"/"timer" of the application
- *              * every period change state of elapsed task from SCHEDULED to ELAPSED
- *              * executes every ELAPSED task
+ * Implementation of the Scheduled task logic
+ * * Manages scheduled tasks - scheduling, executing, cancelling etc.
+ * * Any change to scheduled tasks should be propagated using observer pattern - {@see ModelObservableEvents}
+ * (such as: java.beans.PropertyChangeListener, java.beans.PropertyChangeSupport)
+ * <p>
+ * * Divided into two parts: user-driven and autonomous-periodic-task
+ * * user-part manages user actions
+ * * autonomous represents "countdown"/"timer" of the application
+ * * every period change state of elapsed task from SCHEDULED to ELAPSED
+ * * executes every ELAPSED task
  */
 public class ScheduledTaskModelImpl extends AbstractObservableModel implements PropertyChangeListener {
 
-    protected final Manager scheduledTaskManager;
+    protected final Manager manager;
     protected final PeriodicTaskUpdater periodicTaskUpdater;
 
     public ScheduledTaskModelImpl(@NotNull Manager manager, @NotNull ManagerTimerOperations managerTimerOperations) {
-        this.scheduledTaskManager = manager;
+        this.manager = manager;
         manager.addPropertyChangeListener(this);
 
         periodicTaskUpdater = new PeriodicTaskUpdater(managerTimerOperations);
@@ -46,36 +45,32 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
 
     public int scheduleTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay)
             throws TaskNotFoundException {
-        return scheduledTaskManager.scheduleTask(name, parameter, durationDelay);
-    }
-
-    public @NotNull List<ScheduledTaskMessenger> getAllScheduledTasks() {
-        return scheduledTaskManager.getAllScheduledTasks().stream()
-                .collect(Collectors.toUnmodifiableList());
+        return manager.scheduleTask(name, parameter, durationDelay);
     }
 
     public void cancelScheduledTask(int id) {
-        scheduledTaskManager.cancelScheduledTask(id);
+        manager.cancelScheduledTask(id);
     }
-
 
     public void deleteScheduledTask(int id) {
-        scheduledTaskManager.deleteScheduledTask(id);
+        manager.deleteScheduledTask(id);
     }
 
-
-    public @NotNull ScheduledTaskMessenger getScheduledTask(int id) throws ScheduledTaskNotFoundException {
-        return scheduledTaskManager.getScheduledTaskByIdThrowOnError(id);
+    public void deleteAllScheduledTasks() {
+        manager.deleteAllScheduledTasks();
     }
 
-
-    public void removeAllTasks() {
-        scheduledTaskManager.removeAllTasks();
+    public void deleteAllFinishedScheduledTasks() {
+        manager.deleteAllFinishedScheduledTasks();
     }
 
+    public @NotNull ScheduledTaskMessenger getScheduledTaskByIdThrowOnError(int id) throws ScheduledTaskNotFoundException {
+        return manager.getScheduledTaskByIdThrowOnError(id);
+    }
 
-    public void removeAllFinishedTasks() {
-        scheduledTaskManager.removeAllFinishedTasks();
+    public @NotNull List<ScheduledTaskMessenger> getAllScheduledTasks() {
+        List<? extends ScheduledTaskMessenger> base = manager.getAllScheduledTasks();
+        return (List<ScheduledTaskMessenger>) base;
     }
 
     /**

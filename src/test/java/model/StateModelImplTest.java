@@ -1,6 +1,6 @@
 package model;
 
-class StateModelImplTest extends StateModelTest{
+class StateModelImplTest extends StateModelTest {
 
     StateModelImplTest() {
         this.observer = new Observer();

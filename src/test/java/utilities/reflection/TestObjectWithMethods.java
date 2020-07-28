@@ -5,7 +5,7 @@ public class TestObjectWithMethods {
     int firstArgument;
     int secondArgument;
 
-    public TestObjectWithMethods(){
+    public TestObjectWithMethods() {
 
     }
 

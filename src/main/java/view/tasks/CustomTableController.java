@@ -1,7 +1,6 @@
-package view.scheduledtasks;
+package view.tasks;
 
 import model.ScheduledTaskMessenger;
-import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,22 +15,22 @@ import java.util.stream.Collectors;
 /**
  * Custom JTable
  */
-public class TableViewController {
+public class CustomTableController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TableViewController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomTableController.class);
 
     private final JTable table;
-    private final ScheduledTasksTableModel tableModel;
+    private final CustomTableModel tableModel;
 
-    public TableViewController(@NotNull JTable table, @NotNull List<ScheduledTaskMessenger> alreadyExistingScheduledTasks) {
+    public CustomTableController(@NotNull JTable table, @NotNull List<ScheduledTaskMessenger> alreadyExistingScheduledTasks) {
         this.table = table;
 
-        tableModel = new ScheduledTasksTableModel();
+        tableModel = new CustomTableModel();
         initializeWithInitialScheduledTasks(alreadyExistingScheduledTasks);
         table.setModel(tableModel);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment( SwingConstants.CENTER );
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         centerRenderer.setHorizontalTextPosition(SwingConstants.CENTER);
         table.setDefaultRenderer(Object.class, centerRenderer);
         table.setDefaultRenderer(Integer.class, centerRenderer);
@@ -96,7 +95,7 @@ public class TableViewController {
     public @NotNull List<Integer> getSelectedTaskIds() {
         return Arrays.stream(table.getSelectedRows())
                 .map(table::convertRowIndexToModel) // selected view indexes into model indexes
-                .mapToObj(selectedRow -> tableModel.getScheduledTaskIdByRow(selectedRow)) // model row indexes into scheduled task ids
+                .mapToObj(tableModel::getScheduledTaskIdByRow) // model row indexes into scheduled task ids
                 .collect(Collectors.toUnmodifiableList());
     }
 }

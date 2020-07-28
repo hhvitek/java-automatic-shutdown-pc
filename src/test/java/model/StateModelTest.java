@@ -3,10 +3,7 @@ package model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static model.ModelObservableEvents.SELECTED_TASKNAME_CHANGED;
-import static model.ModelObservableEvents.SELECTED_TASKPARAMETER_CHANGED;
-import static model.ModelObservableEvents.SELECTED_TIMING_DURATION_DELAY_CHANGED;
-import static model.ModelObservableEvents.LAST_SCHEDULED_TASK_CHANGED;
+import static model.ModelObservableEvents.*;
 
 public abstract class StateModelTest {
 

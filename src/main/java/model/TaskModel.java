@@ -18,8 +18,5 @@ public interface TaskModel {
      */
     @NotNull ExecutableTask getTaskByName(@NotNull String name) throws TaskNotFoundException;
 
-    /**
-     * Returns just description of executable tasks
-     */
     @NotNull List<TaskTemplate> getTaskTemplates();
 }

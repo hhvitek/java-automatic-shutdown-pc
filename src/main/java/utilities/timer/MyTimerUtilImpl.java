@@ -2,6 +2,9 @@ package utilities.timer;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tasks.ExecutableTask;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,10 +14,17 @@ import java.util.TimerTask;
  */
 public class MyTimerUtilImpl implements MyTimer {
 
+    private static final Logger logger = LoggerFactory.getLogger(MyTimer.class);
+
     private Timer timer;
 
     @Override
     public void scheduleAtFixedRate(@NotNull Runnable task, int rate) {
+        if (timer != null) {
+            logger.warn("Timer is already running. No another timer allowed.");
+            return;
+        }
+
         TimerTask timerTask = wrapRunnableInTimerTask(task);
 
         timer = new Timer();

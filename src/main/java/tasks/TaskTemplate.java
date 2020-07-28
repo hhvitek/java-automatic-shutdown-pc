@@ -7,9 +7,9 @@ public interface TaskTemplate {
 
     @NotNull String getDescription();
 
-    boolean acceptParameter();
+    boolean canAcceptParameter();
 
-    boolean doProduceResult();
+    boolean canProduceResult();
 
     @NotNull Class<?> getClazz();
 }

@@ -13,10 +13,8 @@ import tasks.ShutdownTask;
 
 import java.util.List;
 
-import static model.scheduledtasks.ScheduledTaskStatus.CREATED;
-import static model.scheduledtasks.ScheduledTaskStatus.ELAPSED;
-import static model.scheduledtasks.ScheduledTaskStatus.CANCELLED;
-import static model.ModelObservableEvents.*;
+import static model.ModelObservableEvents.SCHEDULED_TASK_STATUS_CHANGED;
+import static model.scheduledtasks.ScheduledTaskStatus.*;
 
 public abstract class ScheduledTaskTest {
 
@@ -27,7 +25,7 @@ public abstract class ScheduledTaskTest {
 
     @BeforeAll
     protected static void initStatic() {
-        List<String> taskPackageAndClassNames = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.RemainderTask");
+        List<String> taskPackageAndClassNames = List.of("tasks.ShutdownTask", "tasks.RestartTask", "tasks.ReminderTask");
         taskModel = new TaskModelImpl(taskPackageAndClassNames);
     }
 

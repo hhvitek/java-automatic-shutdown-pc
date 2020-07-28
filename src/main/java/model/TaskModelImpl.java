@@ -18,7 +18,7 @@ public class TaskModelImpl implements TaskModel {
     private final Map<String, ExecutableTask> taskMap = new LinkedHashMap<>();
 
     public TaskModelImpl(@NotNull List<String> tasksPackageAndClassName) {
-        for(String taskPackageAndClassName: tasksPackageAndClassName) {
+        for (String taskPackageAndClassName : tasksPackageAndClassName) {
             try {
                 ExecutableTask taskInstance = getTaskFromPackageAndClassName(taskPackageAndClassName);
                 taskMap.put(taskInstance.getName(), taskInstance);
@@ -31,7 +31,7 @@ public class TaskModelImpl implements TaskModel {
     private @NotNull ExecutableTask getTaskFromPackageAndClassName(@NotNull String packageAndClassName) throws TaskNotFoundException {
         ReflectionApi reflectionApi = new ReflectionApi(false, false);
         Object instance = reflectionApi.instantiateFromStringPackageNameClassName(packageAndClassName);
-        if(instance instanceof ExecutableTask) {
+        if (instance instanceof ExecutableTask) {
             return (ExecutableTask) instance;
         } else {
             throw new TaskNotFoundException(packageAndClassName + " is not ExecutableTask class.");
@@ -42,7 +42,7 @@ public class TaskModelImpl implements TaskModel {
         return taskMap.containsKey(name);
     }
 
-    public @NotNull ExecutableTask getTaskByName(@NotNull String name) throws TaskNotFoundException{
+    public @NotNull ExecutableTask getTaskByName(@NotNull String name) throws TaskNotFoundException {
         ExecutableTask task = taskMap.get(name);
         if (task != null) {
             return task;

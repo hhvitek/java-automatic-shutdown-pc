@@ -13,10 +13,10 @@ import java.util.Arrays;
 /**
  * Using Java Reflection API.
  * Helper class...
- *  * To instantiate object based on class.getName() "package.className" string representation.
- *  * To search and invoke instance's method based on method's string name.
- *
- *  Could be configured to throw ReflectionApiException on Error or/and to log errors
+ * * To instantiate object based on class.getName() "package.className" string representation.
+ * * To search and invoke instance's method based on method's string name.
+ * <p>
+ * Could be configured to throw ReflectionApiException on Error or/and to log errors
  */
 public final class ReflectionApi {
 

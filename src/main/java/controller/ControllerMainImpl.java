@@ -1,18 +1,17 @@
 package controller;
 
 import model.*;
-import model.scheduledtasks.ScheduledTask;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import view.ViewMainImpl;
-import view.scheduledtasks.ViewScheduledTasksImpl;
+import view.main.MainWindow;
+import view.tasks.TasksWindow;
 
 /**
  * Controller for user actions in the Main app window. Specifically to schedule any new ScheduledTask.
- *
+ * <p>
  * Upon user-request shows the a new window containing list of all ScheduledTasks.
  */
 public class ControllerMainImpl extends AbstractController {
@@ -22,9 +21,9 @@ public class ControllerMainImpl extends AbstractController {
     private final StateModel stateModel;
     private final ScheduledTaskModelImpl scheduledTaskModel;
 
-    private ViewMainImpl view;
-    private ViewScheduledTasksImpl taskView;
-    private ControllerScheduledTasksImpl controllerScheduledTasks;
+    private MainWindow mainView;
+    private TasksWindow taskView;
+    private final ControllerScheduledTasksImpl controllerScheduledTasks;
 
     public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModelImpl scheduledTaskModel, @NotNull ControllerScheduledTasksImpl controllerScheduledTasks) {
         this.stateModel = stateModel;
@@ -36,8 +35,8 @@ public class ControllerMainImpl extends AbstractController {
         addModel(scheduledTaskModel);
     }
 
-    public void setViews(@NotNull ViewMainImpl mainView, @NotNull ViewScheduledTasksImpl taskView) {
-        this.view = mainView;
+    public void setViews(@NotNull MainWindow mainView, @NotNull TasksWindow taskView) {
+        this.mainView = mainView;
         this.taskView = taskView;
     }
 
@@ -49,21 +48,22 @@ public class ControllerMainImpl extends AbstractController {
         try {
             int id = scheduledTaskModel.scheduleTask(taskName, taskParameter, strTimingDelay);
             stateModel.setLastScheduledTaskId(id);
-            view.showInfoMessageToUser("Scheduled task created: " + id);
+            mainView.showInfoMessageToUser("Task created: " + id);
         } catch (TaskNotFoundException t) {
-            view.showErrorMessageToUser(t.toString());
+            mainView.showErrorMessageToUser(t.toString());
         }
     }
 
     public void actionCancelLastScheduledTask() {
         int lastScheduledTaskId = stateModel.getLastScheduledTaskId();
         controllerScheduledTasks.actionCancelScheduledTaskById(lastScheduledTaskId);
+        mainView.showInfoMessageToUser("Task id: <" + lastScheduledTaskId + "> cancelled");
     }
 
     public void eventTimerTickReceived() {
         int lastScheduledTaskId = stateModel.getLastScheduledTaskId();
         try {
-            ScheduledTaskMessenger lastScheduledTask = scheduledTaskModel.getScheduledTask(lastScheduledTaskId);
+            ScheduledTaskMessenger lastScheduledTask = scheduledTaskModel.getScheduledTaskByIdThrowOnError(lastScheduledTaskId);
             refreshViewIfTaskIsInScheduledStatus(lastScheduledTask);
         } catch (ScheduledTaskNotFoundException ex) {
             // task has simply been deleted and user hasn't created a new one.
@@ -71,18 +71,18 @@ public class ControllerMainImpl extends AbstractController {
             // or database has changed since last run (scheduled task deleted but lastScheduledTaskId stayed)...
             String errorMessage = "Last eventId <{" + lastScheduledTaskId + "}> in database is old and incorrect one.";
             logger.debug(errorMessage);
-            view.showInfoMessageToUser(errorMessage);
+            mainView.showInfoMessageToUser(errorMessage);
+        }
+    }
+
+    private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {
+        if (lastScheduledTask.getStatus() == ScheduledTaskStatus.SCHEDULED) {
+            mainView.refreshLastScheduledTaskTimingCountdowns(lastScheduledTask.getWhenElapsed());
         }
     }
 
     public void actionShowScheduledTasks() {
         taskView.runAndShowScheduledTasksOverviewWindow();
-    }
-
-    private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {
-        if (lastScheduledTask.getStatus() == ScheduledTaskStatus.SCHEDULED) {
-            view.refreshLastScheduledTaskTimingCountdowns(lastScheduledTask.getWhenElapsed());
-        }
     }
 
     public void actionNewTaskSelectedByUser(@NotNull String newTaskName) {
@@ -94,7 +94,7 @@ public class ControllerMainImpl extends AbstractController {
     }
 
     public void run() {
-        view.refreshViewFromModel(stateModel);
-        view.run();
+        mainView.refreshViewFromModel(stateModel);
+        mainView.run();
     }
 }

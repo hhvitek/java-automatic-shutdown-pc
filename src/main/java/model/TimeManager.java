@@ -10,10 +10,10 @@ import java.util.Objects;
 
 /**
  * durationDelay is defined as String in the format %H:%M 13:56
- *
+ * <p>
  * Represents time remaining to the point in time. Specifically used to store Java's Instant time in future.
  * This point in time in future is determined by duration from now() to this point in time.
- *
+ * <p>
  * Minimum string value is 00:00
  */
 public final class TimeManager {
@@ -77,7 +77,7 @@ public final class TimeManager {
         try {
             convertStringDurationDelayIntoDuration(durationDelta);
             return true;
-        } catch(DateTimeException ex) {
+        } catch (DateTimeException ex) {
             return false;
         }
     }
@@ -91,7 +91,6 @@ public final class TimeManager {
     }
 
 
-
     public static @NotNull Duration howLongBeforeItElapses(@NotNull Instant pointInTime) {
         return Duration.between(
                 Instant.now(),
@@ -101,19 +100,6 @@ public final class TimeManager {
 
     public boolean hasElapsed() {
         return whenElapsedPointInTime.isBefore(Instant.now());
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        final TimeManager that = (TimeManager) obj;
-        return Objects.equals(whenElapsedPointInTime, that.whenElapsedPointInTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(whenElapsedPointInTime);
     }
 
     @Override
@@ -148,9 +134,15 @@ public final class TimeManager {
     }
 
     @Override
-    public TimeManager clone() {
-        return new TimeManager(this);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeManager that = (TimeManager) o;
+        return whenElapsedPointInTime.equals(that.whenElapsedPointInTime);
     }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(whenElapsedPointInTime);
+    }
 }

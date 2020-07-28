@@ -2,6 +2,7 @@ package model;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskNotFoundException extends RuntimeException {
@@ -13,9 +14,10 @@ public class TaskNotFoundException extends RuntimeException {
     public TaskNotFoundException(@NotNull String taskName) {
         this.taskName = taskName;
     }
+
     public TaskNotFoundException(@NotNull String taskName, @NotNull List<String> relevantTaskNames) {
         this(taskName);
-        this.relevantTaskNames = relevantTaskNames;
+        this.relevantTaskNames = new ArrayList<>(relevantTaskNames);
     }
 
     @Override

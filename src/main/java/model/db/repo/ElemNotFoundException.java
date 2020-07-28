@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ElemNotFoundException extends Exception {
 
+    private static final long serialVersionUID = 6441482060828926996L;
     private Object where;
     private Object what;
 

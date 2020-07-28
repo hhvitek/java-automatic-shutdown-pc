@@ -1,8 +1,8 @@
-package view.choosetasks;
+package view.main;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tasks.TaskTemplate;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -13,12 +13,12 @@ import java.util.Map;
 /**
  * Represents whole RadioGroup to choose tasks from.
  */
-public class TaskGroup {
+public class ChooseTaskGroup {
 
     private final ButtonGroup buttonGroupChooseTask = new ButtonGroup();
 
     // maps unique task name to radio element
-    private final Map<String, TaskElement> taskMap = new HashMap<>();
+    private final Map<String, ChooseTaskElement> taskMap = new HashMap<>();
 
     public JPanel createUIForOneTask(@NotNull TaskTemplate taskTemplate) {
         JPanel taskPanel = new JPanel();
@@ -29,7 +29,7 @@ public class TaskGroup {
         JRadioButton radioButton = createTaskRadioButton(taskPanel, taskTemplate);
         JTextField textField = createTaskParameterFieldIfTaskAcceptsParameter(taskPanel, taskTemplate);
 
-        TaskElement element = new TaskElement(radioButton, textField);
+        ChooseTaskElement element = new ChooseTaskElement(radioButton, textField);
         taskMap.put(taskTemplate.getName(), element);
 
         return taskPanel;
@@ -48,7 +48,7 @@ public class TaskGroup {
     }
 
     private @Nullable JTextField createTaskParameterFieldIfTaskAcceptsParameter(@NotNull JPanel taskPanel, @NotNull TaskTemplate taskTemplate) {
-        if (taskTemplate.acceptParameter()) {
+        if (taskTemplate.canAcceptParameter()) {
             JTextField textFieldParameter = new JTextField();
             taskPanel.add(textFieldParameter);
             return textFieldParameter;
@@ -66,7 +66,7 @@ public class TaskGroup {
 
     public void selectTaskName(@NotNull String taskName) {
         if (taskMap.containsKey(taskName)) {
-            TaskElement element = taskMap.get(taskName);
+            ChooseTaskElement element = taskMap.get(taskName);
             element.setSelected();
         }
     }
@@ -78,7 +78,7 @@ public class TaskGroup {
     public @Nullable String getSelectedTaskParameter() {
         String selectedTaskName = getSelectedTaskName();
         if (selectedTaskName != null) {
-            TaskElement element = taskMap.get(selectedTaskName);
+            ChooseTaskElement element = taskMap.get(selectedTaskName);
             return element.getTaskParameter();
         }
         return null;

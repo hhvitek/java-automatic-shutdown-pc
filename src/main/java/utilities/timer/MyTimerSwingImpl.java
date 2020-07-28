@@ -1,6 +1,8 @@
 package utilities.timer;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,10 +13,17 @@ import java.awt.event.ActionListener;
  */
 public class MyTimerSwingImpl implements MyTimer {
 
+    private static final Logger logger = LoggerFactory.getLogger(MyTimer.class);
+
     private Timer timer;
 
     @Override
     public void scheduleAtFixedRate(@NotNull Runnable task, int rate) {
+        if (timer != null) {
+            logger.warn("Timer is already running. No another timer allowed.");
+            return;
+        }
+
         ActionListener listener = wrapRunnableInActionListener(task);
 
         timer = new Timer(rate, listener);
@@ -32,7 +41,7 @@ public class MyTimerSwingImpl implements MyTimer {
 
     @Override
     public boolean isRunning() {
-        return timer != null && timer.isRunning();
+        return timer != null;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class StateModelEntity {
     }
 
     public String getSelectedTaskParameter() {
-        return selectedTaskName;
+        return selectedTaskParameter;
     }
 
     public void setSelectedTaskParameter(@NotNull String selectedTaskParameter) {

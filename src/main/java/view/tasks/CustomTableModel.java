@@ -1,35 +1,40 @@
-package view.scheduledtasks;
+package view.tasks;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Custom JTable Model
  */
-public class ScheduledTasksTableModel extends AbstractTableModel {
+public class CustomTableModel extends AbstractTableModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScheduledTasksTableModel.class);
+    private static final long serialVersionUID = 438291217388409669L;
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomTableModel.class);
 
     private static final int ID_COLUMN_INDEX = 0;
     private static final int WHEN_ELAPSED_COLUMN_INDEX = 3;
 
-    private static String[] columnNames = {
+
+    private static final String[] COLUMN_NAMES = {
             "Id", "Name", "Status", "WhenElapse", "Result"
     };
     private final List<Object[]> data;
 
-    public ScheduledTasksTableModel() {
+    public CustomTableModel() {
         data = Collections.synchronizedList(new ArrayList<>());
     }
 
     public void addScheduledTaskRow(@NotNull Object[] rowValues) {
         if (rowValues.length != getColumnCount()) {
             logger.error("Expected column count: <{}>. Actual: <{}>. Ignoring", rowValues.length, getColumnCount());
-        } else  {
+        } else {
             int id = (int) rowValues[ID_COLUMN_INDEX];
             if (isIdAlreadyInTable(id)) {
                 logger.error("Trying to insert a new row for already existing scheduled task id: <{}>! Ignoring.", id);
@@ -50,8 +55,8 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
     }
 
     private int getRowById(int id) {
-        for(int rowIndex =0; rowIndex<getRowCount(); rowIndex++) {
-            if (id == (int)getValueAt(rowIndex, ID_COLUMN_INDEX)) {
+        for (int rowIndex = 0; rowIndex < getRowCount(); rowIndex++) {
+            if (id == (int) getValueAt(rowIndex, ID_COLUMN_INDEX)) {
                 return rowIndex;
             }
         }
@@ -70,7 +75,7 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
 
     private void updateValuesIfDifferent(int rowIndex, @NotNull Object[] updated) {
         if (updated.length == getColumnCount() && rowIndex >= 0 && rowIndex <= getRowCount()) {
-            for(int i=0; i<getColumnCount(); i++) {
+            for (int i = 0; i < getColumnCount(); i++) {
                 if (data.get(rowIndex)[i] != updated[i]) {
                     setValueAt(updated[i], rowIndex, i);
                 }
@@ -94,7 +99,7 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return columnNames.length;
+        return COLUMN_NAMES.length;
     }
 
     @Override
@@ -109,14 +114,14 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
     }
 
     @Override
-    public boolean isCellEditable(int row, int col) {
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
 
     @Override
     public int findColumn(@NotNull String columnName) {
-        for(int i=0; i<columnNames.length; i++) {
-            if (columnName.equalsIgnoreCase(columnNames[i])) {
+        for (int i = 0; i < getColumnCount(); i++) {
+            if (columnName.equalsIgnoreCase(COLUMN_NAMES[i])) {
                 return i;
             }
         }
@@ -124,12 +129,12 @@ public class ScheduledTasksTableModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int col) {
-        return columnNames[col];
+    public String getColumnName(int column) {
+        return COLUMN_NAMES[column];
     }
 
     @Override
-    public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+    public Class<?> getColumnClass(int columnIndex) {
+        return getValueAt(0, columnIndex).getClass();
     }
 }

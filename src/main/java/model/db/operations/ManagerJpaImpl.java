@@ -14,7 +14,6 @@ import tasks.ExecutableTask;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ import static model.scheduledtasks.ScheduledTaskStatus.SCHEDULED;
 
 /**
  * Implementation of Manager
- * Persistence implemented
+ * Persistence implemented using Jpa persistence
  */
 public class ManagerJpaImpl extends Manager {
 
@@ -37,12 +36,12 @@ public class ManagerJpaImpl extends Manager {
     }
 
     @Override
-    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
-        if (parameter == null) {
-            return new ScheduledTaskJpaImpl(entityManager, executableTask, durationDelay);
-        } else {
-            return new ScheduledTaskJpaImpl(entityManager, executableTask, durationDelay, parameter);
-        }
+    protected @NotNull ScheduledTask instantiateNewScheduleTask(
+            @NotNull ExecutableTask executableTask,
+            @NotNull TimeManager durationDelay,
+            @Nullable String parameter)
+    {
+        return new ScheduledTaskJpaImpl(entityManager, executableTask, durationDelay, parameter);
     }
 
     @Override
@@ -50,7 +49,27 @@ public class ManagerJpaImpl extends Manager {
         // nothing to do already updated by hibernate in database
     }
 
-    private @Nullable ScheduledTask createTaskFromAlreadyExistingEntity(@NotNull ScheduledTaskEntity existingEntity) {
+    @Override
+    public void deleteAllScheduledTasks() {
+        repository.findAll()
+                .forEach(
+                        entity -> deleteScheduledTask(entity.getId())
+                );
+    }
+
+    @Override
+    public @NotNull Optional<ScheduledTask> getScheduledTaskById(int id) {
+        try {
+            ScheduledTaskEntity entity = repository.findOneById(id);
+            ScheduledTask task = createTaskFromAlreadyExistingEntity(entity);
+            return Optional.of(task);
+        } catch (ElemNotFoundException e) {
+            logger.warn("Trying to get task that doesn't exist. Id: <{}>", id);
+            return Optional.empty();
+        }
+    }
+
+    private @NotNull ScheduledTask createTaskFromAlreadyExistingEntity(@NotNull ScheduledTaskEntity existingEntity) {
         ExecutableTask executableTask = taskModel.getTaskByName(existingEntity.getTaskTemplate().getName());
         ScheduledTask task = new ScheduledTaskJpaImpl(
                 entityManager,
@@ -62,45 +81,22 @@ public class ManagerJpaImpl extends Manager {
     }
 
     @Override
-    @NotNull
-    public Optional<ScheduledTask> getScheduledTaskById(int id) {
-        try {
-            ScheduledTaskEntity entity = repository.findOneById(id);
-            ScheduledTask task = createTaskFromAlreadyExistingEntity(entity);
-            return Optional.of(task);
-        } catch (ElemNotFoundException e) {
-            logger.warn("Trying to get task that doesn't exist. Id: <{}>", id);
-            return Optional.empty();
-        }
+    public @NotNull List<ScheduledTask> getAllScheduledTasks() {
+        return repository.findAll()
+                .stream()
+                .map(this::createTaskFromAlreadyExistingEntity)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
     protected @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(@NotNull ScheduledTaskStatus status) {
         return repository.findByStatus(status)
                 .stream()
-                .map(entity -> createTaskFromAlreadyExistingEntity(entity))
-                .filter(Objects::nonNull)
+                .map(this::createTaskFromAlreadyExistingEntity)
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    @Override
-    public void removeAllTasks() {
-        repository.findAll()
-                .forEach(
-                    entity -> deleteScheduledTask(entity.getId())
-                );
-    }
-
-    @Override
-    public List<ScheduledTask> getAllScheduledTasks() {
-        return repository.findAll()
-                .stream()
-                .map(entity -> createTaskFromAlreadyExistingEntity(entity))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    //TIMER##############################################################################################################
+    //##############################ManagerTimerOperations##############################################################
 
     @Override
     public void recomputeStatusForTasksInScheduledStatus() {

@@ -2,7 +2,11 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Iterator;
 
+/**
+ * Swing utility helper methods
+ */
 public final class SwingViewUtils {
 
     private SwingViewUtils() {
@@ -13,9 +17,7 @@ public final class SwingViewUtils {
     }
 
     public static void setUIFont(javax.swing.plaf.FontUIResource f) {
-        java.util.Enumeration keys = UIManager.getDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
+        for (Object key : UIManager.getDefaults().keySet()) {
             Object value = UIManager.get(key);
             if (value instanceof javax.swing.plaf.FontUIResource)
                 UIManager.put(key, f);
@@ -27,7 +29,7 @@ public final class SwingViewUtils {
             @Override
             public void run() {
                 frame.pack();
-                SwingViewUtils.setCenteredToGoldenRatio(frame);
+                setCenteredToGoldenRatio(frame);
                 frame.setVisible(true);
             }
         });

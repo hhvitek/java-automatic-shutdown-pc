@@ -3,7 +3,6 @@ package utilities.reflection;
 public class ReflectionApiException extends RuntimeException {
 
 
-
     public ReflectionApiException(String message) {
         super(message);
     }

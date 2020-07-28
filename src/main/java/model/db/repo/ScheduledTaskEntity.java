@@ -3,7 +3,6 @@ package model.db.repo;
 import model.TimeManager;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.TaskTemplate;
@@ -20,10 +19,9 @@ public class ScheduledTaskEntity {
 
     @Id
     @GeneratedValue
-    @SequenceGenerator(name = "sequence_generator", allocationSize = 1)
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_task_template", nullable = false)
     private TaskTemplateEntity taskTemplate;
 
@@ -47,10 +45,10 @@ public class ScheduledTaskEntity {
     }
 
     public ScheduledTaskEntity(@NotNull TaskTemplateEntity entity, @NotNull TimeManager whenElapsed) {
-        this.taskTemplate = entity;
+        taskTemplate = entity;
         instant = whenElapsed.getWhenElapsedPointInTime();
 
-        logger.info("The new task has been created: <{}>.", this);
+        logger.debug("The new task has been created: <{}>.", this);
     }
 
     public ScheduledTaskEntity(@NotNull TaskTemplateEntity task, @NotNull TimeManager whenElapsed, @NotNull String parameter) {
@@ -101,25 +99,6 @@ public class ScheduledTaskEntity {
 
     public void setStatus(@NotNull ScheduledTaskStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ScheduledTaskEntity that = (ScheduledTaskEntity) o;
-        return Objects.equals(id, that.id) &&
-                taskTemplate.equals(that.taskTemplate) &&
-                instant.equals(that.instant) &&
-                Objects.equals(parameter, that.parameter) &&
-                Objects.equals(output, that.output) &&
-                Objects.equals(errorMessage, that.errorMessage) &&
-                status == that.status;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, taskTemplate, instant, parameter, output, errorMessage, status);
     }
 
     @Override

@@ -1,17 +1,14 @@
-package view.scheduledtasks;
+package view.tasks;
 
 import controller.ControllerScheduledTasksImpl;
 import model.ModelObservableEvents;
 import model.ScheduledTaskMessenger;
-import model.scheduledtasks.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import view.AbstractView;
-import view.SwingViewUtils;
+import view.AbstractWindow;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -22,7 +19,7 @@ import java.util.List;
  * both View and Controller for this frame
  * Uses JTable
  */
-public class ViewScheduledTasksImpl extends AbstractView {
+public class TasksWindow extends AbstractWindow {
     private JPanel panelGui;
     private JPanel panelControls;
     private JTable tableScheduledTasks;
@@ -31,45 +28,42 @@ public class ViewScheduledTasksImpl extends AbstractView {
     private JButton buttonCancelSelected;
     private JScrollPane panelScrollTable;
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewScheduledTasksImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(TasksWindow.class);
 
-    private final JFrame guiFrame;
+    private final CustomTableController tableController;
 
-    private final TableViewController scheduledActions;
+    public TasksWindow(@NotNull ControllerScheduledTasksImpl controller,
+                       @NotNull List<ScheduledTaskMessenger> initialAlreadyExistingTasks) {
+        super(controller,new JFrame("Načasované akce"));
 
-    public ViewScheduledTasksImpl(@NotNull ControllerScheduledTasksImpl controller,
-                                  @NotNull List<ScheduledTaskMessenger> initialAlreadyExistingTasks) {
-        super(controller);
-
-        guiFrame = new JFrame("Načasované akce");
         guiFrame.setContentPane(panelGui);
-        guiFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        guiFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-        scheduledActions = new TableViewController(tableScheduledTasks, initialAlreadyExistingTasks);
+        tableController = new CustomTableController(tableScheduledTasks, initialAlreadyExistingTasks);
 
         buttonRemoveFinished.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.actionRemoveAllFinishedTasks();
+            public void actionPerformed(ActionEvent actionEvent) {
+                controller.actionDeleteAllFinishedScheduledTasks();
             }
         });
         buttonRemoveAll.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.actionRemoveAllTasks();
+            public void actionPerformed(ActionEvent actionEvent) {
+                controller.actionDeleteAllScheduledTasks();
             }
         });
         buttonCancelSelected.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                List<Integer> selectedTasks = scheduledActions.getSelectedTaskIds();
+            public void actionPerformed(ActionEvent actionEvent) {
+                List<Integer> selectedTasks = tableController.getSelectedTaskIds();
                 controller.actionCancelSelectedTasks(selectedTasks);
             }
         });
     }
 
     public void runAndShowScheduledTasksOverviewWindow() {
-        SwingViewUtils.runAndShowWindow(guiFrame);
+        run();
     }
 
     @Override
@@ -80,19 +74,19 @@ public class ViewScheduledTasksImpl extends AbstractView {
         switch (ModelObservableEvents.valueOf(propertyName)) {
             case SCHEDULED_TASK_CREATED: {
                 ScheduledTaskMessenger newTask = (ScheduledTaskMessenger) evt.getNewValue();
-                scheduledActions.createUIForOneScheduledTask(newTask);
+                tableController.createUIForOneScheduledTask(newTask);
                 break;
             }
             case SCHEDULED_TASK_STATUS_CHANGED:
             case SCHEDULED_TASK_FINISHED:
             case SCHEDULED_TASK_FINISHED_WITH_ERRORS: {
                 ScheduledTaskMessenger updatedTask = (ScheduledTaskMessenger) evt.getNewValue();
-                scheduledActions.updateUIForOneScheduledTask(updatedTask);
+                tableController.updateUIForOneScheduledTask(updatedTask);
                 break;
             }
             case TIMER_TICK: {
                 List<ScheduledTaskMessenger> scheduledTasks = (List<ScheduledTaskMessenger>) evt.getNewValue();
-                scheduledActions.updateUIWhenElapsedForTasks(scheduledTasks);
+                tableController.updateUIWhenElapsedForTasks(scheduledTasks);
                 break;
             }
         }

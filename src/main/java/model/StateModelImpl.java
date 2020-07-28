@@ -18,7 +18,7 @@ public class StateModelImpl extends StateModel {
     // data in ui
     private String selectedTaskName = "";
     private String selectedTaskParameter = "";
-    private String timingDurationDelay = "01:00";
+    private String timingDurationDelay;
     private int lastScheduledTaskId;
 
 

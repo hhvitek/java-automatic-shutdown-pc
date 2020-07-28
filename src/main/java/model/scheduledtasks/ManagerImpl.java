@@ -26,7 +26,11 @@ public class ManagerImpl extends Manager {
     }
 
     @Override
-    protected ScheduledTask instantiateNewScheduleTask(@NotNull ExecutableTask executableTask, @NotNull TimeManager durationDelay, @Nullable String parameter) {
+    protected @NotNull ScheduledTask instantiateNewScheduleTask(
+            @NotNull ExecutableTask executableTask,
+            @NotNull TimeManager durationDelay,
+            @Nullable String parameter)
+    {
         if (parameter == null) {
             return new ScheduledTaskImpl(executableTask, durationDelay);
         } else {
@@ -40,39 +44,37 @@ public class ManagerImpl extends Manager {
     }
 
     @Override
-    @NotNull
-    public Optional<ScheduledTask> getScheduledTaskById(int id) {
-        return scheduledTasks.stream()
-                .filter(scheduledTask -> scheduledTask.getId() == id)
-                .findAny();
-    }
-
-    @Override
-    protected  @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(@NotNull ScheduledTaskStatus status) {
-        return scheduledTasks.stream()
-                .filter(scheduledTask -> scheduledTask.getStatus() == status)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    @Override
-    public void removeAllTasks() {
+    public void deleteAllScheduledTasks() {
         scheduledTasks.forEach(
                 scheduledTask -> deleteScheduledTask(scheduledTask.getId())
         );
     }
 
     @Override
-    public List<ScheduledTask> getAllScheduledTasks() {
+    public @NotNull Optional<ScheduledTask> getScheduledTaskById(int id) {
+        return scheduledTasks.stream()
+                .filter(scheduledTask -> scheduledTask.getId() == id)
+                .findAny();
+    }
+
+    @Override
+    public @NotNull List<ScheduledTask> getAllScheduledTasks() {
         return scheduledTasks.stream().collect(Collectors.toUnmodifiableList());
     }
 
-    //TIMER#####################
+    @Override
+    protected @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(@NotNull ScheduledTaskStatus status) {
+        return scheduledTasks.stream()
+                .filter(scheduledTask -> scheduledTask.getStatus() == status)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    //##############################ManagerTimerOperations##############################################################
+
     @Override
     public void recomputeStatusForTasksInScheduledStatus() {
         scheduledTasks.forEach(
                 ScheduledTask::recomputeStatusIfTaskHasElapsedChangeIntoElapsedStatus
         );
     }
-
-
 }

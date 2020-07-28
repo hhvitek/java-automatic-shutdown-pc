@@ -9,7 +9,7 @@ public enum ScheduledTaskStatus {
     CREATED, // just been created
     SCHEDULED, // created and sleeping
     ELAPSED, // now > task whenElapsed, waiting to be executed
-    RUNNING, // executed and still running
+    RUNNING, // executed and still running TODO
     EXECUTED_SUCCESS, // finished successfully
     EXECUTED_ERROR, // finished with errors
     CANCELLED, // cancelled by user

@@ -1,7 +1,7 @@
-package view.choosetasks;
+package view.main;
 
-import tasks.TaskTemplate;
 import org.jetbrains.annotations.NotNull;
+import tasks.TaskTemplate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,20 +9,20 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 
-public class TaskUI {
+public class ChooseTaskUI {
 
     private final JPanel uiContainerPanel = new JPanel();
 
-    private final TaskGroup taskGroup = new TaskGroup();
+    private final ChooseTaskGroup taskGroup = new ChooseTaskGroup();
 
-    public TaskUI() {
+    public ChooseTaskUI() {
         uiContainerPanel.setLayout(
                 new GridLayout(0, 1)
         );
     }
 
     public JPanel createUIChooseTask(@NotNull List<TaskTemplate> tasks) {
-        for (TaskTemplate taskTemplate: tasks) {
+        for (TaskTemplate taskTemplate : tasks) {
             JPanel taskPanel = taskGroup.createUIForOneTask(taskTemplate);
             uiContainerPanel.add(taskPanel);
         }

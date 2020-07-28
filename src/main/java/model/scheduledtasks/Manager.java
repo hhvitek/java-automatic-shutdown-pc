@@ -1,7 +1,6 @@
 package model.scheduledtasks;
 
 import model.*;
-import org.dom4j.rule.Mode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -22,15 +21,15 @@ import static model.scheduledtasks.ScheduledTaskStatus.*;
  * !!!
  * !!! Provides interface to existing ScheduledTasks - ManagerTimerOperations,
  * !!!  it's expected that SOMEONE other shall periodically use this interface
- * !!!  to change ScheduledTasks state and executes them accordingly.
+ * !!!  to check on and change ScheduledTasks state and executes them accordingly.
  * !!!
- *
+ * <p>
  * This class is itself observable and in turn observer to scheduled tasks it manages
- *
+ * <p>
  * Scheduled tasks produce events in their lifetime. This manager listens to those events and propagate them to it's
  * observers.
  */
-abstract public class Manager extends AbstractObservableModel implements ManagerTimerOperations,PropertyChangeListener {
+public abstract class Manager extends AbstractObservableModel implements ManagerTimerOperations, PropertyChangeListener {
 
     protected static final Logger logger = LoggerFactory.getLogger(Manager.class);
 
@@ -38,15 +37,13 @@ abstract public class Manager extends AbstractObservableModel implements Manager
 
     protected Manager(@NotNull TaskModel taskModel) {
         this.taskModel = taskModel;
-
-        //TODO startTimer must be called in children at the end of the constructors after every object was created
     }
 
     /**
-     * @param name the name of a task to schedule. If task not exist throws exception.
-     * @param parameter the parameter for a task to schedule, may be null as no parameter
+     * @param name          the name of a task to schedule. If task does not exist, it throws exception.
+     * @param parameter     the parameter for a task to schedule, may be null as no parameter
      * @param durationDelay when to schedule task from now() in the format %H:%M 01:00
-     * @return scheduled task unique identification
+     * @return scheduled task's unique identification
      * @throws TaskNotFoundException if no task is found.
      */
     public int scheduleTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay)
@@ -55,7 +52,7 @@ abstract public class Manager extends AbstractObservableModel implements Manager
         return scheduledTask.getId();
     }
 
-    protected @NotNull ScheduledTask createScheduleTask(
+    private @NotNull ScheduledTask createScheduleTask(
             @NotNull String name,
             @Nullable String parameter,
             @NotNull String durationDelay) throws TaskNotFoundException {
@@ -72,7 +69,7 @@ abstract public class Manager extends AbstractObservableModel implements Manager
         return scheduledTask;
     }
 
-    protected abstract ScheduledTask instantiateNewScheduleTask(
+    protected abstract @NotNull ScheduledTask instantiateNewScheduleTask(
             @NotNull ExecutableTask executableTask,
             @NotNull TimeManager durationDelay,
             @Nullable String parameter
@@ -84,40 +81,39 @@ abstract public class Manager extends AbstractObservableModel implements Manager
         setScheduledTaskStatus(id, CANCELLED);
     }
 
+    private void setScheduledTaskStatus(int id, @NotNull ScheduledTaskStatus newStatus) {
+        Optional<ScheduledTask> scheduledTaskOpt = getScheduledTaskById(id);
+        scheduledTaskOpt.ifPresent(scheduledTask -> scheduledTask.setStatusIfPossible(newStatus));
+    }
+
     public void deleteScheduledTask(int id) {
         setScheduledTaskStatus(id, DELETED);
     }
 
-    public void removeAllFinishedTasks() {
+    public void deleteAllFinishedScheduledTasks() {
         getAllScheduledTasksByStatus(EXECUTED_SUCCESS).forEach(
                 scheduledTask -> deleteScheduledTask(scheduledTask.getId())
         );
     }
 
-    protected void setScheduledTaskStatus(int id, @NotNull ScheduledTaskStatus newStatus) {
-        Optional<ScheduledTask> scheduledTaskOpt = getScheduledTaskById(id);
-        scheduledTaskOpt.ifPresent(scheduledTask -> scheduledTask.setStatusIfPossible(newStatus));
-    }
+    public abstract void deleteAllScheduledTasks();
 
-    public abstract  @NotNull Optional<ScheduledTask> getScheduledTaskById(int id);
+    public abstract @NotNull Optional<ScheduledTask> getScheduledTaskById(int id);
 
     public @NotNull ScheduledTask getScheduledTaskByIdThrowOnError(int id) throws ScheduledTaskNotFoundException {
         return getScheduledTaskById(id)
                 .orElseThrow(() -> new ScheduledTaskNotFoundException(id));
     }
 
-    public abstract void removeAllTasks();
+    public abstract @NotNull List<ScheduledTask> getAllScheduledTasks();
 
-    public abstract List<ScheduledTask> getAllScheduledTasks();
+    protected abstract @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(ScheduledTaskStatus elapsed);
 
-    @Override
-    public abstract void recomputeStatusForTasksInScheduledStatus();
-
-    protected abstract List<ScheduledTask> getAllScheduledTasksByStatus(ScheduledTaskStatus elapsed);
+    //##############################ManagerTimerOperations##############################################################
 
     @Override
     public void executeElapsedScheduledTasks() {
-        for(ScheduledTask task: getAllTasksInElapsedStatus()) {
+        for (ScheduledTask task : getAllTasksInElapsedStatus()) {
             try {
                 task.execute();
             } catch (TaskException e) {
@@ -126,7 +122,7 @@ abstract public class Manager extends AbstractObservableModel implements Manager
         }
     }
 
-    private List<ScheduledTask> getAllTasksInElapsedStatus() {
+    private @NotNull List<ScheduledTask> getAllTasksInElapsedStatus() {
         return getAllScheduledTasksByStatus(ELAPSED);
     }
 
@@ -135,9 +131,8 @@ abstract public class Manager extends AbstractObservableModel implements Manager
         return getAllScheduledTasksByStatus(SCHEDULED);
     }
 
-    /**
-     * Propagate events from scheduled tasks
-     */
+    //##############################Propagate events from ScheduledTasks################################################
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(

@@ -2,10 +2,8 @@ package controller;
 
 import model.AbstractObservableModel;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utilities.reflection.ReflectionApi;
-import view.AbstractView;
+import view.AbstractWindow;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -13,15 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * It's listener for any events in Models. Propagate those events to Views.
+ * It's a listener for any events in Models. Propagate those events to Views.
  */
 public abstract class AbstractController implements PropertyChangeListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractController.class);
     private final ReflectionApi reflectionApi;
 
-    protected final List<AbstractView> registeredViews;
-    protected final List<AbstractObservableModel> registeredModels;
+    private final List<AbstractWindow> registeredViews;
+    private final List<AbstractObservableModel> registeredModels;
 
     protected AbstractController() {
         reflectionApi = new ReflectionApi(false, false);
@@ -40,20 +37,20 @@ public abstract class AbstractController implements PropertyChangeListener {
         model.removePropertyChangeListener(this);
     }
 
-    public void addView(@NotNull AbstractView view) {
+    public void addView(@NotNull AbstractWindow view) {
         registeredViews.add(view);
     }
 
-    public void removeView(@NotNull AbstractView view) {
+    public void removeView(@NotNull AbstractWindow view) {
         registeredViews.remove(view);
     }
 
-
     //  Use this to observe property changes from registered models
     //  and propagate them on to all the views.
-    public void propertyChange(PropertyChangeEvent evt) {
-        for (AbstractView view : registeredViews) {
-            view.modelPropertyChange(evt);
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        for (AbstractWindow view : registeredViews) {
+            view.modelPropertyChange(propertyChangeEvent);
         }
     }
 
@@ -70,10 +67,8 @@ public abstract class AbstractController implements PropertyChangeListener {
     }
 
     protected void viewInvokeMethod(@NotNull String methodName, Object... optionalMethodParameters) {
-        for (AbstractView view: registeredViews) {
+        for (AbstractWindow view : registeredViews) {
             reflectionApi.invokeMethodWithParameters(view, methodName, optionalMethodParameters);
         }
     }
-
-
 }

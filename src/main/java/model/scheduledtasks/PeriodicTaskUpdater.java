@@ -10,10 +10,10 @@ import java.util.List;
 
 /**
  * This is the SOMEONE mentioned in Manager class.
- *
- * Periodically executed timerTick() method that
- *      * changes status of elapsed ScheduledTasks from SCHEDULED to ELAPSED
- *      * executes all ELAPSED tasks.
+ * <p>
+ * Periodically executed timerTick() method that:
+ * * changes status of elapsed ScheduledTasks from SCHEDULED to ELAPSED
+ * * executes all ELAPSED tasks.
  */
 public class PeriodicTaskUpdater extends AbstractObservableModel {
 
@@ -24,7 +24,7 @@ public class PeriodicTaskUpdater extends AbstractObservableModel {
 
     public PeriodicTaskUpdater(@NotNull ManagerTimerOperations manager) {
         this.manager = manager;
-        this.timer = new MyTimerUtilImpl();
+        timer = new MyTimerUtilImpl();
     }
 
     public void startTimer() {

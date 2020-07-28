@@ -2,13 +2,9 @@ package model.scheduledtasks;
 
 import model.Observer;
 import model.ScheduledTaskMessenger;
-import model.TimeManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.ExecutableTask;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +19,13 @@ public abstract class ManagerTest {
     protected Observer observer;
     protected int shutdownId;
     protected int restartId;
-    protected int remainderId;
+    protected int reminderId;
 
     @BeforeEach
     public void init() {
         shutdownId = manager.scheduleTask("Shutdown", null, "01:30");
         restartId = manager.scheduleTask("Restart", null, "02:30");
-        remainderId = manager.scheduleTask("Remainder", "this is a parameter", "03:30");
+        reminderId = manager.scheduleTask("Reminder", "this is a parameter", "03:30");
 
         observer = new Observer();
         manager.addPropertyChangeListener(observer);

@@ -97,22 +97,6 @@ class TimeManagerTest {
         time1.setWhenElapsedUsingDurationDelay("14:30");
 
         Assertions.assertEquals(time2, time1);
-
-
-    }
-
-    @Test
-    void copyDeepTest() {
-        String duratioDelay = "02:30";
-        TimeManager time1 = new TimeManager(duratioDelay);
-        TimeManager time2 = time1.clone();
-
-        Assertions.assertEquals(time2, time1);
-
-        // changes only one variable, two objects exist
-        time1.setWhenElapsedUsingDurationDelay("22:30");
-
-        Assertions.assertNotEquals(time2, time1);
     }
 
 }
