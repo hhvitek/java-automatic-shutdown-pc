@@ -10,6 +10,7 @@ import view.SwingViewUtils;
 import view.tasks.TasksWindow;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class Main {
         logger.info("************STARTING configuration*************");
 
         SwingViewUtils.setLookAndFeelToSystemDefault();
-        SwingViewUtils.setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
+        SwingViewUtils.setDefaultFont();
+        //SwingViewUtils.setUIFont(new FontUIResource("Segoe UI", Font.PLAIN, 16));
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
         StateModel stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);

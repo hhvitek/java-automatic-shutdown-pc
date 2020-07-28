@@ -1,12 +1,10 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.util.Iterator;
+import java.util.Enumeration;
 
-/**
- * Swing utility helper methods
- */
 public final class SwingViewUtils {
 
     private SwingViewUtils() {
@@ -16,10 +14,16 @@ public final class SwingViewUtils {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
 
-    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
-        for (Object key : UIManager.getDefaults().keySet()) {
+    public static void setDefaultFont() {
+        setUIFont(new FontUIResource(null, Font.PLAIN, 16));
+    }
+
+    public static void setUIFont(FontUIResource f) {
+        Enumeration<Object> keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
             Object value = UIManager.get(key);
-            if (value instanceof javax.swing.plaf.FontUIResource)
+            if (value instanceof FontUIResource)
                 UIManager.put(key, f);
         }
     }
