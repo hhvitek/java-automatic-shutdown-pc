@@ -1,6 +1,7 @@
 package model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of a dynamic part of the application excluding ScheduledTasks.
@@ -25,5 +26,14 @@ public abstract class StateModel extends AbstractObservableModel {
     public abstract void setLastScheduledTaskId(int id);
 
     public abstract int getLastScheduledTaskId();
+
+    public void setSelectedTaskNameAndParameter(@NotNull String taskName, @Nullable String taskParameter) {
+        setSelectedTaskName(taskName);
+        if (taskParameter == null) {
+            setSelectedTaskParameter("");
+        } else {
+            setSelectedTaskParameter(taskParameter);
+        }
+    }
 
 }

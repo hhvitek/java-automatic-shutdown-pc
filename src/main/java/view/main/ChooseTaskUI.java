@@ -1,6 +1,7 @@
 package view.main;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tasks.TaskTemplate;
 
 import javax.swing.*;
@@ -31,8 +32,12 @@ public class ChooseTaskUI {
         return uiContainerPanel;
     }
 
-    public void addActionListener(@NotNull ActionListener listener) {
-        taskGroup.addActionListener(listener);
+    public void addActionListenerOnNewTaskSelected(@NotNull ActionListener listener) {
+        taskGroup.addActionListenerOnNewTaskSelected(listener);
+    }
+
+    public void addActionListenerOnTaskParameterChanged(@NotNull ActionListener listener) {
+        taskGroup.addActionListenerOnTaskParameterChanged(listener);
     }
 
     public String getSelectedTaskName() {
@@ -41,6 +46,10 @@ public class ChooseTaskUI {
 
     public String getSelectedTaskParameter() {
         return taskGroup.getSelectedTaskParameter();
+    }
+
+    public void setSelectedTaskParameter(@Nullable String taskParameter) {
+        taskGroup.setSelectedTaskParameter(taskParameter);
     }
 
     public void setSelectedTaskName(@NotNull String taskName) {

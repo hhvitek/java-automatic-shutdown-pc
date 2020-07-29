@@ -38,4 +38,12 @@ public class ControllerScheduledTasksImpl extends AbstractController {
     public void actionDeleteAllScheduledTasks() {
         scheduledTaskModel.deleteAllScheduledTasks();
     }
+
+    public void actionTimerTick_RefreshTaskView() {
+        viewInvokeMethod("refreshScheduledTasksTimingCountdowns");
+    }
+
+    public void actionExitByUser() {
+        viewInvokeMethod("stopAndClean");
+    }
 }

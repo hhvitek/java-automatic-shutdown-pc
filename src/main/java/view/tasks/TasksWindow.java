@@ -6,6 +6,7 @@ import model.ScheduledTaskMessenger;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.AbstractTimedWindow;
 import view.AbstractWindow;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ import java.util.List;
  * both View and Controller for this frame
  * Uses JTable
  */
-public class TasksWindow extends AbstractWindow {
+public class TasksWindow extends AbstractTimedWindow {
     private JPanel panelGui;
     private JPanel panelControls;
     private JTable tableScheduledTasks;
@@ -30,11 +31,14 @@ public class TasksWindow extends AbstractWindow {
 
     private static final Logger logger = LoggerFactory.getLogger(TasksWindow.class);
 
+    private final ControllerScheduledTasksImpl scheduledTaskController;
     private final CustomTableController tableController;
 
     public TasksWindow(@NotNull ControllerScheduledTasksImpl controller,
                        @NotNull List<ScheduledTaskMessenger> initialAlreadyExistingTasks) {
         super(controller,new JFrame("Načasované akce"));
+
+        scheduledTaskController = controller;
 
         guiFrame.setContentPane(panelGui);
         guiFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
@@ -67,6 +71,15 @@ public class TasksWindow extends AbstractWindow {
     }
 
     @Override
+    protected void timerTick() {
+        scheduledTaskController.actionTimerTick_RefreshTaskView();
+    }
+
+    public void refreshScheduledTasksTimingCountdowns() {
+        tableController.refreshTimingCountDowns();
+    }
+
+    @Override
     public void modelPropertyChange(PropertyChangeEvent evt) {
         String propertyName = evt.getPropertyName();
 
@@ -84,11 +97,8 @@ public class TasksWindow extends AbstractWindow {
                 tableController.updateUIForOneScheduledTask(updatedTask);
                 break;
             }
-            case TIMER_TICK: {
-                List<ScheduledTaskMessenger> scheduledTasks = (List<ScheduledTaskMessenger>) evt.getNewValue();
-                tableController.updateUIWhenElapsedForTasks(scheduledTasks);
-                break;
-            }
         }
     }
+
+
 }

@@ -4,6 +4,8 @@ import controller.AbstractController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 
 /**
@@ -13,11 +15,12 @@ public abstract class AbstractWindow {
 
     protected final AbstractController controller;
 
-    protected JFrame guiFrame;
+    protected final JFrame guiFrame;
 
     protected AbstractWindow(@NotNull AbstractController controller, @NotNull JFrame guiFrame) {
         this.controller = controller;
         this.guiFrame = guiFrame;
+
         controller.addView(this);
     }
 

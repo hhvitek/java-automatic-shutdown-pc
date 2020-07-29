@@ -3,10 +3,10 @@
   <grid id="27dc6" binding="panelGui" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="400" height="500"/>
+      <xy x="20" y="20" width="322" height="378"/>
     </constraints>
     <properties>
-      <minimumSize width="375" height="500"/>
+      <minimumSize width="-1" height="-1"/>
       <preferredSize width="375" height="500"/>
     </properties>
     <border type="none"/>
@@ -162,7 +162,7 @@
           </component>
           <hspacer id="cedc6">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
           <component id="eb303" class="javax.swing.JButton" binding="buttonCancel">
@@ -202,21 +202,35 @@
       <grid id="71550" binding="panelStatusbar" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="true"/>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="true"/>
         </constraints>
         <properties/>
         <border type="etched" title="StatusBar">
           <font size="16"/>
         </border>
         <children>
-          <component id="d300c" class="javax.swing.JLabel" binding="labelStatusbar">
+          <scrollpane id="7501" binding="scrollPaneStatusbar">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="StatusBar"/>
+              <horizontalScrollBarPolicy value="31"/>
+              <verticalScrollBarPolicy value="21"/>
             </properties>
-          </component>
+            <border type="none"/>
+            <children>
+              <component id="cda37" class="javax.swing.JLabel" binding="labelStatusBar">
+                <constraints/>
+                <properties>
+                  <horizontalAlignment value="2"/>
+                  <horizontalTextPosition value="2"/>
+                  <text value="Načasujte akci."/>
+                  <verticalAlignment value="0"/>
+                  <verticalTextPosition value="0"/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
         </children>
       </grid>
     </children>

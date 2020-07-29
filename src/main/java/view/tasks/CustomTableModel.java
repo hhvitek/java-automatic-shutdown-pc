@@ -1,6 +1,9 @@
 package view.tasks;
 
+import model.TimeManager;
+import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +11,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Custom JTable Model
@@ -19,11 +23,13 @@ public class CustomTableModel extends AbstractTableModel {
     private static final Logger logger = LoggerFactory.getLogger(CustomTableModel.class);
 
     private static final int ID_COLUMN_INDEX = 0;
+    private static final int STATUS_COLUMN_INDEX = 2;
     private static final int WHEN_ELAPSED_COLUMN_INDEX = 3;
+    private static final int HIDDEN_TIME_MANAGER_COLUMN_INDEX = 5;
 
 
     private static final String[] COLUMN_NAMES = {
-            "Id", "Name", "Status", "WhenElapse", "Result"
+            "Id", "Name", "Status", "WhenElapse", "Result", "HiddenTimeManager"
     };
     private final List<Object[]> data;
 
@@ -90,6 +96,28 @@ public class CustomTableModel extends AbstractTableModel {
         } else {
             logger.error("Trying to update task id: <{}> that is not in table yet. Ignoring", id);
         }
+    }
+
+    public void refreshTimingCountDowns() {
+        synchronized (data) {
+            data.forEach(
+                this::refreshTimingIfScheduledStatus
+            );
+        }
+    }
+
+    private void refreshTimingIfScheduledStatus(@NotNull Object[] row) {
+        ScheduledTaskStatus status = (ScheduledTaskStatus) row[STATUS_COLUMN_INDEX];
+        if (status == ScheduledTaskStatus.SCHEDULED) {
+            refreshTiming(row);
+        }
+    }
+
+    private void refreshTiming(@NotNull Object[] row) {
+        int scheduledTaskId = (Integer) row[ID_COLUMN_INDEX];
+        TimeManager timeManager = (TimeManager) row[HIDDEN_TIME_MANAGER_COLUMN_INDEX];
+        String newWhenElapse = timeManager.getRemainingDurationInHHMMSS_ifElapsedZeros();
+        setValueAt(newWhenElapse, getRowById(scheduledTaskId), WHEN_ELAPSED_COLUMN_INDEX);
     }
 
     @Override

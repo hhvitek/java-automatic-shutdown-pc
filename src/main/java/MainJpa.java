@@ -22,17 +22,19 @@ public class MainJpa {
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("my-sqlite");
 
+    private static final AbstractEntityManagerFactory entityManagerFactory = new SqliteEntityManagerFactoryImpl(ENTITY_MANAGER_FACTORY);
+
+    private static final EntityManager appEntityManager = entityManagerFactory.createEntityManager();
+
+    private static final EntityManager periodicModelTimerEntityManager = entityManagerFactory.createEntityManager();
+
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         Main.logger.info("STARTING JPA");
 
         SwingViewUtils.setLookAndFeelToSystemDefault();
-        SwingViewUtils.setUIFont(new javax.swing.plaf.FontUIResource("Segoe UI", Font.PLAIN, 16));
+        SwingViewUtils.setDefaultFont();
 
         TaskModel taskModel = new TaskModelImpl(Main.ACTIVE_TASKS);
-
-        AbstractEntityManagerFactory entityManagerFactory = new SqliteEntityManagerFactoryImpl(ENTITY_MANAGER_FACTORY);
-        EntityManager appEntityManager = entityManagerFactory.createEntityManager();
-        EntityManager periodicModelTimerEntityManager = entityManagerFactory.createEntityManager();
 
         StateModel stateModel = new StateModelJpaImpl(appEntityManager, Main.DEFAULT_AFTERDELTA, Main.DEFAULT_TASK);
 
@@ -41,7 +43,20 @@ public class MainJpa {
 
         Main.executeCommon(taskModel, stateModel, userManager, periodicManager);
 
-        Main.logger.info("FINISHED");
+        addShutdownHooks();
+        Main.logger.info("FINISHED initialization");
+    }
+
+    public static void addShutdownHooks() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run()
+            {
+                Main.logger.info("EXITING application");
+                periodicModelTimerEntityManager.close();
+                appEntityManager.close();
+                ENTITY_MANAGER_FACTORY.close();
+            }
+        });
     }
 
 

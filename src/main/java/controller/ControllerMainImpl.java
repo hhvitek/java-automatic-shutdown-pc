@@ -42,6 +42,8 @@ public class ControllerMainImpl extends AbstractController {
 
     public void actionExitByUser() {
         logger.warn("Action EXIT requested by user");
+        scheduledTaskModel.stopTimerAndCleanResources();
+        System.exit(0);
     }
 
     public void actionNewTaskScheduledByUser(@NotNull String taskName, @NotNull String strTimingDelay, @Nullable String taskParameter) {
@@ -60,11 +62,11 @@ public class ControllerMainImpl extends AbstractController {
         mainView.showInfoMessageToUser("Task id: <" + lastScheduledTaskId + "> cancelled");
     }
 
-    public void eventTimerTickReceived() {
+    public void actionTimerTick_RefreshMainView() {
         int lastScheduledTaskId = stateModel.getLastScheduledTaskId();
         try {
             ScheduledTaskMessenger lastScheduledTask = scheduledTaskModel.getScheduledTaskByIdThrowOnError(lastScheduledTaskId);
-            refreshViewIfTaskIsInScheduledStatus(lastScheduledTask);
+            refreshMainViewIfTaskIsInScheduledStatus(lastScheduledTask);
         } catch (ScheduledTaskNotFoundException ex) {
             // task has simply been deleted and user hasn't created a new one.
             // or no task has ever been scheduled so far...
@@ -75,7 +77,7 @@ public class ControllerMainImpl extends AbstractController {
         }
     }
 
-    private void refreshViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {
+    private void refreshMainViewIfTaskIsInScheduledStatus(@NotNull ScheduledTaskMessenger lastScheduledTask) {
         if (lastScheduledTask.getStatus() == ScheduledTaskStatus.SCHEDULED) {
             mainView.refreshLastScheduledTaskTimingCountdowns(lastScheduledTask.getWhenElapsed());
         }
@@ -85,8 +87,11 @@ public class ControllerMainImpl extends AbstractController {
         taskView.runAndShowScheduledTasksOverviewWindow();
     }
 
-    public void actionNewTaskSelectedByUser(@NotNull String newTaskName) {
-        modelInvokeMethodWithParameters("setSelectedTaskName", newTaskName);
+    public void actionNewTaskSelectedByUser(@NotNull String newTaskName, @Nullable String newTaskParameter) {
+        modelInvokeMethodWithParameters("setSelectedTaskNameAndParameter", newTaskName, newTaskParameter);
+
+        String infoMessage = "The new task selected: <" + newTaskName + ">.<" + newTaskParameter + ">";
+        viewInvokeMethod("showInfoMessageToUser", infoMessage);
     }
 
     public void changedTimingByUser(@NotNull String newValue) {

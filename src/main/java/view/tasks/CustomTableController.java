@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,11 @@ public class CustomTableController {
         setColumnPreferredWidth("Name", 100);
         setColumnPreferredWidth("Status", 125);
         setColumnPreferredWidth("WhenElapse", 100);
+
+        // hide TimeManager column
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.removeColumn(columnModel.getColumn(columnModel.getColumnCount() - 1));
+
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     }
 
@@ -73,7 +79,8 @@ public class CustomTableController {
                 scheduledTask.getTaskTemplate().getName(),
                 scheduledTask.getStatus(),
                 scheduledTask.getWhenElapsed().getRemainingDurationInHHMMSS_ifElapsedZeros(),
-                output
+                output,
+                scheduledTask.getWhenElapsed()
         };
         return cols;
     }
@@ -97,5 +104,9 @@ public class CustomTableController {
                 .map(table::convertRowIndexToModel) // selected view indexes into model indexes
                 .mapToObj(tableModel::getScheduledTaskIdByRow) // model row indexes into scheduled task ids
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public void refreshTimingCountDowns() {
+        tableModel.refreshTimingCountDowns();
     }
 }

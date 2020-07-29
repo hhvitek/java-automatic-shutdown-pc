@@ -23,13 +23,11 @@ public class Main {
 
     public static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         logger.info("************STARTING configuration*************");
 
         SwingViewUtils.setLookAndFeelToSystemDefault();
         SwingViewUtils.setDefaultFont();
-        //SwingViewUtils.setUIFont(new FontUIResource("Segoe UI", Font.PLAIN, 16));
 
         TaskModel taskModel = new TaskModelImpl(ACTIVE_TASKS);
         StateModel stateModel = new StateModelImpl(DEFAULT_AFTERDELTA, DEFAULT_TASK);

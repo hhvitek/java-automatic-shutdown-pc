@@ -84,9 +84,27 @@ public class ChooseTaskGroup {
         return null;
     }
 
-    public void addActionListener(@NotNull ActionListener listener) {
+    public void setSelectedTaskParameter(@Nullable String taskParameter) {
+        String selectedTaskName = getSelectedTaskName();
+        if (selectedTaskName != null) {
+            setTaskParameter(selectedTaskName, taskParameter);
+        }
+    }
+
+    private void setTaskParameter(@NotNull String taskName, @Nullable String taskParameter) {
+        ChooseTaskElement element = taskMap.get(taskName);
+        element.setParameter(taskParameter);
+    }
+
+    public void addActionListenerOnNewTaskSelected(@NotNull ActionListener listener) {
         taskMap.values().forEach(
-                taskElement -> taskElement.addActionListener(listener)
+                taskElement -> taskElement.addActionListenerOnNewTaskSelected(listener)
+        );
+    }
+
+    public void addActionListenerOnTaskParameterChanged(@NotNull ActionListener listener) {
+        taskMap.values().forEach(
+                taskElement -> taskElement.addActionListenerOnTaskParameterChanged(listener)
         );
     }
 }

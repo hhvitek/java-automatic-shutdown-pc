@@ -14,6 +14,6 @@ public class RestartTask extends ExecutableTask {
     @Override
     public @Nullable String execute(Object... parameters) throws TaskException {
         logger.info("Executing {}", getName());
-        throw new TaskException("Test error exception");
+        throw new TaskException("Error message");
     }
 }

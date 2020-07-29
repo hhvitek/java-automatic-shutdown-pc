@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.TaskTemplate;
+import view.AbstractTimedWindow;
 import view.AbstractWindow;
 
 import javax.swing.*;
@@ -16,19 +17,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MainWindow extends AbstractWindow {
+/**
+ * Status bar label needs to be in JScrollPane otherwise there is an issue with resizing of the windows.
+ */
+public class MainWindow extends AbstractTimedWindow {
     private JPanel panelGui;
     private JPanel panelChooseTasks;
     private JPanel panelChooseTiming;
     private JPanel panelCountdown;
     private JPanel panelControls;
     private JPanel panelStatusbar;
-    private JLabel labelStatusbar;
     private JButton buttonSubmit;
     private JButton buttonExit;
     private JButton buttonShowScheduledTasks;
@@ -39,6 +42,9 @@ public class MainWindow extends AbstractWindow {
     private JLabel labelWhenElapsed;
     private JLabel labelDurationDelay;
     private JLabel labelLastId;
+    private JLabel labelStatusBar;
+    private JScrollPane scrollPaneStatusbar;
+    private JTextArea statusAreaTextArea;
 
     static final int TIMING_STEP_IN_MINUTES = 15;
     static final String TIMING_DEFAULT_VALUE = "01:00";
@@ -47,11 +53,24 @@ public class MainWindow extends AbstractWindow {
 
     private final ChooseTaskUI uiChooseTask = new ChooseTaskUI();
 
+    private final ControllerMainImpl mainController;
+
     public MainWindow(@NotNull ControllerMainImpl controller, @NotNull TaskModel taskModel) {
         super(controller, new JFrame("Vypnutí PC"));
 
+        mainController = controller;
+
+        guiFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                controller.actionExitByUser();
+            }
+        });
         guiFrame.setContentPane(panelGui);
         guiFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        scrollPaneStatusbar.setViewportBorder(null);
+        scrollPaneStatusbar.setBorder(null);
 
         List<TaskTemplate> tasks = taskModel.getTaskTemplates();
 
@@ -87,11 +106,20 @@ public class MainWindow extends AbstractWindow {
                 controller.actionExitByUser();
             }
         });
-        uiChooseTask.addActionListener(new ActionListener() {
+        uiChooseTask.addActionListenerOnNewTaskSelected(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String selectedTaskName = getSelectedTaskName();
-                controller.actionNewTaskSelectedByUser(selectedTaskName);
+                String selectedTaskParameter = getSelectedTaskParameter();
+                controller.actionNewTaskSelectedByUser(selectedTaskName, selectedTaskParameter);
+            }
+        });
+        uiChooseTask.addActionListenerOnTaskParameterChanged(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String selectedTaskName = getSelectedTaskName();
+                String selectedTaskParameter = getSelectedTaskParameter();
+                controller.actionNewTaskSelectedByUser(selectedTaskName, selectedTaskParameter);
             }
         });
         buttonCancel.addActionListener(new ActionListener() {
@@ -112,6 +140,10 @@ public class MainWindow extends AbstractWindow {
 
     private String getSelectedTaskName() {
         return uiChooseTask.getSelectedTaskName();
+    }
+
+    private void setSelectedTaskParameter(@NotNull String taskParameter) {
+        uiChooseTask.setSelectedTaskParameter(taskParameter);
     }
 
     private String getSelectedTaskParameter() {
@@ -147,13 +179,9 @@ public class MainWindow extends AbstractWindow {
         labelWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
     }
 
-    public void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
-        labelLastDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
-        labelLastWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
-    }
-
     public void refreshViewFromModel(@NotNull StateModel stateModel) {
         setSelectedTaskName(stateModel.getSelectedTaskName());
+        setSelectedTaskParameter(stateModel.getSelectedTaskParameter());
         spinnerChooseTiming.getModel().setValue(stateModel.getTimingDurationDelay());
         refreshTimingCountdowns(new TimeManager(stateModel.getTimingDurationDelay()));
         updateLastScheduledTask(stateModel.getLastScheduledTaskId());
@@ -164,12 +192,23 @@ public class MainWindow extends AbstractWindow {
     }
 
     public void showInfoMessageToUser(@NotNull String message) {
-        labelStatusbar.setText(message);
+        labelStatusBar.setText(message);
+        labelStatusBar.setToolTipText(message);
     }
 
     public void showErrorMessageToUser(@NotNull String errorMessage) {
         showInfoMessageToUser(errorMessage);
         showErrorPopup(errorMessage);
+    }
+
+    @Override
+    protected void timerTick() {
+        mainController.actionTimerTick_RefreshMainView();
+    }
+
+    public void refreshLastScheduledTaskTimingCountdowns(@NotNull TimeManager durationDelay) {
+        labelLastDurationDelay.setText(durationDelay.getRemainingDurationInHHMMSS_ifElapsedZeros());
+        labelLastWhenElapsed.setText(durationDelay.getWhenElapsedInHHMM());
     }
 
     @Override
@@ -185,10 +224,6 @@ public class MainWindow extends AbstractWindow {
                 refreshTimingCountdowns(timeManager);
                 break;
             }
-            case TIMER_TICK: {
-                //controller.eventTimerTickReceived();
-                break;
-            }
             case LAST_SCHEDULED_TASK_CHANGED: {
                 int id = (int) evt.getNewValue();
                 updateLastScheduledTask(id);
@@ -196,4 +231,6 @@ public class MainWindow extends AbstractWindow {
             }
         }
     }
+
+
 }

@@ -17,7 +17,8 @@ import java.util.List;
  */
 public class PeriodicTaskUpdater extends AbstractObservableModel {
 
-    private static final int DEFAULT_TIMER_TICK_RATE_1s = 1000;
+    // this doesn't really need to run every second. If precision is not relevant it could run event every X minutes...
+    private static final int DEFAULT_TIMER_TICK_RATE = 10000;
 
     private final ManagerTimerOperations manager;
     private final MyTimer timer;
@@ -30,7 +31,7 @@ public class PeriodicTaskUpdater extends AbstractObservableModel {
     public void startTimer() {
         timer.scheduleAtFixedRate(
                 this::timerTick,
-                DEFAULT_TIMER_TICK_RATE_1s
+                DEFAULT_TIMER_TICK_RATE
         );
     }
 
@@ -41,8 +42,5 @@ public class PeriodicTaskUpdater extends AbstractObservableModel {
     private void timerTick() {
         manager.recomputeStatusForTasksInScheduledStatus();
         manager.executeElapsedScheduledTasks();
-
-        List<ScheduledTask> scheduledTasksElapsed = manager.getAllScheduledTasksInScheduledStatus();
-        firePropertyChange(ModelObservableEvents.TIMER_TICK, scheduledTasksElapsed.size(), scheduledTasksElapsed);
     }
 }

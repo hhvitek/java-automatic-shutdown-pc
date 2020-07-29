@@ -14,6 +14,6 @@ public class ShutdownTask extends ExecutableTask {
     @Override
     public @Nullable String execute(Object... parameters) throws TaskException {
         logger.info("Executing {}", getName());
-        return "OK.";
+        return null;
     }
 }

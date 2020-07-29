@@ -12,6 +12,4 @@ public enum ModelObservableEvents {
     SELECTED_TASKPARAMETER_CHANGED, // oldParameter, newParameter
     LAST_SCHEDULED_TASK_CHANGED, // oldId, newId
     SELECTED_TIMING_DURATION_DELAY_CHANGED, // oldTiming, newTiming
-    TIMER_TICK, // ELAPSED size(), List<scheduledTask> in SCHEDULED status
-
 }

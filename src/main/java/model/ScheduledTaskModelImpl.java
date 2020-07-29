@@ -43,6 +43,10 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
         periodicTaskUpdater.startTimer();
     }
 
+    public void stopTimerAndCleanResources() {
+        periodicTaskUpdater.stopTimer();
+    }
+
     public int scheduleTask(@NotNull String name, @Nullable String parameter, @NotNull String durationDelay)
             throws TaskNotFoundException {
         return manager.scheduleTask(name, parameter, durationDelay);
