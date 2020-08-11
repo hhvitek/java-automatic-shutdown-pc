@@ -23,9 +23,9 @@ import static model.scheduledtasks.ScheduledTaskStatus.*;
 public class ScheduledTaskJpaImpl extends ScheduledTask {
 
     private ScheduledTaskEntity entity;
-    private ScheduledTaskRepository scheduledTaskRepository;
-    private TaskTemplateRepository taskTemplateRepository;
-    private ExecutableTask executableTask;
+    private final ScheduledTaskRepository scheduledTaskRepository;
+    private final TaskTemplateRepository taskTemplateRepository;
+    private final ExecutableTask executableTask;
 
     private ScheduledTaskJpaImpl(@NotNull EntityManager entityManager, @NotNull ExecutableTask executableTask) {
         this.executableTask = executableTask;

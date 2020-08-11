@@ -1,12 +1,9 @@
 package model.scheduledtasks;
 
 import model.AbstractObservableModel;
-import model.ModelObservableEvents;
 import org.jetbrains.annotations.NotNull;
 import utilities.timer.MyTimer;
 import utilities.timer.MyTimerUtilImpl;
-
-import java.util.List;
 
 /**
  * This is the SOMEONE mentioned in Manager class.

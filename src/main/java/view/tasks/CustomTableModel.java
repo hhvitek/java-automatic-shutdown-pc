@@ -3,7 +3,6 @@ package view.tasks;
 import model.TimeManager;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,6 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Custom JTable Model

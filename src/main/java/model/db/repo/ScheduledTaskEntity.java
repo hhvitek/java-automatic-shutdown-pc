@@ -9,7 +9,6 @@ import tasks.TaskTemplate;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Objects;
 
 @Entity
 @Table(name = "scheduled_task")

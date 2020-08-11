@@ -3,18 +3,18 @@ package model;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ManagerTimerOperations;
 import model.scheduledtasks.PeriodicTaskUpdater;
+import model.scheduledtasks.ScheduledTaskMessenger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the Scheduled task logic
  * * Manages scheduled tasks - scheduling, executing, cancelling etc.
- * * Any change to scheduled tasks should be propagated using observer pattern - {@see ModelObservableEvents}
+ * * Any change to scheduled tasks should be propagated using observer pattern - {@link ModelObservableEvents}
  * (such as: java.beans.PropertyChangeListener, java.beans.PropertyChangeSupport)
  * <p>
  * * Divided into two parts: user-driven and autonomous-periodic-task
@@ -72,6 +72,8 @@ public class ScheduledTaskModelImpl extends AbstractObservableModel implements P
         return manager.getScheduledTaskByIdThrowOnError(id);
     }
 
+
+    @SuppressWarnings("unchecked")
     public @NotNull List<ScheduledTaskMessenger> getAllScheduledTasks() {
         List<? extends ScheduledTaskMessenger> base = manager.getAllScheduledTasks();
         return (List<ScheduledTaskMessenger>) base;

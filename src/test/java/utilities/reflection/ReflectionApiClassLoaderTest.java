@@ -63,7 +63,7 @@ class ReflectionApiClassLoaderTest {
     void manualTest_logWithDifferentLogFacility_Test() {
         reflectionApi.shouldThrowExceptionOnError(false);
         reflectionApi.shouldLog(true);
-        reflectionApi.logLevel(ReflectionApi.LEVEL.INFO);
+        reflectionApi.logLevel(ReflectionApi.LogLevel.INFO);
         System.out.println("2] There should be <INFO> facility:");
 
         String packageClassName = "UnknownTask";

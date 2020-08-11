@@ -1,6 +1,6 @@
 package view.tasks;
 
-import model.ScheduledTaskMessenger;
+import model.scheduledtasks.ScheduledTaskMessenger;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +37,12 @@ public class CustomTableController {
         table.setDefaultRenderer(Integer.class, centerRenderer);
         table.setDefaultRenderer(String.class, centerRenderer);
 
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer())
+                .setHorizontalAlignment(SwingConstants.CENTER);
+
         setColumnPreferredWidth("Id", 50);
         setColumnPreferredWidth("Name", 100);
-        setColumnPreferredWidth("Status", 125);
+        setColumnPreferredWidth("Status", 200);
         setColumnPreferredWidth("WhenElapse", 100);
 
         // hide TimeManager column

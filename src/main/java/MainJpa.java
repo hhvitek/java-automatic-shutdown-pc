@@ -6,18 +6,14 @@ import model.db.operations.ManagerJpaImpl;
 import model.db.operations.SqliteEntityManagerFactoryImpl;
 import model.db.operations.StateModelJpaImpl;
 import model.scheduledtasks.Manager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import view.SwingViewUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
-public class MainJpa {
+public final class MainJpa {
 
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("my-sqlite");
@@ -41,7 +37,7 @@ public class MainJpa {
         Manager userManager = new ManagerJpaImpl(taskModel, appEntityManager);
         Manager periodicManager = new ManagerJpaImpl(taskModel, periodicModelTimerEntityManager);
 
-        Main.executeCommon(taskModel, stateModel, userManager, periodicManager);
+        Main.executeCommonAfter(taskModel, stateModel, userManager, periodicManager);
 
         addShutdownHooks();
         Main.logger.info("FINISHED initialization");

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ public abstract class AbstractRepository<T> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    protected Class<T> clazz;
+    protected final Class<T> clazz;
 
     protected final EntityManager entityManager;
 
@@ -36,6 +36,7 @@ public abstract class AbstractRepository<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public @NotNull List<T> findAll() {
         String query = String.format("SELECT a FROM %s a", clazz.getName());
         return entityManager.createQuery(query).getResultList();
@@ -45,7 +46,7 @@ public abstract class AbstractRepository<T> {
         try {
             entityManager.getTransaction().begin();
             entityManager.remove(entity);
-        } catch (Exception ex) {
+        } catch (IllegalStateException | IllegalArgumentException | TransactionRequiredException ex) {
             logger.error("Failed to remove {} from DB. {}.", clazz, entity, ex);
         } finally {
             entityManager.getTransaction().commit();
@@ -67,7 +68,7 @@ public abstract class AbstractRepository<T> {
         try {
             entityManager.getTransaction().begin();
             entityManager.createQuery(query).executeUpdate();
-        } catch (Exception ex) {
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException ex) {
             logger.error("Failed to remove from DB <{}>.", clazz, ex);
         } finally {
             entityManager.getTransaction().commit();
@@ -87,7 +88,7 @@ public abstract class AbstractRepository<T> {
         try {
             entityManager.getTransaction().begin();
             entityManager.persist(entity);
-        } catch (Exception ex) {
+        } catch (IllegalStateException | EntityExistsException | IllegalArgumentException | TransactionRequiredException ex) {
             logger.error("Failed to persist/create {} into DB. {}.", clazz, entity, ex);
         } finally {
             entityManager.getTransaction().commit();
@@ -98,7 +99,7 @@ public abstract class AbstractRepository<T> {
         try {
             entityManager.getTransaction().begin();
             entityManager.merge(entity);
-        } catch (Exception ex) {
+        } catch (IllegalStateException | IllegalArgumentException | TransactionRequiredException  ex) {
             logger.error("Failed to merge/update {} into DB. {}.", clazz, entity, ex);
         } finally {
             entityManager.getTransaction().commit();

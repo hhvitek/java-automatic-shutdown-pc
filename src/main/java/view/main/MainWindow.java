@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tasks.TaskTemplate;
 import view.AbstractTimedWindow;
-import view.AbstractWindow;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

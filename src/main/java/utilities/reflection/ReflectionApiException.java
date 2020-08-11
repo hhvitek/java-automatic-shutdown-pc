@@ -2,6 +2,7 @@ package utilities.reflection;
 
 public class ReflectionApiException extends RuntimeException {
 
+    private static final long serialVersionUID = -3834093847408469388L;
 
     public ReflectionApiException(String message) {
         super(message);

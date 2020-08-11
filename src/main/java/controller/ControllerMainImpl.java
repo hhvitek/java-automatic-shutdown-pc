@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import model.scheduledtasks.ScheduledTaskMessenger;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

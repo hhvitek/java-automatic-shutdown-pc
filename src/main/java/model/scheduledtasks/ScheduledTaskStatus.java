@@ -2,7 +2,7 @@ package model.scheduledtasks;
 
 /**
  * State of a ScheduledTask
- * ScheduledTask can change state only to the "bigger" one: CREATED < SCHEDULED < ELAPSED <...
+ * ScheduledTask can change state only to the "bigger" one:  {@literal CREATED < SCHEDULED < ELAPSED <...}
  */
 public enum ScheduledTaskStatus {
 

@@ -10,6 +10,7 @@ public class ElemNotFoundException extends Exception {
 
     public ElemNotFoundException(@NotNull String errorMessage) {
         super(errorMessage);
+
     }
 
     public ElemNotFoundException(@NotNull Class<?> where, @NotNull Object what) {

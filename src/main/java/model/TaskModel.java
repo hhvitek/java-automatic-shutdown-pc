@@ -14,7 +14,10 @@ public interface TaskModel {
     boolean contains(@NotNull String name);
 
     /**
-     * @throws TaskNotFoundException
+     * @param name Task's name
+     * @return Found Task
+     *
+     * @throws TaskNotFoundException if the given name does not represent any existing task.
      */
     @NotNull ExecutableTask getTaskByName(@NotNull String name) throws TaskNotFoundException;
 

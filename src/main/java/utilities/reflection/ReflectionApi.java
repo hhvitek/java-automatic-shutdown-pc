@@ -20,7 +20,7 @@ import java.util.Arrays;
  */
 public final class ReflectionApi {
 
-    public static enum LEVEL {
+    public enum LogLevel {
         TRACE, DEBUG, INFO, WARN, ERROR
     }
 
@@ -28,21 +28,21 @@ public final class ReflectionApi {
 
     private boolean shouldLog;
     //logging facility such as DEBUG, INFO, WARN, ...
-    private LEVEL logLevel;
+    private LogLevel logLevel;
 
     private boolean shouldThrowException;
 
     private ReflectionApi() {
-        this(true, true, LEVEL.DEBUG);
+        this(true, true, LogLevel.DEBUG);
     }
 
     public ReflectionApi(boolean shouldThrow, boolean shouldLog) {
         shouldLog(shouldLog);
         shouldThrowExceptionOnError(shouldThrow);
-        logLevel(LEVEL.DEBUG);
+        logLevel(LogLevel.DEBUG);
     }
 
-    public ReflectionApi(boolean shouldThrow, boolean shouldLog, @NotNull LEVEL logLevel) {
+    public ReflectionApi(boolean shouldThrow, boolean shouldLog, @NotNull ReflectionApi.LogLevel logLevel) {
         shouldLog(shouldLog);
         shouldThrowExceptionOnError(shouldThrow);
         logLevel(logLevel);
@@ -52,12 +52,12 @@ public final class ReflectionApi {
         this.shouldLog = shouldLog;
     }
 
-    public void logLevel(@NotNull LEVEL logLevel) {
+    public void logLevel(@NotNull ReflectionApi.LogLevel logLevel) {
         this.logLevel = logLevel;
     }
 
     public void shouldThrowExceptionOnError(boolean shouldThrow) {
-        this.shouldThrowException = shouldThrow;
+        shouldThrowException = shouldThrow;
     }
 
     private void logIfShould(@NotNull String logMessage, Object... objects) {
@@ -107,7 +107,7 @@ public final class ReflectionApi {
         try {
             Method method = clazz.getMethod(methodName, convertObjectArrayIntoClassArray(methodParameters));
             method.invoke(instance, methodParameters);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
             //  Handle exception.
             logIfShould("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameters, ex);
             throwIfShould(ex);
@@ -119,7 +119,7 @@ public final class ReflectionApi {
         try {
             Method method = clazz.getMethod(methodName, convertObjectArrayIntoClassArray(methodParameters));
             return method.invoke(instance, methodParameters);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
             //  Handle exception.
             logIfShould("Failed to invoke model's method <{}>.<{}>({}) using utilities.reflection API. Method not found.", clazz, methodName, methodParameters, ex);
             throwIfShould(ex);
@@ -136,18 +136,22 @@ public final class ReflectionApi {
     //CLASS LOADER##################################################################################################################
 
     /**
-     * Parameter must be in the format package.className convention
+     * @param packageNameClassName a class to be instantiated int the format package.className
+     * @return the instantiated class. may return null if shouldThrow is set to false.
      *
-     * @throws ReflectionApiException
+     * @throws ReflectionApiException on error only if the object attribute shouldThrow is set to true
      */
     public @Nullable Object instantiateFromStringPackageNameClassName(@NotNull String packageNameClassName) throws ReflectionApiException {
         return instantiateWithParametersFromStringPackageNameClassName(packageNameClassName);
     }
 
     /**
-     * Parameter must be in the format package.className convention
+     * @param packageNameClassName a class to be instantiated int the format package.className
+     * @param objects optional parameters for the class constructor
      *
-     * @throws ReflectionApiException
+     * @return the instantiated class. may return null if shouldThrow is set to false.
+     *
+     * @throws ReflectionApiException on error only if the object attribute shouldThrow is set to true
      */
     public @Nullable Object instantiateWithParametersFromStringPackageNameClassName(@NotNull String packageNameClassName, @Nullable Object... objects) throws ReflectionApiException {
         try {

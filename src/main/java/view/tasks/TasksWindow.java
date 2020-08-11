@@ -2,12 +2,11 @@ package view.tasks;
 
 import controller.ControllerScheduledTasksImpl;
 import model.ModelObservableEvents;
-import model.ScheduledTaskMessenger;
+import model.scheduledtasks.ScheduledTaskMessenger;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.AbstractTimedWindow;
-import view.AbstractWindow;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

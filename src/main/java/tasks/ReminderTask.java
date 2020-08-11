@@ -13,7 +13,7 @@ public class ReminderTask extends ExecutableTask {
 
     @Override
     public @Nullable String execute(Object... parameters) throws TaskException {
-        logger.info("Executing {}", getName(), parameters);
+        logger.info("Executing {}.{}", getName(), parameters);
         if (parameters != null && parameters.length > 0) {
             return "Reminder output with parameter: " + parameters[0];
         } else {

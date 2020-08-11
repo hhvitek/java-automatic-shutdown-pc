@@ -4,8 +4,6 @@ import controller.AbstractController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 
 /**

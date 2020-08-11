@@ -1,6 +1,6 @@
-package model;
+package model.scheduledtasks;
 
-import model.scheduledtasks.ScheduledTaskStatus;
+import model.TimeManager;
 import org.jetbrains.annotations.NotNull;
 import tasks.TaskTemplate;
 

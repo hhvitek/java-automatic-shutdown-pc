@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public interface MyTimer {
 
     /**
-     * Schedules and starts a timer in an interval with period {@param rate}.
-     * If the timer is already running, should not allow another.
+     * Schedules and starts a timer in an interval with a defined period {@code rate}.
+     * If the timer is already running, does not allow another.
      *
      * @param rate timer's period in millis.
      * @param task Runnable that is executed every period.
