@@ -2,7 +2,6 @@ package ini.inireaders;
 
 import ini.inireaders.chain.ChainOfResponsibilityIniReader;
 import ini.inireaders.fsm.LineIniReader;
-import ini.inireaders.IIniReader;
 
 public final class FactoryReader {
 

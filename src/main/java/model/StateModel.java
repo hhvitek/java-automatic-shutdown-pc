@@ -5,9 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of a dynamic part of the application excluding ScheduledTasks.
- * * Contains storage for the user data
+ * * Contains storage for user data
  * * Represents current configuration of the application
- * * If no attribute selected, methods should return relevant default values.
+ * * If no attribute is selected, methods should return relevant default values.
  */
 public abstract class StateModel extends AbstractObservableModel {
 

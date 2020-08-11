@@ -1,4 +1,4 @@
-package model.db.operations;
+package model.db;
 
 import org.jetbrains.annotations.NotNull;
 

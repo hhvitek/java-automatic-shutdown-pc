@@ -107,7 +107,7 @@ public abstract class Manager extends AbstractObservableModel implements Manager
 
     public abstract @NotNull List<ScheduledTask> getAllScheduledTasks();
 
-    protected abstract @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(ScheduledTaskStatus elapsed);
+    protected abstract @NotNull List<ScheduledTask> getAllScheduledTasksByStatus(ScheduledTaskStatus status);
 
     //##############################ManagerTimerOperations##############################################################
 

@@ -44,10 +44,11 @@ class CustomIIniConfigLoadAndStoreTest {
                                       "# the second section, first item comment.",
                                       "first_ket = first_value_second_section"
         );
-        StringReader reader = new StringReader(expected);
-
-        IIniConfig ini = new CustomIIniConfig();
-        ini.load(new BufferedReader(reader));
+        IIniConfig ini;
+        try (StringReader reader = new StringReader(expected)) {
+            ini = new CustomIIniConfig();
+            ini.load(new BufferedReader(reader));
+        }
 
         String actual = ini.toString();
 
@@ -60,12 +61,13 @@ class CustomIIniConfigLoadAndStoreTest {
                                    "key = value"
         );
 
-        StringReader reader = new StringReader(input);
-        CustomIIniConfig ini = new CustomIIniConfig();
+        try (StringReader reader = new StringReader(input)) {
+            CustomIIniConfig ini = new CustomIIniConfig();
 
-        Assertions.assertThrows(InvalidConfigFileFormatException.class,
-                                () -> ini.load(new BufferedReader(reader))
-        );
+            Assertions.assertThrows(InvalidConfigFileFormatException.class,
+                    () -> ini.load(new BufferedReader(reader))
+            );
+        }
 
     }
 
@@ -76,12 +78,13 @@ class CustomIIniConfigLoadAndStoreTest {
                                    "key = value", "[section]", "key = value"
         );
 
-        StringReader reader = new StringReader(input);
-        CustomIIniConfig ini = new CustomIIniConfig();
+        try (StringReader reader = new StringReader(input)) {
+            CustomIIniConfig ini = new CustomIIniConfig();
 
-        Assertions.assertThrows(InvalidConfigFileFormatException.class,
-                                () -> ini.load(new BufferedReader(reader))
-        );
+            Assertions.assertThrows(InvalidConfigFileFormatException.class,
+                    () -> ini.load(new BufferedReader(reader))
+            );
+        }
 
     }
 

@@ -35,7 +35,7 @@ class TimeManagerTest {
         Assertions.assertFalse(time.hasElapsed());
 
         Duration duration = time.getRemainingDuration();
-        Assertions.assertTrue(!duration.isNegative());
+        Assertions.assertFalse(duration.isNegative());
         Assertions.assertEquals(2, duration.toHoursPart());
         Assertions.assertEquals(29, duration.toMinutesPart());
     }

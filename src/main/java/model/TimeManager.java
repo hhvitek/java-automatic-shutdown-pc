@@ -134,10 +134,10 @@ public final class TimeManager {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TimeManager that = (TimeManager) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        TimeManager that = (TimeManager) obj;
         return whenElapsedPointInTime.equals(that.whenElapsedPointInTime);
     }
 

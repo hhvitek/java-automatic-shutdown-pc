@@ -1,5 +1,7 @@
 package model;
 
+import model.nodb.StateModelImpl;
+
 class StateModelImplTest extends StateModelTest {
 
     StateModelImplTest() {

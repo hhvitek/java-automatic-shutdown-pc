@@ -1,7 +1,5 @@
 package ini.inireaders.chain.processors;
 
-import ini.inireaders.chain.IContextState;
-
 public abstract class AbstractProcessor {
 
     protected final AbstractProcessor nextProcessor;

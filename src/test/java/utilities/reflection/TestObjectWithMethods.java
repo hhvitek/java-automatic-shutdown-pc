@@ -1,5 +1,8 @@
 package utilities.reflection;
 
+/**
+ * This is a testing Object used in JUnit tests in this package.
+ */
 public class TestObjectWithMethods {
 
     int firstArgument;

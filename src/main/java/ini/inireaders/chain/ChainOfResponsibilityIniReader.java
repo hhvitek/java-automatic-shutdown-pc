@@ -3,7 +3,9 @@ package ini.inireaders.chain;
 import ini.IIniConfig;
 import ini.InvalidConfigFileFormatException;
 import ini.inireaders.IIniReader;
-import ini.InvalidConfigFileFormatException;
+import ini.inireaders.chain.processors.ContextState;
+import ini.inireaders.chain.processors.IContextState;
+import ini.inireaders.chain.processors.ProcessorChain;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -41,7 +43,7 @@ public class ChainOfResponsibilityIniReader implements IIniReader {
     public void load(@NotNull IIniConfig ini, @NotNull BufferedReader reader)
             throws IOException, InvalidConfigFileFormatException {
 
-        IContextState contextState = new app.ini.inireaders.chain.ContextState(ini);
+        IContextState contextState = new ContextState(ini);
 
         String line;
         while ((line = reader.readLine()) != null) {

@@ -1,5 +1,6 @@
-package model;
+package model.nodb;
 
+import model.StateModel;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package model.db.operations;
 
 import model.Observer;
-import model.StateModelImpl;
+import model.nodb.StateModelImpl;
 import model.StateModelTest;
 
 class StateModelJpaImplTest extends StateModelTest {

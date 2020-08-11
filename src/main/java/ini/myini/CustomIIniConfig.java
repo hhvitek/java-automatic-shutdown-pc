@@ -31,7 +31,7 @@ public class CustomIIniConfig implements IIniConfig, Iterable<IIniSection> {
     private final Map<String, IIniSection> sections = new LinkedHashMap<>();
 
     private String     headerComment;
-    private IIniReader loader = new LineIniReader();
+    private final IIniReader loader;
 
     public CustomIIniConfig() {
         loader = FactoryReader.getDefaultIniReader();

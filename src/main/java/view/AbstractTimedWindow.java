@@ -19,7 +19,7 @@ public abstract class AbstractTimedWindow extends AbstractWindow {
 
         guiFrame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            public void windowClosing(java.awt.event.WindowEvent e) {
                 stopTimer();
             }
         });

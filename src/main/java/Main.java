@@ -4,9 +4,12 @@ import ini.IIniConfig;
 import ini.InvalidConfigFileFormatException;
 import ini.myini.CustomIIniConfig;
 import model.*;
+import model.nodb.StateModelImpl;
+import model.TaskModelImpl;
 import model.scheduledtasks.Manager;
-import model.scheduledtasks.ManagerImpl;
+import model.nodb.ManagerImpl;
 import model.scheduledtasks.ScheduledTaskMessenger;
+import model.scheduledtasks.ScheduledTaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.SwingViewUtils;
@@ -77,7 +80,7 @@ public final class Main {
 
 
     public static void executeCommonAfter(TaskModel taskModel, StateModel stateModel, Manager userManager, Manager periodicManager) {
-        ScheduledTaskModelImpl scheduledTaskModel = new ScheduledTaskModelImpl(userManager, periodicManager);
+        ScheduledTaskModel scheduledTaskModel = new ScheduledTaskModel(userManager, periodicManager);
 
         ControllerScheduledTasksImpl controllerScheduledTasks = new ControllerScheduledTasksImpl(scheduledTaskModel);
 

@@ -1,6 +1,7 @@
 package model.scheduledtasks;
 
 import model.TimeManager;
+import model.nodb.ScheduledTaskImpl;
 import tasks.ExecutableTask;
 
 class ScheduledTaskImplTest extends ScheduledTaskTest {

@@ -1,4 +1,4 @@
-package model.db.operations;
+package model.db;
 
 import model.TimeManager;
 import model.db.repo.*;
@@ -144,10 +144,10 @@ public class ScheduledTaskJpaImpl extends ScheduledTask {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ScheduledTaskJpaImpl that = (ScheduledTaskJpaImpl) o;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ScheduledTaskJpaImpl that = (ScheduledTaskJpaImpl) obj;
         return Objects.equals(entity, that.entity);
     }
 

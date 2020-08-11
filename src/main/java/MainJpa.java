@@ -1,10 +1,10 @@
 import model.StateModel;
 import model.TaskModel;
 import model.TaskModelImpl;
-import model.db.operations.AbstractEntityManagerFactory;
-import model.db.operations.ManagerJpaImpl;
-import model.db.operations.SqliteEntityManagerFactoryImpl;
-import model.db.operations.StateModelJpaImpl;
+import model.db.AbstractEntityManagerFactory;
+import model.db.ManagerJpaImpl;
+import model.db.SqliteEntityManagerFactoryImpl;
+import model.db.StateModelJpaImpl;
 import model.scheduledtasks.Manager;
 import view.SwingViewUtils;
 

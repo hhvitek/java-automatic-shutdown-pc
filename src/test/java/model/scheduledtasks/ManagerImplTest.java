@@ -1,6 +1,7 @@
 package model.scheduledtasks;
 
 import model.TaskModel;
+import model.nodb.ManagerImpl;
 import model.TaskModelImpl;
 
 import java.util.List;

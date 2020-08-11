@@ -2,6 +2,7 @@ package controller;
 
 import model.*;
 import model.scheduledtasks.ScheduledTaskMessenger;
+import model.scheduledtasks.ScheduledTaskModel;
 import model.scheduledtasks.ScheduledTaskStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ import view.main.MainWindow;
 import view.tasks.TasksWindow;
 
 /**
- * Controller for user actions in the Main app window. Specifically to schedule any new ScheduledTask.
+ * Controller for user actions in the Main app Window. Specifically to schedule any new ScheduledTask.
  * <p>
  * Upon user-request shows the a new window containing list of all ScheduledTasks.
  */
@@ -20,13 +21,13 @@ public class ControllerMainImpl extends AbstractController {
     private static final Logger logger = LoggerFactory.getLogger(ControllerMainImpl.class);
 
     private final StateModel stateModel;
-    private final ScheduledTaskModelImpl scheduledTaskModel;
+    private final ScheduledTaskModel scheduledTaskModel;
 
     private MainWindow mainView;
     private TasksWindow taskView;
     private final ControllerScheduledTasksImpl controllerScheduledTasks;
 
-    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModelImpl scheduledTaskModel, @NotNull ControllerScheduledTasksImpl controllerScheduledTasks) {
+    public ControllerMainImpl(@NotNull StateModel stateModel, @NotNull ScheduledTaskModel scheduledTaskModel, @NotNull ControllerScheduledTasksImpl controllerScheduledTasks) {
         this.stateModel = stateModel;
         this.scheduledTaskModel = scheduledTaskModel;
 

@@ -1,7 +1,5 @@
 package ini.inireaders.chain.processors;
 
-import ini.inireaders.chain.IContextState;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

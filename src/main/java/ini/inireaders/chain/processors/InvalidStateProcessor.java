@@ -1,8 +1,6 @@
 package ini.inireaders.chain.processors;
 
 
-import ini.inireaders.chain.IContextState;
-
 public class InvalidStateProcessor extends AbstractProcessor {
 
     public InvalidStateProcessor(AbstractProcessor nextProcessor) {

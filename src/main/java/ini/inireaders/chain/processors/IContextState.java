@@ -1,4 +1,4 @@
-package ini.inireaders.chain;
+package ini.inireaders.chain.processors;
 
 public interface IContextState {
 

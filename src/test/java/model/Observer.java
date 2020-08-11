@@ -12,7 +12,7 @@ public class Observer implements PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        this.event = propertyChangeEvent;
+    public void propertyChange(PropertyChangeEvent evt) {
+        event = evt;
     }
 }

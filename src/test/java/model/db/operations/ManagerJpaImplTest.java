@@ -2,6 +2,9 @@ package model.db.operations;
 
 import model.TaskModel;
 import model.TaskModelImpl;
+import model.db.AbstractEntityManagerFactory;
+import model.db.ManagerJpaImpl;
+import model.db.SqliteEntityManagerFactoryImpl;
 import model.db.repo.ScheduledTaskRepository;
 import model.scheduledtasks.ManagerTest;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package model.db.operations;
+package model.db;
 
 import model.TaskModel;
 import model.TimeManager;

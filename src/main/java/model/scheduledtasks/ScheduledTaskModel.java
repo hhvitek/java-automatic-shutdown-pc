@@ -1,5 +1,9 @@
-package model;
+package model.scheduledtasks;
 
+import model.AbstractObservableModel;
+import model.ModelObservableEvents;
+import model.ScheduledTaskNotFoundException;
+import model.TaskNotFoundException;
 import model.scheduledtasks.Manager;
 import model.scheduledtasks.ManagerTimerOperations;
 import model.scheduledtasks.PeriodicTaskUpdater;
@@ -23,12 +27,12 @@ import java.util.List;
  * * every period change state of elapsed task from SCHEDULED to ELAPSED
  * * executes every ELAPSED task
  */
-public class ScheduledTaskModelImpl extends AbstractObservableModel implements PropertyChangeListener {
+public class ScheduledTaskModel extends AbstractObservableModel implements PropertyChangeListener {
 
     protected final Manager manager;
     protected final PeriodicTaskUpdater periodicTaskUpdater;
 
-    public ScheduledTaskModelImpl(@NotNull Manager manager, @NotNull ManagerTimerOperations managerTimerOperations) {
+    public ScheduledTaskModel(@NotNull Manager manager, @NotNull ManagerTimerOperations managerTimerOperations) {
         this.manager = manager;
         manager.addPropertyChangeListener(this);
 

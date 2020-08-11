@@ -1,6 +1,4 @@
-package ini.inireaders.chain;
-
-import ini.inireaders.chain.processors.*;
+package ini.inireaders.chain.processors;
 
 public class ProcessorChain {
 

@@ -1,6 +1,7 @@
 package model.db.operations;
 
 import model.TimeManager;
+import model.db.ScheduledTaskJpaImpl;
 import model.db.repo.ElemNotFoundException;
 import model.db.repo.ScheduledTaskEntity;
 import model.db.repo.ScheduledTaskRepository;
@@ -17,12 +18,12 @@ import javax.persistence.Persistence;
 
 class ScheduledTaskJpaImplTest extends ScheduledTaskTest {
 
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY =
+    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("my-sqlite");
 
-    private static EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
+    private static final EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager();
 
-    private static ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
+    private static final ScheduledTaskRepository repository = new ScheduledTaskRepository(entityManager);
 
     @Override
     protected ScheduledTask createScheduledTask(ExecutableTask task, TimeManager durationDelay, String parameter) {

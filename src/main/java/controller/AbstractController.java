@@ -48,9 +48,9 @@ public abstract class AbstractController implements PropertyChangeListener {
     //  Use this to observe property changes from registered models
     //  and propagate them on to all the views.
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    public void propertyChange(PropertyChangeEvent evt) {
         for (AbstractWindow view : registeredViews) {
-            view.modelPropertyChange(propertyChangeEvent);
+            view.modelPropertyChange(evt);
         }
     }
 
